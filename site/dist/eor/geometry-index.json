@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "snapshotDate": "2026-10-17",
+  "manifestSHA256": "328deaf1f1d2bf9c9d7d5e961cd25be653f082a51fb6966f13be9e495ef4599c",
+  "publicAssetsIndexSHA256": "086b7ca8e1fa7f6c3cedbfa08519c4e5bc5f2b8dd53a4e6097b51a141ec14463",
+  "registrySHA256": "f8ebbb51f77a42ec1f87be40362e8bb3ab8c1c31d5203c31cd08540b535e5b06",
+  "projects": {
+    "durant": {
+      "wellCount": 5,
+      "branchCount": 10,
+      "stationCount": 1163,
+      "bounds": [
+        -89064.890625,
+        -11041.2685546875,
+        -136244.109375,
+        -87072.671875,
+        -2191.88916015625,
+        -125484.9765625
+      ],
+      "expectedWellCount": 5,
+      "geometryAvailable": true,
+      "geometrySHA256": "9bd74f5cac5b47b5d52e0b71ef96127826fcc5e9c1a66a8cf7277a3c0ed1c984"
+    },
+    "clover-roadrunner": {
+      "wellCount": 4,
+      "branchCount": 8,
+      "stationCount": 910,
+      "bounds": [
+        54863.3359375,
+        -10775.12890625,
+        180991.125,
+        58569.00390625,
+        -2187.93798828125,
+        201784.484375
+      ],
+      "expectedWellCount": 4,
+      "geometryAvailable": true,
+      "geometrySHA256": "a36e94a6c906c0e3cd6baa39dc1474127d5c84610bccdc540351e8d676e3f2f9"
+    },
+    "en-ortloff": {
+      "wellCount": 4,
+      "branchCount": 8,
+      "stationCount": 962,
+      "bounds": [
+        63420.265625,
+        -10353.642578125,
+        -146089.53125,
+        64657.11328125,
+        -1894.8416748046875,
+        -136345.8125
+      ],
+      "expectedWellCount": 4,
+      "geometryAvailable": true,
+      "geometrySHA256": "cc3958eb70b465977071f5cc6d5d09161aad43ad62fd45af4ce694688ee2cd9d"
+    },
+    "nygaard": {
+      "wellCount": 4,
+      "branchCount": 8,
+      "stationCount": 1349,
+      "bounds": [
+        11765.142578125,
+        -10773.39453125,
+        89747.5859375,
+        14483.01171875,
+        -1644.8900146484375,
+        101817.515625
+      ],
+      "expectedWellCount": 4,
+      "geometryAvailable": true,
+      "geometrySHA256": "f4ac2a5ec301fe26a9884be3172fc4228aeaf14e5d777e8dd5327abe7dfcb46e"
+    },
+    "haley": {
+      "wellCount": 1,
+      "branchCount": 2,
+      "stationCount": 222,
+      "bounds": [
+        64281.14453125,
+        -9927.4013671875,
+        -210919.6875,
+        64718.91015625,
+        -2157.845947265625,
+        -200209.015625
+      ],
+      "expectedWellCount": 1,
+      "geometryAvailable": true,
+      "geometrySHA256": "bd5299c2da1981d572ffbd57edaf1352dc5de86d8d1cc49bc677b8ed9cdd4995"
+    }
+  },
+  "originalRegistrySHA256": "256c171955dce1ca6b70d3883b92a7cf0525219a842a72a8b2e24d90d101f23d",
+  "publicationNote": "The publication registry changes only its display label. Original registry hash retained; all project membership, evidence, stages and survey geometry remain unchanged."
+}

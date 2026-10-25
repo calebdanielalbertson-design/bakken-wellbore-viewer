@@ -1,31 +1,25 @@
-__pycache__/
-*.pyc
-.venv/
+# Large prepared data (not versioned in Git)
+data/
+full-dataset/
+gamma-data/
+local-data/
+site/dist/viewer/data/
+*.tar.gz
+*.zip
+*.mp4
+
+# Secrets and local settings
 .env
 .env.*
-full-dataset/
-viewer/data/sample/
-viewer/data/showcase/
-gamma-data/*.json
-gamma-data/*.npy
-gamma-data/cache/
-gamma-data/*cache*/
-*.dbf
-*.las
-*.LAS
-*.csv
-*.xlsx
-*.ods
-*.mp4
-*.webm
-*.zip
-
-local-data/
 local-settings.json
-work/
+.openai/
 
-viewer/data/dsu/
-viewer/data/inventory/
+# Deployment run records
+backend/railway-*.json
 
-# Local inventory audit generated from retained model snapshots
-viewer/inventory-review.html
+# Python / Node
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+.sites-runtime/

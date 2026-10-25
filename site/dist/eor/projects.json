@@ -1,0 +1,813 @@
+{
+  "version": 2,
+  "reviewedAt": "2026-10-20",
+  "label": "EOR Projects · Illustrative operating concepts",
+  "limitations": [
+    "Surveyed well paths establish location, not fluid movement.",
+    "Symbolic flow animation and concept diagrams do not show measured plume extent, fractures, pressure fronts, saturations, volumes or rates.",
+    "No daily or monthly EOR series is invented. Operator names describe the cited project records."
+  ],
+  "learningNotes": [
+    "Injection adds pressure and brings fluid into contact with reservoir rock; the contacted region depends on fractures, rock and fluid properties.",
+    "Production lowers pressure at the well and recovers connected fluids. Incremental recovery requires comparison with an appropriate production baseline.",
+    "A shut-in or monitored well need not be an injector. An application, authorization, modeled plan and reported field operation are distinct evidence types."
+  ],
+  "projects": [
+    {
+      "id": "durant",
+      "title": "Durant",
+      "operator": "Continental Resources",
+      "operatorBasis": "Operator as named in the cited project record; not a fresh ownership determination.",
+      "location": "Williams County · East Fork-Bakken",
+      "method": "Multi-well cyclic gas injection",
+      "status": "Published pilot plan",
+      "statusDetail": "Published plan and 2025 injection applications; current operations unverified.",
+      "summary": "Five wells in two groups illustrate a published plan for alternating gas injection and production.",
+      "findings": [
+        "The plan spans the Middle Bakken and Three Forks.",
+        "Its modeled sequence injects through 5H/7H, monitors 6H1, then switches injection to 4H."
+      ],
+      "watch": [
+        "Measured injection histories, group production and incremental oil."
+      ],
+      "sources": [
+        {
+          "id": "durant_proposal",
+          "label": "Continental Resources multi-well, multi-zone EOR proposal for Durant",
+          "url": "https://www.ndic.nd.gov/sites/www/files/documents/Oil--Gas-Research-Program/Grant-Rounds--Final-Reports/Proposals/Grant-Rounds-69-60/G-62-N-A-Multi-Well-Multi-Zone-Enhanced-Oil-Recov.pdf",
+          "date": "2025-08-14",
+          "evidence": "Five-well grouping and modeled role switch (PDF pages 7–8, 12–13).",
+          "qualification": "Proposal model; no measured operating schedule.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "durant_applications",
+          "label": "NDIC hearing docket, August 28, 2025",
+          "url": "https://www.dmr.nd.gov/oilgas/dockets/2025/docket082825.pdf",
+          "date": "2025-08-28",
+          "evidence": "Applications concerning temporary pilot injection authority and conversion for Durant 4-12H, 5-12H, 6-12H1, and 7-12H.",
+          "qualification": "Docket/application evidence; not an issued order or record of actual injection.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "durant_identity",
+          "label": "North Dakota Oil and Gas Production Report, August 2024",
+          "url": "https://www.dmr.nd.gov/oilgas/mpr/2024_08.pdf",
+          "date": "2024-10-15",
+          "evidence": "Lists Durant 3-12H1 through 7-12H with file numbers 35144 through 35148.",
+          "qualification": "Identity evidence; not a current operating feed.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "rich_gas_research",
+          "label": "NETL · Bakken rich-gas EOR",
+          "url": "https://netl.doe.gov/node/2078",
+          "date": "2022-02-28",
+          "evidence": "Bakken gas-injection research examines pressure, fluid composition, fracture pathways and cycle design.",
+          "qualification": "General mechanism evidence, not operating data for these five projects.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "tight_oil_mechanisms",
+          "label": "NETL / LBNL · tight-oil recovery mechanisms",
+          "url": "https://netl.doe.gov/node/2032",
+          "date": "2019-07-01",
+          "evidence": "Studies gas dissolution, viscosity and transport limits in tight rock.",
+          "qualification": "Laboratory and simulation findings; not proof of a field response here.",
+          "checkedAt": "2026-10-20"
+        }
+      ],
+      "statusDate": "2025-08-28",
+      "wells": [
+        {
+          "fileNumber": "35144",
+          "name": "DURANT 3-12H1",
+          "shortName": "3-12H1",
+          "group": "Group 1",
+          "formation": null,
+          "roleNote": "Project participant; no injector assignment established.",
+          "identitySourceIds": [
+            "durant_identity"
+          ],
+          "membershipSourceIds": [
+            "durant_proposal"
+          ]
+        },
+        {
+          "fileNumber": "35145",
+          "name": "DURANT 4-12H",
+          "shortName": "4-12H",
+          "group": "Group 1",
+          "formation": null,
+          "roleNote": "Proposed cyclic injection / production.",
+          "identitySourceIds": [
+            "durant_identity",
+            "durant_applications"
+          ],
+          "membershipSourceIds": [
+            "durant_proposal",
+            "durant_applications"
+          ]
+        },
+        {
+          "fileNumber": "35146",
+          "name": "DURANT 5-12H",
+          "shortName": "5-12H",
+          "group": "Group 2",
+          "formation": "Middle Bakken",
+          "roleNote": "Injector in the displayed proposal model.",
+          "identitySourceIds": [
+            "durant_identity",
+            "durant_applications"
+          ],
+          "membershipSourceIds": [
+            "durant_proposal",
+            "durant_applications"
+          ]
+        },
+        {
+          "fileNumber": "35147",
+          "name": "DURANT 6-12H1",
+          "shortName": "6-12H1",
+          "group": "Group 2",
+          "formation": "Three Forks",
+          "roleNote": "Pressure monitoring during modeled 5H/7H injection; later production.",
+          "identitySourceIds": [
+            "durant_identity",
+            "durant_applications"
+          ],
+          "membershipSourceIds": [
+            "durant_proposal",
+            "durant_applications"
+          ]
+        },
+        {
+          "fileNumber": "35148",
+          "name": "DURANT 7-12H",
+          "shortName": "7-12H",
+          "group": "Group 2",
+          "formation": "Middle Bakken",
+          "roleNote": "Injector in the displayed proposal model.",
+          "identitySourceIds": [
+            "durant_identity",
+            "durant_applications"
+          ],
+          "membershipSourceIds": [
+            "durant_proposal",
+            "durant_applications"
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "id": "group-2-injection",
+          "label": "Model: inject through 5H + 7H",
+          "description": "6H1 monitors pressure while shut in; 3H1 and 4H produce.",
+          "roles": {
+            "35144": "produce",
+            "35145": "produce",
+            "35146": "inject",
+            "35147": "monitor",
+            "35148": "inject"
+          },
+          "basis": "Published proposal illustration; not measured operations.",
+          "reservoirEffects": [
+            "Injection increases pressure in connected rock and fractures.",
+            "Gas–oil contact may aid recovery; pressure response helps test communication."
+          ],
+          "sourceIds": [
+            "durant_proposal",
+            "rich_gas_research"
+          ],
+          "isIllustrative": true
+        },
+        {
+          "id": "group-1-injection",
+          "label": "Model: switch injection to 4H",
+          "description": "5H, 6H1 and 7H produce. The displayed role of 3H1 is unverified.",
+          "roles": {
+            "35144": "unknown",
+            "35145": "inject",
+            "35146": "produce",
+            "35147": "produce",
+            "35148": "produce"
+          },
+          "basis": "Published proposal illustration; no dates, rates or state inferred for 3H1.",
+          "reservoirEffects": [
+            "Producing wells draw fluids toward the wellbore as pressure falls.",
+            "Recovered gas and oil must be measured; this view predicts no uplift."
+          ],
+          "sourceIds": [
+            "durant_proposal",
+            "rich_gas_research"
+          ],
+          "isIllustrative": true
+        }
+      ],
+      "limitations": [
+        "Current daily or monthly injection and production data are not supplied.",
+        "Stages are educational choices, not a dated replay.",
+        "The proposal's prose inconsistently labels one injection group; roles follow the explicit named-well sequence.",
+        "3H1 is not labeled an injector."
+      ]
+    },
+    {
+      "id": "clover-roadrunner",
+      "title": "Clover / Roadrunner",
+      "operator": "Continental Resources",
+      "operatorBasis": "Operator as named in the cited project record; not a fresh ownership determination.",
+      "location": "Dunn County · Murphy Creek-Bakken",
+      "method": "Gas injection proposal",
+      "status": "Conversion applications",
+      "statusDetail": "April 2026 conversion applications; approval and injection start unverified.",
+      "summary": "Four proposed conversion wells anchor a teaching example of gas injection and recovery.",
+      "findings": [
+        "The docket names four conversion candidates.",
+        "No per-well operating sequence is established by that application."
+      ],
+      "watch": [
+        "Issued orders and measured cycle histories."
+      ],
+      "sources": [
+        {
+          "id": "clover_roadrunner_applications",
+          "label": "Supplement to NDIC hearing docket, April 23, 2026",
+          "url": "https://www.dmr.nd.gov/oilgas/dockets/2026/docket042326s.pdf",
+          "date": "2026-04-23",
+          "evidence": "Identifies Roadrunner 6-15H/7-15H and Clover 4-10H/5-10H in applications to convert wells for temporary injection of gas and other fluids.",
+          "qualification": "Application evidence only; no approval or injection start verified here.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "rich_gas_research",
+          "label": "NETL · Bakken rich-gas EOR",
+          "url": "https://netl.doe.gov/node/2078",
+          "date": "2022-02-28",
+          "evidence": "Bakken gas-injection research examines pressure, fluid composition, fracture pathways and cycle design.",
+          "qualification": "General mechanism evidence, not operating data for these five projects.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "tight_oil_mechanisms",
+          "label": "NETL / LBNL · tight-oil recovery mechanisms",
+          "url": "https://netl.doe.gov/node/2032",
+          "date": "2019-07-01",
+          "evidence": "Studies gas dissolution, viscosity and transport limits in tight rock.",
+          "qualification": "Laboratory and simulation findings; not proof of a field response here.",
+          "checkedAt": "2026-10-20"
+        }
+      ],
+      "statusDate": "2026-04-23",
+      "wells": [
+        {
+          "fileNumber": "40476",
+          "name": "Clover 4-10H",
+          "shortName": "Clover 4-10H",
+          "group": null,
+          "formation": null,
+          "roleNote": "Proposed temporary injection conversion",
+          "identitySourceIds": [
+            "clover_roadrunner_applications"
+          ],
+          "membershipSourceIds": [
+            "clover_roadrunner_applications"
+          ]
+        },
+        {
+          "fileNumber": "40477",
+          "name": "Clover 5-10H",
+          "shortName": "Clover 5-10H",
+          "group": null,
+          "formation": null,
+          "roleNote": "Proposed temporary injection conversion",
+          "identitySourceIds": [
+            "clover_roadrunner_applications"
+          ],
+          "membershipSourceIds": [
+            "clover_roadrunner_applications"
+          ]
+        },
+        {
+          "fileNumber": "40480",
+          "name": "Roadrunner 6-15H",
+          "shortName": "Roadrunner 6-15H",
+          "group": null,
+          "formation": null,
+          "roleNote": "Proposed temporary injection conversion",
+          "identitySourceIds": [
+            "clover_roadrunner_applications"
+          ],
+          "membershipSourceIds": [
+            "clover_roadrunner_applications"
+          ]
+        },
+        {
+          "fileNumber": "40481",
+          "name": "Roadrunner 7-15H",
+          "shortName": "Roadrunner 7-15H",
+          "group": null,
+          "formation": null,
+          "roleNote": "Proposed temporary injection conversion",
+          "identitySourceIds": [
+            "clover_roadrunner_applications"
+          ],
+          "membershipSourceIds": [
+            "clover_roadrunner_applications"
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "id": "injection-concept",
+          "label": "Concept: gas injection",
+          "description": "Clover 4-10H demonstrates an injection role on its surveyed path.",
+          "roles": {
+            "40476": "inject",
+            "40477": "unknown",
+            "40480": "unknown",
+            "40481": "unknown"
+          },
+          "basis": "Teaching assignment to Clover 4-10H; actual well sequence is unverified. Other wells remain unassigned.",
+          "isIllustrative": true,
+          "sourceIds": [
+            "rich_gas_research",
+            "tight_oil_mechanisms"
+          ],
+          "reservoirEffects": [
+            "Injection raises pressure where the well connects to the reservoir.",
+            "Gas can dissolve in oil and reduce viscosity; tight-rock transport limits how much oil is contacted."
+          ]
+        },
+        {
+          "id": "production-concept",
+          "label": "Concept: return to production",
+          "description": "The same representative well demonstrates inward recovery flow.",
+          "roles": {
+            "40476": "produce",
+            "40477": "unknown",
+            "40480": "unknown",
+            "40481": "unknown"
+          },
+          "basis": "Teaching assignment to Clover 4-10H; actual well sequence is unverified. Other wells remain unassigned.",
+          "isIllustrative": true,
+          "sourceIds": [
+            "rich_gas_research"
+          ],
+          "reservoirEffects": [
+            "Lower well pressure draws connected reservoir fluids into the well.",
+            "Gas returning quickly through fractures may bypass oil. Measured oil and gas response is needed to assess recovery."
+          ]
+        }
+      ],
+      "limitations": [
+        "Current daily or monthly injection and production data are not supplied.",
+        "Stages are educational choices, not a dated replay.",
+        "File 40476 is chosen only to demonstrate flow direction; the source does not establish this sequence."
+      ],
+      "illustrativeWellNumber": "40476"
+    },
+    {
+      "id": "en-ortloff",
+      "title": "EN-Ortloff",
+      "operator": "Hess · named in project record",
+      "operatorBasis": "Operator as named in the cited project record; not a fresh ownership determination.",
+      "location": "Mountrail County · Big Butte-Bakken",
+      "method": "Foam-assisted gas research",
+      "status": "Authorized pilot under review",
+      "statusDetail": "February 2026 review cites prior authorization under Order 30288; current phase unverified.",
+      "summary": "Four named pilot wells accompany research into foam that slows gas flow through fractures.",
+      "findings": [
+        "The docket identifies a previously authorized four-well pilot.",
+        "NETL describes EN-Ortloff chemical screening and reservoir modeling."
+      ],
+      "watch": [
+        "Field results showing containment and incremental recovery."
+      ],
+      "sources": [
+        {
+          "id": "ortloff_review",
+          "label": "NDIC hearing docket, February 25, 2026",
+          "url": "https://www.dmr.nd.gov/oilgas/dockets/2026/docket022526.pdf",
+          "date": "2026-02-25",
+          "evidence": "Reviews the pilot injection project previously authorized under Order 30288 and identifies the four EN-Ortloff wells.",
+          "qualification": "Confirms prior authorization and regulatory review; does not provide current injection volumes or operating phases.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "ortloff_foam",
+          "label": "NETL · foam-assisted gas research",
+          "url": "https://netl.doe.gov/node/9463",
+          "date": "2024-03-14",
+          "evidence": "EN-Ortloff modeling studies foam for gas mobility control.",
+          "qualification": "Research and modeling do not establish current operating phase or field uplift.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "rich_gas_research",
+          "label": "NETL · Bakken rich-gas EOR",
+          "url": "https://netl.doe.gov/node/2078",
+          "date": "2022-02-28",
+          "evidence": "Bakken gas-injection research examines pressure, fluid composition, fracture pathways and cycle design.",
+          "qualification": "General mechanism evidence, not operating data for these five projects.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "tight_oil_mechanisms",
+          "label": "NETL / LBNL · tight-oil recovery mechanisms",
+          "url": "https://netl.doe.gov/node/2032",
+          "date": "2019-07-01",
+          "evidence": "Studies gas dissolution, viscosity and transport limits in tight rock.",
+          "qualification": "Laboratory and simulation findings; not proof of a field response here.",
+          "checkedAt": "2026-10-20"
+        }
+      ],
+      "statusDate": "2026-02-25",
+      "wells": [
+        {
+          "fileNumber": "27297",
+          "name": "EN-Ortloff 156-94-2635H-4",
+          "shortName": "H-4",
+          "group": null,
+          "formation": null,
+          "roleNote": "Named pilot participant",
+          "identitySourceIds": [
+            "ortloff_review"
+          ],
+          "membershipSourceIds": [
+            "ortloff_review"
+          ]
+        },
+        {
+          "fileNumber": "27296",
+          "name": "EN-Ortloff 156-94-2635H-5",
+          "shortName": "H-5",
+          "group": null,
+          "formation": null,
+          "roleNote": "Named pilot participant",
+          "identitySourceIds": [
+            "ortloff_review"
+          ],
+          "membershipSourceIds": [
+            "ortloff_review"
+          ]
+        },
+        {
+          "fileNumber": "27295",
+          "name": "EN-Ortloff 156-94-2635H-6",
+          "shortName": "H-6",
+          "group": null,
+          "formation": null,
+          "roleNote": "Named pilot participant",
+          "identitySourceIds": [
+            "ortloff_review"
+          ],
+          "membershipSourceIds": [
+            "ortloff_review"
+          ]
+        },
+        {
+          "fileNumber": "27294",
+          "name": "EN-Ortloff 156-94-2635H-7",
+          "shortName": "H-7",
+          "group": null,
+          "formation": null,
+          "roleNote": "Named pilot participant",
+          "identitySourceIds": [
+            "ortloff_review"
+          ],
+          "membershipSourceIds": [
+            "ortloff_review"
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "id": "injection-concept",
+          "label": "Concept: foam + gas injection",
+          "description": "H-4 demonstrates an injection role on its surveyed path.",
+          "roles": {
+            "27294": "unknown",
+            "27295": "unknown",
+            "27296": "unknown",
+            "27297": "inject"
+          },
+          "basis": "Teaching assignment to H-4; actual well sequence is unverified. Other wells remain unassigned.",
+          "isIllustrative": true,
+          "sourceIds": [
+            "ortloff_foam"
+          ],
+          "reservoirEffects": [
+            "Gas with surfactant solution can form foam in fractures.",
+            "Foam can slow gas mobility and redirect contact toward oil-bearing rock; success depends on local conditions."
+          ]
+        },
+        {
+          "id": "production-concept",
+          "label": "Concept: return to production",
+          "description": "The same representative well demonstrates inward recovery flow.",
+          "roles": {
+            "27294": "unknown",
+            "27295": "unknown",
+            "27296": "unknown",
+            "27297": "produce"
+          },
+          "basis": "Teaching assignment to H-4; actual well sequence is unverified. Other wells remain unassigned.",
+          "isIllustrative": true,
+          "sourceIds": [
+            "rich_gas_research"
+          ],
+          "reservoirEffects": [
+            "Lower well pressure draws connected reservoir fluids into the well.",
+            "Gas returning quickly through fractures may bypass oil. Measured oil and gas response is needed to assess recovery."
+          ]
+        }
+      ],
+      "limitations": [
+        "Current daily or monthly injection and production data are not supplied.",
+        "Stages are educational choices, not a dated replay.",
+        "File 27297 is chosen only to demonstrate flow direction; the source does not establish this sequence."
+      ],
+      "illustrativeWellNumber": "27297"
+    },
+    {
+      "id": "nygaard",
+      "title": "Nygaard Federal",
+      "operator": "XTO Energy · named in project record",
+      "operatorBasis": "Operator as named in the cited project record; not a fresh ownership determination.",
+      "location": "Dunn County · Lost Bridge-Bakken",
+      "method": "Produced-gas EOR proposal",
+      "status": "Pilot applications",
+      "statusDetail": "March 2024 pilot and conversion applications; approval and injection start unverified.",
+      "summary": "Four proposed pilot wells illustrate how produced gas might be reinjected to aid oil recovery.",
+      "findings": [
+        "The applications name produced gas and other fluids.",
+        "The source does not establish measured incremental oil."
+      ],
+      "watch": [
+        "Approval records, injection histories and production response."
+      ],
+      "sources": [
+        {
+          "id": "nygaard_applications",
+          "label": "NDIC hearing docket, March 21, 2024",
+          "url": "https://www.dmr.nd.gov/oilgas/dockets/2024/docket032124.pdf",
+          "date": "2024-03-21",
+          "evidence": "Identifies four Nygaard Federal wells in pilot EOR and conversion applications for injection of produced gas and other fluids.",
+          "qualification": "Application evidence only; current operating status was not verified.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "rich_gas_research",
+          "label": "NETL · Bakken rich-gas EOR",
+          "url": "https://netl.doe.gov/node/2078",
+          "date": "2022-02-28",
+          "evidence": "Bakken gas-injection research examines pressure, fluid composition, fracture pathways and cycle design.",
+          "qualification": "General mechanism evidence, not operating data for these five projects.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "tight_oil_mechanisms",
+          "label": "NETL / LBNL · tight-oil recovery mechanisms",
+          "url": "https://netl.doe.gov/node/2032",
+          "date": "2019-07-01",
+          "evidence": "Studies gas dissolution, viscosity and transport limits in tight rock.",
+          "qualification": "Laboratory and simulation findings; not proof of a field response here.",
+          "checkedAt": "2026-10-20"
+        }
+      ],
+      "statusDate": "2024-03-21",
+      "wells": [
+        {
+          "fileNumber": "21702",
+          "name": "Nygaard Federal 13X-5A",
+          "shortName": "13X-5A",
+          "group": null,
+          "formation": null,
+          "roleNote": "Proposed pilot injector",
+          "identitySourceIds": [
+            "nygaard_applications"
+          ],
+          "membershipSourceIds": [
+            "nygaard_applications"
+          ]
+        },
+        {
+          "fileNumber": "32917",
+          "name": "Nygaard Federal 13X-5BXC",
+          "shortName": "13X-5BXC",
+          "group": null,
+          "formation": null,
+          "roleNote": "Proposed pilot injector",
+          "identitySourceIds": [
+            "nygaard_applications"
+          ],
+          "membershipSourceIds": [
+            "nygaard_applications"
+          ]
+        },
+        {
+          "fileNumber": "32919",
+          "name": "Nygaard Federal 13X-5B",
+          "shortName": "13X-5B",
+          "group": null,
+          "formation": null,
+          "roleNote": "Proposed pilot injector",
+          "identitySourceIds": [
+            "nygaard_applications"
+          ],
+          "membershipSourceIds": [
+            "nygaard_applications"
+          ]
+        },
+        {
+          "fileNumber": "32921",
+          "name": "Nygaard Federal 13X-5AXD",
+          "shortName": "13X-5AXD",
+          "group": null,
+          "formation": null,
+          "roleNote": "Proposed pilot injector",
+          "identitySourceIds": [
+            "nygaard_applications"
+          ],
+          "membershipSourceIds": [
+            "nygaard_applications"
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "id": "injection-concept",
+          "label": "Concept: gas injection",
+          "description": "13X-5A demonstrates an injection role on its surveyed path.",
+          "roles": {
+            "21702": "inject",
+            "32917": "unknown",
+            "32919": "unknown",
+            "32921": "unknown"
+          },
+          "basis": "Teaching assignment to 13X-5A; actual well sequence is unverified. Other wells remain unassigned.",
+          "isIllustrative": true,
+          "sourceIds": [
+            "rich_gas_research",
+            "tight_oil_mechanisms"
+          ],
+          "reservoirEffects": [
+            "Injection raises pressure where the well connects to the reservoir.",
+            "Gas can dissolve in oil and reduce viscosity; tight-rock transport limits how much oil is contacted."
+          ]
+        },
+        {
+          "id": "production-concept",
+          "label": "Concept: return to production",
+          "description": "The same representative well demonstrates inward recovery flow.",
+          "roles": {
+            "21702": "produce",
+            "32917": "unknown",
+            "32919": "unknown",
+            "32921": "unknown"
+          },
+          "basis": "Teaching assignment to 13X-5A; actual well sequence is unverified. Other wells remain unassigned.",
+          "isIllustrative": true,
+          "sourceIds": [
+            "rich_gas_research"
+          ],
+          "reservoirEffects": [
+            "Lower well pressure draws connected reservoir fluids into the well.",
+            "Gas returning quickly through fractures may bypass oil. Measured oil and gas response is needed to assess recovery."
+          ]
+        }
+      ],
+      "limitations": [
+        "Current daily or monthly injection and production data are not supplied.",
+        "Stages are educational choices, not a dated replay.",
+        "File 21702 is chosen only to demonstrate flow direction; the source does not establish this sequence."
+      ],
+      "illustrativeWellNumber": "21702"
+    },
+    {
+      "id": "haley",
+      "title": "East Nesson / Haley",
+      "operator": "Liberty Resources · historical project operator",
+      "operatorBasis": "Operator as named in the cited project record; not a fresh ownership determination.",
+      "location": "Mountrail County · East Tioga-Bakken",
+      "method": "Gas, water and surfactant huff-and-puff",
+      "status": "Historical field test",
+      "statusDetail": "EERC reports historical East Nesson operations; current state unverified.",
+      "summary": "The Haley application identifies a pilot well; EERC separately describes the East Nesson single-well method and historical injection.",
+      "findings": [
+        "EERC reports initial coinjection during September 9–October 11, 2021.",
+        "A July 2024 abstract discusses a second pilot's production phase without identifying its well."
+      ],
+      "watch": [
+        "Well-specific cycle records and net incremental recovery."
+      ],
+      "sources": [
+        {
+          "id": "haley_identity_membership",
+          "label": "NDIC hearing docket, June 17, 2021",
+          "url": "https://www.dmr.nd.gov/oilgas/dockets/2021/docket061721.pdf",
+          "date": "2021-06-17",
+          "evidence": "Names Haley 158-93-29-32-10MBH, file 35883, as the proposed Liberty Resources EOR pilot injector.",
+          "qualification": "Identity and proposed membership verified by docket; historical operation is separately supported by EERC updates.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "liberty_first_cycle",
+          "label": "Liberty Resources East Nesson Pilot EOR Project Update",
+          "url": "https://bpop.undeerc.org/Abstract.aspx?id=284",
+          "date": "2021-11-23",
+          "evidence": "EERC reports commissioning on September 9, 2021 with produced-gas/water/surfactant coinjection and completion of the initial injection cycle October 11, 2021.",
+          "qualification": "Public abstract; full material is partner restricted. Supports historical field operation, not current status.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "liberty_second_cycle",
+          "label": "Liberty East Nesson Second Pilot",
+          "url": "https://bpop.undeerc.org/Abstract.aspx?id=310",
+          "date": "2024-07-11",
+          "evidence": "EERC discusses the second pilot's ongoing production cycle as of July 11, 2024.",
+          "qualification": "The public abstract does not identify an exact well or daily schedule. Do not assign additional wells or exact cycle dates from this abstract alone.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "rich_gas_research",
+          "label": "NETL · Bakken rich-gas EOR",
+          "url": "https://netl.doe.gov/node/2078",
+          "date": "2022-02-28",
+          "evidence": "Bakken gas-injection research examines pressure, fluid composition, fracture pathways and cycle design.",
+          "qualification": "General mechanism evidence, not operating data for these five projects.",
+          "checkedAt": "2026-10-20"
+        },
+        {
+          "id": "tight_oil_mechanisms",
+          "label": "NETL / LBNL · tight-oil recovery mechanisms",
+          "url": "https://netl.doe.gov/node/2032",
+          "date": "2019-07-01",
+          "evidence": "Studies gas dissolution, viscosity and transport limits in tight rock.",
+          "qualification": "Laboratory and simulation findings; not proof of a field response here.",
+          "checkedAt": "2026-10-20"
+        }
+      ],
+      "wells": [
+        {
+          "fileNumber": "35883",
+          "name": "Haley 158-93-29-32-10MBH",
+          "shortName": "10MBH",
+          "group": null,
+          "formation": null,
+          "roleNote": "Named proposed injector in the 2021 application.",
+          "identitySourceIds": [
+            "haley_identity_membership"
+          ],
+          "membershipSourceIds": [
+            "haley_identity_membership"
+          ]
+        }
+      ],
+      "stages": [
+        {
+          "id": "inject",
+          "label": "Concept: inject gas + water",
+          "description": "Haley illustrates the single-well method with gas, water and surfactant.",
+          "roles": {
+            "35883": "inject"
+          },
+          "basis": "Method illustration; exact well-specific dates, volumes and reservoir response are not assigned.",
+          "isIllustrative": true,
+          "sourceIds": [
+            "liberty_first_cycle",
+            "rich_gas_research"
+          ],
+          "reservoirEffects": [
+            "The mixture enters connected reservoir pathways under injection pressure.",
+            "Gas contact and chemical effects seek to mobilize oil; the public abstract does not map their reach."
+          ]
+        },
+        {
+          "id": "produce",
+          "label": "Concept: return to production",
+          "description": "The same well demonstrates recovery after injection.",
+          "roles": {
+            "35883": "produce"
+          },
+          "basis": "Method illustration; no soak time or second-pilot well identity is inferred.",
+          "isIllustrative": true,
+          "sourceIds": [
+            "rich_gas_research",
+            "liberty_second_cycle"
+          ],
+          "reservoirEffects": [
+            "Reducing well pressure lets fluids flow back toward the well.",
+            "Only measured cycle production can show incremental recovery; no recovery amount is predicted here."
+          ]
+        }
+      ],
+      "statusDate": "2024-07-11",
+      "limitations": [
+        "The second-pilot abstract does not identify an exact well, so its dates and outcomes are not assigned to Haley.",
+        "Current daily or monthly injection and production data are not supplied.",
+        "No soak duration is inferred."
+      ]
+    }
+  ]
+}

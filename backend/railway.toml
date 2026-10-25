@@ -1,0 +1,14 @@
+# Legacy config reference only: new Railway services must set these values in
+# their service settings. Config as Code was closed to new services in 2026.
+# Staging API service only; no domain, frontend or automatic import configured.
+# First import must run explicitly inside the private staging network before
+# /health can pass. An approved one-time pre-deploy command can run the importer.
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

@@ -1,0 +1,1 @@
+{"metadata": {"sourceCRS": "EPSG:4269"}, "features": [{"id": "dsu-a", "properties": {"id": "dsu-a", "formation": "Bakken", "acres": 1280, "sourceRecord": 1}, "geometry": {"type": "Polygon", "coordinates": [[[-103, 48], [-102, 48], [-102, 49], [-103, 48]]]}, "display": {"DO_NOT_COPY": true}}]}

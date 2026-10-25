@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /full-dataset/
+Disallow: /viewer/data/
+
+Sitemap: https://bakkensubsurface.com/sitemap.xml

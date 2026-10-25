@@ -1,0 +1,136 @@
+/* Supplied logo palette, scoped to the local non-viewer branding preview. */
+:root {
+  --ink:#3f4549; --ink-deep:#20262b; --paper:#fff; --white:#fff;
+  --muted:#596772; --line:#dce5eb;
+  --blue:#64c6f3; --blue-dark:#075b88; --blue-tint:#eff8fd;
+  --lime:#a4d929; --lime-dark:#426413; --lime-tint:#f3f9e8;
+  --copper:var(--blue-dark); --navy:var(--ink-deep); --accent:var(--blue-dark); --soft:var(--blue-tint);
+  --sans:Inter,"Segoe UI",Helvetica,Arial,sans-serif; --serif:var(--sans);
+}
+body.brand-preview {background:var(--paper);color:var(--ink)}
+.brand-preview h1,.brand-preview h2 {font-family:var(--sans);font-weight:650;letter-spacing:-.05em}
+.brand-preview h1 em,.brand-preview h2 em {font-style:normal;font-weight:inherit}
+.brand-preview a:focus-visible,.brand-preview button:focus-visible,.brand-preview input:focus-visible,.brand-preview select:focus-visible {outline:3px solid var(--blue-dark);outline-offset:4px}
+.brand-preview ::selection {background:var(--lime);color:var(--ink-deep)}
+.site-header {background:#fff;border-bottom:1px solid var(--line)}
+.header-inner {min-height:138px;padding-block:12px;gap:32px}
+.brand {display:inline-flex;align-items:center;flex-shrink:0;background:#fff;text-decoration:none}
+.brand-logo {display:block;position:relative;width:230px;aspect-ratio:1248 / 642;overflow:hidden;background:#fff;isolation:isolate}
+.brand-logo img {position:absolute;width:123.076923%;max-width:none;height:auto;left:-11.778846%;top:-27.570093%;margin:0}
+.primary-nav {gap:27px;row-gap:8px;flex-wrap:wrap;color:var(--ink);font-size:13px}
+.primary-nav a {transition:color .15s,background .15s;text-decoration-thickness:2px}
+.primary-nav a:hover {color:var(--blue-dark)}
+.primary-nav a[aria-current=page] {color:var(--blue-dark);text-decoration:underline;text-decoration-color:var(--lime);text-underline-offset:8px}
+.primary-nav .nav-cta {background:var(--blue);color:var(--ink-deep);min-height:46px;padding:12px 19px;gap:28px;border:1px solid transparent}
+.primary-nav .nav-cta:hover {background:#8ad6f8;color:var(--ink-deep)}
+.button-blue {background:var(--blue);color:var(--ink-deep)}
+.button-blue:hover {background:#8ad6f8;color:var(--ink-deep)}
+.button-dark {background:var(--ink-deep);color:#fff}
+.button-dark:hover {background:#3f4a51;color:#fff}
+.button-lime {background:var(--lime);color:var(--ink-deep)}
+.button-lime:hover {background:#b9e75b}
+.text-link {text-decoration-color:#99b4c5}
+.text-link:hover {color:var(--blue-dark)}
+.local-preview-note {background:var(--blue-tint)!important;color:#34586d!important;border-bottom-color:#d0e5f0!important}
+.local-preview-note>.page-width {min-height:34px!important}
+.brand-home .hero {background:var(--ink-deep);color:#fff;min-height:690px}
+.brand-home .hero-image {opacity:.86;object-position:75% center}
+.brand-home .hero-shade {background:linear-gradient(90deg,rgba(28,34,39,.98) 0%,rgba(28,34,39,.95) 20%,rgba(28,34,39,.8) 43%,rgba(28,34,39,.1) 80%),linear-gradient(0deg,rgba(28,34,39,.75),transparent 45%)}
+.brand-home .hero h1 {font-size:clamp(54px,5.7vw,84px);line-height:1.04;max-width:800px}
+.brand-home .hero h1 em {color:var(--blue)}
+.brand-home .hero-eyebrow {color:#e3eaee;letter-spacing:.14em}
+.brand-home .live-mark {background:var(--lime);box-shadow:0 0 0 4px rgba(164,217,41,.13)}
+.brand-home .hero-description {color:#dce3e8}
+.brand-home .hero .text-link-light {color:#fff;text-decoration-color:#8ba0ad}
+.brand-home .hero .text-link-light:hover {color:var(--blue)}
+.brand-home .hero-footnote,.brand-home .hero-footnote strong {color:#cad6df}
+.brand-home .crosshair {color:var(--lime)}
+.brand-home .hero-edge {color:#dce3e8}
+.brand-home .hero-edge i {background:var(--blue)}
+.brand-home .context-strip {background:#f7fafc;border-color:var(--line)}
+.brand-home .context-number {font-family:var(--sans);font-style:normal;font-size:11px;font-weight:700;color:var(--blue-dark)}
+.brand-home .context-inner>a {color:var(--muted)}
+.brand-home .forward-introduction {background:var(--blue-tint);border-color:#d9eaf4}
+.brand-home .forward-introduction .eyebrow {color:var(--blue-dark)}
+.brand-home .forward-introduction p:not(.eyebrow) {color:#4d6170}
+.brand-home .forward-introduction h2 {font-size:38px}
+.brand-home .section-intro .eyebrow,.brand-home .about-section .eyebrow,.brand-home .capability-index {color:var(--blue-dark)}
+.brand-home .capability {border-color:var(--line)}
+.brand-home .capability-detail,.brand-home .path-motif>span {color:#536672}
+.brand-home .path-motif {color:var(--lime-dark)}
+.brand-home .motif-grid {stroke:#dbe7ed}
+.brand-home .motif-well-muted {stroke:#61686d}
+.brand-home .motif-well-copper {stroke:var(--blue)}
+.brand-home .motif-well-lime {stroke:var(--lime)}
+.brand-home .method-section {background:var(--ink-deep);color:#fff}
+.brand-home .method-intro .eyebrow {color:var(--lime)}
+.brand-home .method-intro h2 em {color:var(--blue)}
+.brand-home .method-intro>p:not(.eyebrow),.brand-home .method-notes p {color:#cbd6df}
+.brand-home .method-notes strong {color:#fff}
+.brand-home .method-notes>div {border-color:#414c54}
+.brand-home .note-label {color:var(--lime)}
+.brand-home .button-outline {color:#fff;border-color:#7c949f}
+.brand-home .button-outline:hover {background:#303d46;border-color:var(--blue)}
+.brand-home .about-copy .about-lead {font-size:24px;font-weight:550;line-height:1.55;letter-spacing:-.025em}
+.brand-home .closing-section {background:var(--lime-tint);border-color:#dce8c8}
+.brand-home .closing-inner .eyebrow {color:var(--lime-dark)}
+.brand-home .closing-inner h2 {font-size:clamp(29px,3vw,42px)}
+.site-footer {background:#fff;border-top:1px solid var(--line)}
+.footer-brand .brand-logo {width:200px}
+.footer-inner>p {font-family:var(--sans);font-style:normal;color:var(--muted)}
+.footer-bottom {color:var(--muted)}
+/* Methodology uses its own original stylesheet, so its header is adapted here. */
+.brand-methodology header {background:var(--ink-deep);color:#fff}
+.brand-methodology .nav {max-width:none;padding:12px max(40px,calc((100vw - 1240px)/2));background:#fff;color:var(--ink);min-height:138px}
+.brand-methodology .nav-links a:hover {color:var(--blue-dark)}
+.brand-methodology .nav-links a[aria-current] {border-bottom:2px solid var(--lime)}
+.brand-methodology header .eyebrow {color:var(--blue)}
+.brand-methodology .hero .intro,.brand-methodology .dates {color:#d4dfe6}
+.brand-methodology .dates strong {color:#fff}
+.brand-methodology .note {background:var(--blue-tint);border-color:var(--blue)}
+.brand-methodology .formula {background:var(--ink-deep);color:#fff;border-left:3px solid var(--lime)}
+.brand-methodology .formula small {color:#cbd6df}
+.brand-methodology .return {background:var(--blue);color:var(--ink-deep);font-weight:650}
+.brand-methodology .return:hover {background:#8ad6f8;color:var(--ink-deep)}
+@media(max-width:1100px) {
+  .brand-logo {width:206px}
+  .primary-nav {gap:20px}
+  .brand-home .hero h1 {font-size:clamp(52px,6.4vw,72px)}
+}
+@media(max-width:800px) {
+  .header-inner {min-height:0;padding-block:15px;gap:12px}
+  .brand-logo {width:188px}
+  .primary-nav {padding-top:14px;gap:20px}
+  .primary-nav a {min-height:42px;display:inline-flex;align-items:center}
+  .primary-nav .nav-cta {margin-left:auto;font-size:11px;padding:10px 14px;gap:18px}
+  .brand-home .hero {min-height:630px}
+  .brand-home .hero-shade {background:linear-gradient(90deg,rgba(28,34,39,.95),rgba(28,34,39,.86) 55%,rgba(28,34,39,.5)),linear-gradient(0deg,rgba(28,34,39,.82),transparent 45%)}
+  .brand-home .hero h1 {font-size:clamp(45px,7.6vw,62px);line-height:1.09}
+  .brand-home .forward-introduction h2 {font-size:33px}
+  .brand-methodology .nav {padding:15px 22px;flex-wrap:wrap;gap:14px;min-height:0}
+  .brand-methodology .nav-links {width:100%;border-top:1px solid var(--line);padding-top:12px;min-height:44px}
+}
+@media(max-width:480px) {
+  .header-inner {padding-block:13px;gap:11px}
+  .brand-logo {width:180px}
+  .primary-nav {gap:12px;font-size:10px;justify-content:space-between;padding-top:9px}
+  .primary-nav .nav-cta {gap:14px;font-size:10px;padding:10px 12px;min-height:44px}
+  .brand-home .hero {min-height:650px}
+  .brand-home .hero-inner {padding-top:39px}
+  .brand-home .hero h1 {font-size:clamp(39px,11.6vw,52px);line-height:1.09;letter-spacing:-.055em}
+  .brand-home .hero-eyebrow {font-size:8px;letter-spacing:.08em;margin-bottom:26px}
+  .brand-home .hero-description {font-size:14px;margin-top:24px}
+  .brand-home .hero-footnote {margin-top:35px}
+  .brand-home .about-copy .about-lead {font-size:22px}
+  .brand-home .method-intro h2 {font-size:37px}
+  .brand-home .closing-inner h2 {font-size:32px}
+  .brand-methodology .nav-links {font-size:12px;gap:20px}
+}
+@media(prefers-reduced-motion:reduce) {.brand-preview * {transition:none!important}}
+@media print {
+  .brand-methodology header {background:#fff;color:#111}
+  .brand-methodology header .eyebrow,.brand-methodology .hero .intro,
+  .brand-methodology .dates,.brand-methodology .dates strong {color:#111}
+  .brand-methodology .formula {background:#eee;color:#111;border-color:#555}
+  .brand-methodology .formula small {color:#333}
+}

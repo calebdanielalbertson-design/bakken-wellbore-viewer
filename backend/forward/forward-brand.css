@@ -1,0 +1,244 @@
+/* Local preview only. Load after brand.css and forward.css on research/setup
+   pages. The 3D viewer does not load this stylesheet. */
+
+.preview-strip {
+  background: #edf7fc;
+  border-color: var(--line, #dce5eb);
+  color: #365564;
+  font-size: 12px;
+}
+.preview-strip > .page-width { min-height: 40px; }
+.preview-strip strong, .preview-strip a { font-size: 11px; }
+.preview-dot { background: var(--blue-dark, #075b88); }
+.primary-nav [aria-current=page] { color: var(--blue-dark, #075b88); }
+
+.forward-hero h1 { letter-spacing: -.045em; }
+.forward-hero h1 em, .research-bridge h2 em { color: var(--blue-dark, #075b88); }
+.forward-hero .eyebrow, .section-heading .eyebrow,
+.inspector > .eyebrow, .architecture .eyebrow,
+.research-bridge .eyebrow { color: var(--blue-dark, #075b88); font-size: 11px; }
+.forward-intro { font-size: 16px; line-height: 1.8; }
+.snapshot-note { color: var(--muted, #596772); font-size: 12px; }
+.note-top .eyebrow { color: var(--muted, #596772); font-size: 10px; }
+.small-cross { color: var(--blue-dark, #075b88); }
+.snapshot-rule { background: var(--blue, #64c6f3); }
+.backend-status { color: var(--lime-dark, #426413); font-size: 12px; }
+
+.workspace-section { background: #f3f7fa; border-color: var(--line, #dce5eb); }
+.section-heading h2 { font-size: 32px; }
+.section-heading .text-link { font-size: 13px; }
+.research-tabs {
+  gap: 26px;
+  border-color: #c6d4dd;
+  overflow-x: auto;
+  scroll-padding-inline: 4px;
+  scrollbar-width: thin;
+}
+.research-tabs button {
+  flex: 0 0 auto;
+  color: var(--muted, #596772);
+  font-size: 14px;
+  min-height: 50px;
+  white-space: nowrap;
+}
+.research-tabs button[aria-selected=true] {
+  color: var(--ink-deep, #20262b);
+  border-bottom-color: var(--blue-dark, #075b88);
+}
+.research-tabs button > span {
+  background: #fff;
+  color: #445561;
+  border-color: #c4d4df;
+  font-size: 11px;
+  min-width: 27px;
+}
+.research-tabs button[aria-selected=true] > span {
+  background: #e7f5fc;
+  border-color: #aacfe3;
+  color: var(--blue-dark, #075b88);
+}
+.scope-note, .research-footnote {
+  color: var(--muted, #596772);
+  font-size: 13px;
+  line-height: 1.8;
+}
+.filters label { color: #46545e; font-size: 12px; }
+.filters input, .filters select {
+  background: #fff;
+  border-color: #a9bbc7;
+  color: var(--ink-deep, #20262b);
+  min-height: 44px;
+  font-size: 14px;
+}
+.filters input::placeholder { color: #65737e; opacity: 1; }
+.search-field svg { stroke: #526977; top: 14px; }
+.reset-button {
+  min-height: 44px;
+  height: auto;
+  color: var(--blue-dark, #075b88);
+  border-color: #a9bbc7;
+  background: #fff;
+  font-size: 12px;
+}
+.reset-button:hover { background: #e7f4fc; }
+
+.record-register { background: #fff; border-color: #cbd9e2; }
+.register-heading { border-color: var(--line, #dce5eb); }
+.register-heading h3 { font-size: 15px; }
+.register-heading > span { color: var(--muted, #596772); font-size: 12px; }
+.record-row { border-color: #e1e9ee; }
+.record-row:hover { background: #f0f8fd; }
+.record-row[aria-pressed=true] {
+  background: #e6f3fc;
+  box-shadow: inset 4px 0 var(--blue-dark, #075b88);
+}
+.record-date { color: #596a76; font-size: 12px; }
+.record-date strong { color: #3b4c58; font-size: 12px; }
+.record-content > strong { font-size: 15px; line-height: 1.5; }
+.record-content > small { color: var(--muted, #596772); font-size: 12px; line-height: 1.75; }
+.record-content .record-tag {
+  background: #f0f8df;
+  color: var(--lime-dark, #426413);
+  border-color: #b8cb93;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.record-content .record-tag.candidate, .detail-tag.candidate {
+  background: #fff5e3;
+  color: #80501e;
+  border-color: #cfaa74;
+}
+.record-arrow { color: var(--blue-dark, #075b88); }
+.pagination { gap: 12px; }
+.pagination button {
+  min-height: 44px;
+  padding: 10px 4px;
+  color: var(--blue-dark, #075b88);
+  font-size: 12px;
+}
+.pagination button:disabled { color: #8a98a2; }
+.pagination > span { color: var(--muted, #596772); font-size: 11px; text-align: center; }
+
+.inspector { background: #fff; border-color: #cbd9e2; }
+.inspector h3 { font-size: 28px; line-height: 1.3; }
+.inspector > p:not(.eyebrow) { font-size: 14px; line-height: 1.8; }
+.empty-symbol { color: #8fc9e6; }
+.detail-tag {
+  background: #f0f8df;
+  border-color: #b8cb93;
+  color: var(--lime-dark, #426413);
+  font-size: 10px;
+}
+.detail-facts { border-color: var(--line, #dce5eb); gap: 16px 18px; }
+.detail-facts dt { color: #596a76; font-size: 10px; }
+.detail-facts dd { color: var(--ink-deep, #20262b); font-size: 13px; }
+.evidence-excerpt { border-color: var(--blue-dark, #075b88); color: #42545f; font-size: 13px; }
+.detail-note {
+  background: #fff5e3;
+  border-left: 3px solid #bd8738;
+  color: #755024 !important;
+  font-size: 12px !important;
+}
+.detail-actions a {
+  border-color: #8faebe;
+  color: var(--blue-dark, #075b88);
+  min-height: 44px;
+  font-size: 12px;
+}
+.detail-actions a:hover { background: #edf7fc; }
+.detail-actions a.primary-action {
+  background: var(--lime, #a4d929);
+  border-color: #87b421;
+  color: var(--ink-deep, #20262b);
+}
+.detail-actions a.primary-action:hover { background: #b7e553; }
+.identity-note { color: #596a76 !important; font-size: 12px !important; line-height: 1.75 !important; }
+.inspector-back { color: var(--blue-dark, #075b88); font-size: 13px; }
+.empty-message { color: var(--muted, #596772); font-size: 14px; }
+.error-box { background: #fff0ed; border-color: #bd6b5b; color: #843b2d; font-size: 14px; }
+
+.coverage-intro h3 { font-size: 29px; }
+.coverage-intro p { font-size: 14px; }
+.source-card { background: #fff; border-color: #cbd9e2; }
+.source-card h4 { font-size: 15px; }
+.source-card .source-count { font-size: 38px; color: var(--ink-deep, #20262b); }
+.source-card .source-caption, .source-card p { color: var(--muted, #596772); font-size: 12px; }
+.source-card .source-dates { border-color: var(--line, #dce5eb); color: #3e6072; }
+.source-reference { color: var(--blue-dark, #075b88); font-size: 12px; min-height: 44px; padding-block: 10px; }
+.limits-block { background: #eaf4fb; border-color: #c3d9e7; }
+.limits-block h3 { font-size: 16px; }
+.limits-block li { color: #425966; font-size: 13px; }
+.architecture p { font-size: 14px; }
+.architecture .text-link { font-size: 13px; }
+.architecture li { border-color: var(--line, #dce5eb); }
+.architecture li > span { color: var(--blue-dark, #075b88); }
+.architecture li strong { font-size: 14px; }
+.architecture li p { font-size: 13px; }
+.research-bridge p { font-size: 15px; }
+.research-bridge .button { min-height: 48px; font-size: 13px; }
+.site-footer .footer-bottom { font-size: 12px; }
+
+/* The setup page uses the same non-viewer palette, with its plan-only warning
+   retaining a distinct amber treatment. */
+.setup-main > p { font-size: 15px; }
+.setup-main h1 em { color: var(--blue-dark, #075b88); }
+.setup-flow > div { background: #edf7fc; border-color: #b5d1e0; font-size: 14px; }
+.setup-flow small { color: #506977; font-size: 12px; }
+.setup-flow > span { color: var(--blue-dark, #075b88); }
+.setup-steps > li { border-color: var(--line, #dce5eb); font-size: 15px; }
+.setup-steps p { font-size: 14px; }
+.setup-main code { background: #eaf3f8; color: #354b58; font-size: 12px; }
+.setup-main table { font-size: 14px; }
+.setup-main td, .setup-main th { border-color: #cbd9e2; }
+.setup-main th { background: #eaf3f8; }
+.setup-links { font-size: 13px; }
+
+.research-tabs button:focus-visible, .record-row:focus-visible {
+  outline: 3px solid var(--blue-dark, #075b88);
+  outline-offset: -4px;
+}
+.filters input:focus-visible, .filters select:focus-visible,
+.reset-button:focus-visible, .pagination button:focus-visible,
+.detail-actions a:focus-visible, .source-reference:focus-visible,
+.inspector-back:focus-visible {
+  outline: 3px solid var(--blue-dark, #075b88);
+  outline-offset: 3px;
+}
+
+@media (max-width: 800px) {
+  .preview-strip, .preview-strip strong, .preview-strip .page-width > span:not(.preview-dot) { font-size: 10px; }
+  .preview-strip > .page-width { min-height: 42px; }
+  .forward-intro { font-size: 15px; }
+  .filters input, .filters select { font-size: 16px; height: 46px; }
+  .filters label { font-size: 12px; }
+  .reset-button { min-height: 44px; height: auto; font-size: 12px; padding-inline: 4px; }
+  .research-tabs { gap: 22px; justify-content: flex-start; }
+  .research-tabs button { font-size: 13px; }
+  .record-list { max-height: 520px; }
+  .site-footer .footer-bottom { font-size: 11px; }
+}
+@media (max-width: 480px) {
+  .forward-hero .eyebrow { font-size: 10px; }
+  .section-heading h2 { font-size: 28px; }
+  .research-tabs { gap: 18px; }
+  .research-tabs button { font-size: 12px; min-height: 48px; gap: 7px; }
+  .research-tabs button > span { font-size: 10px; min-width: 23px; }
+  .scope-note, .research-footnote { font-size: 12px; }
+  .filters label { font-size: 11px; }
+  .filters select { font-size: 16px; padding-inline: 8px; }
+  .register-heading { flex-wrap: wrap; gap: 6px; }
+  .register-heading h3 { font-size: 14px; }
+  .register-heading > span { font-size: 11px; }
+  .record-row { grid-template-columns: 65px minmax(0, 1fr) 14px; gap: 9px; }
+  .record-content > strong { font-size: 14px; }
+  .record-content > small { font-size: 12px; }
+  .record-date, .record-date strong { font-size: 11px; }
+  .record-content .record-tag { font-size: 10px; }
+  .detail-facts { grid-template-columns: 1fr; gap: 14px; }
+  .inspector h3 { font-size: 26px; }
+  .pagination { flex-wrap: wrap; }
+  .pagination button { font-size: 12px; }
+  .pagination > span { font-size: 11px; }
+  .setup-main table { font-size: 12px; }
+  .setup-main td, .setup-main th { padding: 10px; overflow-wrap: anywhere; }
+}

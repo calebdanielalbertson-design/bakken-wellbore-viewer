@@ -1,0 +1,32 @@
+{
+  "createdAt": "2026-10-18 01:17:57 UTC",
+  "scope": "local-only Bakken Forward research + SQL prototype",
+  "previewURL": "http://127.0.0.1:58519/forward/",
+  "homepageURL": "http://127.0.0.1:58519/",
+  "backendPlanURL": "http://127.0.0.1:58519/setup/",
+  "publicWebsiteChanged": false,
+  "railwayResourcesCreated": false,
+  "railwayPreference": "separate Bakken project",
+  "authenticationAndBilling": "on hold",
+  "storage": "owned local SQLite read-model",
+  "data": {
+    "notices": 40,
+    "checkedHistoricalProvisions": 14,
+    "checkedHistoricalOrders": 4,
+    "candidateOrders": 26,
+    "latestReportDate": "2026-10-09",
+    "coverage": "bounded historical sample, not a live feed"
+  },
+  "validation": {
+    "unitChecks": 28,
+    "desktopAndMobile": "1440px,390px,320px; no horizontal overflow",
+    "browserErrors": 0,
+    "checkedEvidenceFilter": 14,
+    "fullLandDescription": "Order 25494 inspector displays all four sections (14,15,22,23)",
+    "wellBridge": "File 41914 -> API 33061055280000 -> SCHA 33-34 6H selected and centered",
+    "unmatchedPermit": "File 43394 stays unmatched; no drilled-lateral inference",
+    "sourceFiles": "published checkout clean; original survey files unchanged",
+    "postgresql": "adapter/schema/Docker/Railway scaffold prepared; no running PostgreSQL or cloud deployment tested"
+  },
+  "screenshot": "outputs/bakken-forward-local-preview.jpg"
+}

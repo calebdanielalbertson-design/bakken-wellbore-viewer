@@ -1,0 +1,8 @@
+#timelineMode{width:100%;margin:5px 0 14px;min-height:42px}
+#activityOptions{padding:10px 12px;margin-bottom:12px;background:#103145;border:1px solid #235772;border-radius:9px}
+.activity-note{font-size:12px;line-height:1.5;color:#c0e7fa;margin:0 0 9px}
+#activityOptions .legend-row{align-items:flex-start;font-size:12px;line-height:1.4}
+#wellProduction>button{display:block;width:100%;text-align:left;margin:6px 0;font-size:12px;white-space:normal}
+#productionCoverage{line-height:1.45}
+#productionSummary{max-width:100%;overflow-wrap:anywhere}
+@media(max-width:700px){.production-time-heading{gap:8px}.production-time-heading>div{min-width:0}#productionCoverage{font-size:10px}#activityOptions{padding:8px}}

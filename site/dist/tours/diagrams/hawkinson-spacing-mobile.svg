@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="440" viewBox="0 0 420 440" role="img" aria-labelledby="title description">
+  <title id="title">Hawkinson historical pilot spacing design</title>
+  <desc id="description">Mobile end-on schematic of fourteen Hawkinson wells. Middle Bakken row, left to right: 5, 8, 3, 13. Three Forks first bench: 1, 10, 2. Second bench: 4, 7, 11, 14. Third bench: 6, 9, 12. Same-zone spacing is 1,320 feet, with a 660-foot horizontal stagger between adjacent zones. Vertical spacing is schematic, not to scale. Colors identify historical target zones, not monitoring roles. This is a historical design, not a surveyed cross section.</desc>
+  <defs>
+    <marker id="start" markerWidth="7" markerHeight="7" refX="1" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M6 1 L1 3.5 L6 6" fill="none" stroke="#d5e6f0" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <marker id="end" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L6 3.5 L1 6" fill="none" stroke="#d5e6f0" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <style>
+      text{font-family:Inter,"Segoe UI",Arial,sans-serif}
+      .number{font-size:20px;font-weight:650;fill:#071724;text-anchor:middle;dominant-baseline:central}
+      .zone{font-size:19px;font-weight:600}
+      .dimension{font-size:15px;fill:#d5e6f0;text-anchor:middle}
+      .arrow{stroke:#d5e6f0;stroke-width:1.3;fill:none;marker-start:url(#start);marker-end:url(#end)}
+      .guide{stroke:#7392a8;stroke-width:1;stroke-dasharray:2 3;opacity:.7}
+    </style>
+  </defs>
+  <rect width="420" height="440" rx="6" fill="#071724"/>
+  <path d="M20 22 H39" stroke="#a4d929" stroke-width="2.5"/>
+  <text x="48" y="27" fill="#80cbed" font-size="14" letter-spacing="1">HISTORICAL PILOT DESIGN</text>
+  <text x="20" y="55" fill="#eef5f9" font-size="23" font-weight="550" letter-spacing="-.5">Hawkinson: four target zones</text>
+
+  <g>
+    <rect x="67" y="107" width="335" height="46" rx="6" fill="#64c6f3" opacity=".075"/>
+    <rect x="67" y="182" width="335" height="46" rx="6" fill="#a4d929" opacity=".075"/>
+    <rect x="67" y="257" width="335" height="46" rx="6" fill="#ffa85c" opacity=".075"/>
+    <rect x="67" y="332" width="335" height="46" rx="6" fill="#b89aff" opacity=".075"/>
+    <path d="M67 130 H402" stroke="#64c6f3" opacity=".2"/>
+    <path d="M67 205 H402" stroke="#a4d929" opacity=".2"/>
+    <path d="M67 280 H402" stroke="#ffa85c" opacity=".2"/>
+    <path d="M67 355 H402" stroke="#b89aff" opacity=".2"/>
+  </g>
+
+  <g aria-label="Spacing dimensions">
+    <text x="142.5" y="82" class="dimension">1,320 ft</text>
+    <path d="M95 91 H190" class="arrow"/>
+    <path d="M95 95 V110 M190 95 V110" class="guide"/>
+    <text x="218" y="90" fill="#91adbf" font-size="14">within a zone</text>
+    <text x="118.75" y="166" class="dimension">660 ft</text>
+    <path d="M95 175 H142.5" class="arrow"/>
+    <path d="M95 148 V178 M142.5 171 V186" class="guide"/>
+    <text x="165" y="178" fill="#91adbf" font-size="14">horizontal stagger</text>
+  </g>
+
+  <g aria-label="Middle Bakken row">
+    <text x="20" y="137" class="zone" fill="#64c6f3">MB</text>
+    <g fill="#64c6f3"><circle cx="95" cy="130" r="18"/><circle cx="190" cy="130" r="18"/><circle cx="285" cy="130" r="18"/><circle cx="380" cy="130" r="18"/></g>
+    <g class="number"><text x="95" y="130">5</text><text x="190" y="130">8</text><text x="285" y="130">3</text><text x="380" y="130">13</text></g>
+  </g>
+  <g aria-label="Three Forks first bench row">
+    <text x="20" y="212" class="zone" fill="#a4d929">TF1</text>
+    <g fill="#a4d929"><circle cx="142.5" cy="205" r="18"/><circle cx="237.5" cy="205" r="18"/><circle cx="332.5" cy="205" r="18"/></g>
+    <g class="number"><text x="142.5" y="205">1</text><text x="237.5" y="205">10</text><text x="332.5" y="205">2</text></g>
+  </g>
+  <g aria-label="Three Forks second bench row">
+    <text x="20" y="287" class="zone" fill="#ffa85c">TF2</text>
+    <g fill="#ffa85c"><circle cx="95" cy="280" r="18"/><circle cx="190" cy="280" r="18"/><circle cx="285" cy="280" r="18"/><circle cx="380" cy="280" r="18"/></g>
+    <g class="number"><text x="95" y="280">4</text><text x="190" y="280">7</text><text x="285" y="280">11</text><text x="380" y="280">14</text></g>
+  </g>
+  <g aria-label="Three Forks third bench row">
+    <text x="20" y="362" class="zone" fill="#b89aff">TF3</text>
+    <g fill="#b89aff"><circle cx="142.5" cy="355" r="18"/><circle cx="237.5" cy="355" r="18"/><circle cx="332.5" cy="355" r="18"/></g>
+    <g class="number"><text x="142.5" y="355">6</text><text x="237.5" y="355">9</text><text x="332.5" y="355">12</text></g>
+  </g>
+  <path d="M20 390 H400" stroke="#294455"/>
+  <text x="20" y="410" fill="#a8bdca" font-size="14">MB: Middle Bakken · TF: Three Forks bench</text>
+  <text x="20" y="431" fill="#91adbf" font-size="14">End-on schematic · Vertical spacing not to scale</text>
+</svg>

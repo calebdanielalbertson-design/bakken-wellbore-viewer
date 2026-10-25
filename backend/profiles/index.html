@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#3f4549">
+  <title>Well profiles | Bakken Subsurface Analytics local preview</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/brand-mark.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/brand.css">
+  <link rel="stylesheet" href="/profiles/profiles.css">
+</head>
+<body class="brand-preview brand-profiles">
+  <a class="skip-link" href="#wellSearch">Skip to well search</a>
+  <div class="profile-preview"><div class="page-width"><strong>LOCAL STAGING PREVIEW</strong><span>Saved well records · not a live feed</span><a href="/forward/">Research desk ↗</a></div></div>
+  <header class="site-header"><div class="header-inner page-width">
+    <a class="brand" href="/" aria-label="Bakken Subsurface Analytics home"><span class="brand-logo"><img src="/assets/bakken-logo-original.png" width="1536" height="1024" alt="Bakken Subsurface Analytics" decoding="async"></span></a>
+    <nav class="primary-nav" aria-label="Main navigation"><a href="/">Overview</a><a href="/forward/">Research</a><a href="/profiles/" aria-current="page">Well profiles</a><a class="nav-cta" href="/viewer/?dataset=full">3D viewer <span aria-hidden="true">↗</span></a></nav>
+  </div></header>
+  <main>
+    <section class="profile-hero page-width">
+      <div><p class="eyebrow">BASIN RECORDS / WELL PROFILES</p><h1>A well,<br><em>in context.</em></h1><p>Find a well by name, file number, or API. Explore its reported treatments, production history, mapped survey branches, and spatial relationships in one place.</p></div>
+      <aside class="release-card" aria-label="Source release"><span class="release-dot" aria-hidden="true"></span><p class="eyebrow">A dated perspective</p><strong id="releaseLabel">Reading the saved release…</strong><p id="releaseDate">Source dates remain separate from import dates.</p><span id="apiStatus" role="status">Connecting to the local read-only API…</span></aside>
+    </section>
+    <div class="profile-summary"><div class="page-width"><div><strong id="summaryWells">—</strong><span>well records</span></div><div><strong id="summaryBranches">—</strong><span>survey branches</span></div><div><strong id="summaryProduction">—</strong><span>wells with production records</span></div><a href="#releaseDetails">Source & coverage details ↓</a></div></div>
+    <section class="profile-workspace page-width" aria-label="Well search and profile">
+      <aside class="well-register">
+        <form id="wellSearch" role="search"><label for="wellQuery">Find a well</label><p>Well name, file number, or API</p><div class="well-search-field"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6.5"></circle><path d="m15 15 5 5"></path></svg><input id="wellQuery" type="search" placeholder="Try a name or file number…" maxlength="150" autocomplete="off" spellcheck="false" aria-describedby="searchStatus"><button id="clearSearch" type="button" aria-label="Clear search" hidden>×</button></div></form>
+        <div class="well-register-heading"><h2>Saved wells</h2><span id="searchStatus" role="status" aria-live="polite">Loading…</span></div>
+        <div id="wellResults" class="well-results" aria-label="Matching well records"></div>
+        <div class="well-pagination"><button id="previousWells" type="button" disabled>← Previous</button><span id="wellPage"></span><button id="nextWells" type="button" disabled>Next →</button></div>
+      </aside>
+      <article id="wellProfile" class="well-profile" aria-label="Selected well profile" aria-busy="false">
+        <div class="profile-empty"><span class="profile-empty-mark" aria-hidden="true">↗</span><p class="eyebrow">Start with a well</p><h2>From a name<br>to a fuller picture.</h2><p>Select a saved record to explore its reported history and mapped context. Missing observations remain visible as missing.</p><div><span>01 / Identity</span><span>02 / Production</span><span>03 / Spatial context</span></div></div>
+      </article>
+    </section>
+    <section id="releaseDetails" class="profile-release page-width"><div><p class="eyebrow">Sources & interpretation</p><h2>The record keeps<br>its context.</h2><p>Well attributes, production, and geometry can have different source dates. A mapped branch is not an additional producing well; a spatial DSU relationship is not a legal assignment.</p></div><div id="releaseDetailsBody"><p class="subtle">Source release details will appear when the local API is ready.</p></div></section>
+  </main>
+  <footer class="site-footer"><div class="footer-bottom page-width"><span>Bakken Subsurface Analytics · Well profiles</span><span>Local evaluation · public viewer unchanged</span></div></footer>
+  <script type="module" src="/profiles/profiles.js"></script>
+</body>
+</html>

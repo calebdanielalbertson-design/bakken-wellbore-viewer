@@ -1,0 +1,14 @@
+{
+  "vertical_max_deg": 6.5,
+  "lateral_min_deg": 85.0,
+  "curve_rate_deg_per_100ft": 4.5,
+  "upper_well_max_deg": 35.0,
+  "departure_start_deg": 3.0,
+  "departure_min_ft": 75.0,
+  "persistence_ft": 150.0,
+  "min_stations": 3,
+  "landing_context_deg": 70.0,
+  "build_window_ft": 250.0,
+  "main_build_rate_deg_per_100ft": 0.5,
+  "max_survey_gap_ft": 1000.0
+}
