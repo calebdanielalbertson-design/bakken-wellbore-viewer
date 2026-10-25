@@ -59,7 +59,7 @@ async function setup(input=null,{deferFootage=false,savedRates=null}={}){
   const storage=new Map(savedRates?[['bakken-footage-scenarios-v1',JSON.stringify(savedRates)]]:[]);
   globalThis.localStorage={getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)};
   const elements=new Map(),$=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
-  globalThis.document={getElementById:$,createElement:tag=>new Element(tag)};
+  globalThis.document={getElementById:$,createElement:tag=>new Element(tag),addEventListener(){},dispatchEvent(){return true}};
   for(const [id,value] of Object.entries({footageLayer:'dsu',footageMetric:'developmentPct',footageScenario:'base','footageRate-low':'49.5','footageRate-base':'66','footageRate-high':'82.5',dsuColor:'acreage',dsuFilter:'all',dsuSearch:'',dsuTopOffset:'0',dsuBottomOffset:'0',townshipSearch:''}))$(id).value=value;
   $('townshipInspect').checked=true;
   let release;const wait=deferFootage?new Promise(resolve=>release=resolve):null;
@@ -122,6 +122,7 @@ await test('township card reads independent union ledger rather than sum of over
   const center=bounds.getCenter(new THREE.Vector3()),camera=new THREE.OrthographicCamera(-20000,20000,20000,-20000,.1,100000);
   camera.position.set(center.x,50000,center.z);camera.up.set(0,0,-1);camera.lookAt(center.x,0,center.z);camera.updateProjectionMatrix();
   s.$('footageSelection').replaceChildren();
+  s.$('townshipInspect').checked=true; // user chooses Townships in "Select on map"
   assert.equal(s.footage.pick({clientX:500,clientY:500},camera,{left:0,top:0,width:1000,height:1000}),true);
   assert.match(s.$('footageSelection').textContent,/T152N R96W/,'actual ray triangle owner selects the township ledger');
 });

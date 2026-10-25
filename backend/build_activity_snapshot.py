@@ -17,11 +17,12 @@ import re
 import tempfile
 
 import fracfocus_backend
+import workspace_paths as wp
 import wells_backend
 from fracfocus_store import dump, sha_file
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_MANIFEST = ROOT.parents[1] / 'outputs/wellbore-viewer/full-dataset/manifest.json'
+DEFAULT_MANIFEST = wp.FULL_DATASET / 'manifest.json'
 DEFAULT_OUTPUT = ROOT / 'data/activity-snapshot.json'
 VERSION = 1
 
@@ -166,7 +167,7 @@ def build(manifest_path=DEFAULT_MANIFEST):
             'fracfocus_source_file': ff_metadata['source_file'], 'fracfocus_source_sha256': ff_metadata['source_sha256'],
             'fracfocus_dictionary_sha256': ff_metadata['dictionary_sha256'],
             'fracfocus_prepared_at': ff_metadata['prepared_at'],
-            'survey_manifest_sha256': manifest_sha, 'survey_manifest_file': 'outputs/wellbore-viewer/full-dataset/manifest.json',
+            'survey_manifest_sha256': manifest_sha, 'survey_manifest_file': 'explorer/full-dataset/manifest.json',
             'prepared_at': datetime.now(timezone.utc).isoformat(), 'latest_job_end': ff_metadata['latest_job_end'],
             'latest_job_end_month': ff_metadata['latest_job_end'][:7] if ff_metadata['latest_job_end'] else None,
             'source_url': 'https://www.fracfocus.org/data-download',

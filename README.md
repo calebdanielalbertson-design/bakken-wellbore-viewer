@@ -56,12 +56,16 @@ python import_snapshot.py data/forward-snapshot.json
 python serve.py --port 58519
 ```
 
-**Tests:**
+**Tests** (Python 3.11+ and Node.js 20+):
 
 ```
-cd explorer && python -m unittest discover -s tests
-cd backend  && python -m unittest discover -s tests
+python scripts/run_tests.py          # everything that works on a fresh clone
+python scripts/run_tests.py --data   # also checks that need prepared viewer data
 ```
+
+Every pull request runs the same suite plus a secret scan (`.github/workflows/checks.yml`).
+
+**Where scripts look for things.** Backend and deploy scripts resolve locations through `backend/workspace_paths.py`, relative to the repo. Override with `BAKKEN_EXPLORER_DIR`, `BAKKEN_SITE_DIST`, `BAKKEN_WORK_DIR` (scratch area, default `work/`, git-ignored) or `RAILWAY_CLI`.
 
 ## Staging API
 
@@ -82,8 +86,7 @@ Railway project *Bakken Subsurface Analytics*, environment `staging`, services `
 - Production is historical imported data (through Dec 2024), not a live DMR feed. FracFocus is not connected to the staging API.
 - Inventory footage densities are illustrative scenarios, not forecasts.
 
-## Known issues (from consolidation, Oct 2026)
+## Known issues
 
-- Four backend tests and `site/validate_release.py` still assume the old workspace layout (`outputs/wellbore-viewer/...`, `.openai/hosting.json`) and fail in this repo layout.
 - `docs/bakken-inventory-methodology.md` cites code from a separate `bakken-forward` source folder that isn't in this repo yet.
-- An unpublished combined production/spud/frac timeline exists outside `main` and still needs reconciling with the featured-tour release.
+- An unpublished combined production/spud/frac timeline exists outside `main` and still needs reconciling with the featured-tour release. Its tests (`backend/viewer/test_timeline_controller.mjs`, `backend/viewer/test_preview_hooks.py`) come with it.

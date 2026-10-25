@@ -2,8 +2,8 @@
 import json,sys
 from urllib.request import Request,build_opener,HTTPRedirectHandler
 from urllib.error import HTTPError
-from well_operations import ROOT,invoke,TARGET
-sys.path.insert(0,str(ROOT/'work/bakken-forward-preview'))
+from well_operations import ROOT,invoke,TARGET,wp
+sys.path.insert(0,str(wp.BACKEND))
 from railway_preview import serve,NoRedirect
 
 origin=sys.argv[1]

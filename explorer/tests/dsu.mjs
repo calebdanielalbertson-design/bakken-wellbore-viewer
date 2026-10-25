@@ -189,7 +189,7 @@ if(hasData){
 // Exercise controller visibility/pick ownership under nonuniform parent depth scale.
 class Element{constructor(){this.children=[];this.style={};this.value='';this.checked=false;this.textContent='';this.hidden=false;}append(...items){this.children.push(...items);}replaceChildren(...items){this.children=items;}setAttribute(){} }
 const elements=new Map(),$=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
-globalThis.document={getElementById:$,createElement:()=>new Element()};
+globalThis.document={getElementById:$,createElement:()=>new Element(),addEventListener(){},dispatchEvent(){return true}};
 globalThis.fetch=async()=>({ok:true,json:async()=>structuredClone(fixtures)});
 const root=new THREE.Group();root.scale.y=8;const messages=[],focuses=[];
 const controller=createDSUController(root,{say:message=>messages.push(message),focus:b=>focuses.push(b)});
@@ -208,7 +208,7 @@ assert.equal(controllerGroup.children.find(child=>child.isMesh).geometry.attribu
 assert.ok($('dsuSelection').children.at(-1).textContent.includes('hole'));
 selectedButton().onclick();assert.equal($('dsuFilter').value,'all');
 assert.equal(controllerGroup.children.find(child=>child.isMesh).geometry.attributes.position.count,nestedBatch.geometry.attributes.position.count);
-assert.equal(controller.pick(eventAt(0,0),camera,rect),true);assert.match(messages.at(-1),/No DSU box/);
+assert.equal(controller.pick(eventAt(0,0),camera,rect),true);assert.match(messages.at(-1),/No spacing unit at this point/);
 const oblique=new THREE.PerspectiveCamera(45,1,.1,100000),target=new THREE.Vector3(...projectReference(lon+.007,lat,manifest));target.y=-800;
 oblique.position.copy(target).add(new THREE.Vector3(2000,5000,3000));oblique.lookAt(target);oblique.updateProjectionMatrix();oblique.updateMatrixWorld();
 assert.equal(controller.pick({clientX:500,clientY:500},oblique,rect),true);
@@ -231,7 +231,7 @@ $('dsuLayout').onchange({target:{value:'nested'}});
 assert.equal(controllerGroup.children.filter(child=>child.isMesh).length,2,'nested layout has a separate hidden full-source target');
 assert.equal(controllerGroup.children.filter(child=>child.isMesh&&child.visible===false).length,1);
 $('dsuFilter').onchange({target:{value:'acres-1280'}});
-controller.pick({clientX:500,clientY:500},partCamera,rect);assert.match(messages.at(-1),/No DSU box/,'filtered hidden pick target cannot capture a click');
+controller.pick({clientX:500,clientY:500},partCamera,rect);assert.match(messages.at(-1),/No spacing unit at this point/,'filtered hidden pick target cannot capture a click');
 $('dsuFilter').onchange({target:{value:'all'}});
 await controller.setVisible(false);assert.equal(controller.pick(eventAt(.007,0),camera,rect),false);
 assert.equal(controller.inspecting(),false);

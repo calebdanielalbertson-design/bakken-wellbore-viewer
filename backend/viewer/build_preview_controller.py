@@ -1,8 +1,11 @@
 """Create the local timeline controller from the unchanged published oil renderer."""
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import workspace_paths as wp
 ROOT = Path(__file__).resolve().parent
-SOURCE = ROOT.parents[2] / 'sites/bakken-subsurface/dist/viewer/production.js'
-BASELINE = ROOT.parents[1] / 'fracfocus-release/baseline/viewer/production.js'
+SOURCE = wp.SITE_DIST / 'viewer/production.js'
+BASELINE = wp.WORK / 'fracfocus-release/baseline/viewer/production.js'
 if BASELINE.is_file():
     SOURCE = BASELINE
 

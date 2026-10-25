@@ -22,8 +22,9 @@ import struct
 import unicodedata
 
 BASE = Path(__file__).resolve().parent
-ROOT = BASE.parents[1]
-FULL = ROOT / "outputs/wellbore-viewer/full-dataset"
+import workspace_paths as wp
+ROOT = wp.REPO
+FULL = wp.FULL_DATASET
 CONFIG = {"version": 1, "identity": "normalized state file number + complete API14",
           "membership": "positive classified-lateral plan overlap, not legal assignment",
           "production": "distinct valid pools once; any invalid/conflicting pool invalidates whole month",
@@ -131,9 +132,9 @@ class Writer:
         return {"sha256": digest(self.path), "rows": self.count, "bytes": self.path.stat().st_size}
 
 
-def build_bundle(output, *, wells_dbf=ROOT / "work/nd-refresh-2026-10-17/sources/wells/OGD_Wells.dbf",
+def build_bundle(output, *, wells_dbf=wp.WORK / "nd-refresh-2026-10-17/sources/wells/OGD_Wells.dbf",
                  manifest_path=FULL / "manifest.json", names_path=FULL / "well-names.json",
-                 production_db=ROOT / "work/nd-refresh-2026-10-17/production/production-audit.sqlite",
+                 production_db=wp.WORK / "nd-refresh-2026-10-17/production/production-audit.sqlite",
                  production_meta=FULL / "production.json",
                  dsu_path=ROOT / "dist/data/dsu/drilling-spacing-units.geojson",
                  membership_path=ROOT / "dist/data/dsu/dsu-well-membership.json",

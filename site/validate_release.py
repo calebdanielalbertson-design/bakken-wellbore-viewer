@@ -15,60 +15,69 @@ sha=lambda b:hashlib.sha256(b).hexdigest()
 hosting=json.loads((ROOT/'.openai/hosting.json').read_text())
 assert hosting['project_id']=='appgprj_6ad3fd50b2488191993a92f3ed09603f'
 assert hosting['static']['not_found_handling']=='404-page'
+import sys
+REQUIRE_DATA='--require-data' in sys.argv
 index=json.loads((DIST/'viewer/public-assets-index.json').read_text())
-assert index['version']==2
+HAVE_DATA=all((DIST/part['path']).is_file() for asset in index['assets'].values() for part in asset['parts'])
+if REQUIRE_DATA: assert HAVE_DATA, 'Prepared viewer data is missing; run scripts/fetch_data.py first'
 logical={}
-for name,asset in index['assets'].items():
-    parts=[]
-    for part in asset['parts']:
-        payload=(DIST/part['path']).read_bytes()
-        assert len(payload)==part['bytes'] and sha(payload)==part['sha256']
-        parts.append(payload)
-    stored=b''.join(parts)
-    assert asset['encoding']=='gzip'
-    assert len(stored)==asset['storedBytes'] and sha(stored)==asset['storedSHA256']
-    joined=gzip.decompress(stored)
-    assert len(joined)==asset['bytes'] and sha(joined)==asset['sha256']
-    assert not (DIST/name).exists(), 'Uncompressed logical data was duplicated in the artifact'
-    logical[name]=joined
-def read_logical(name):
-    return logical[name] if name in logical else (DIST/name).read_bytes()
-assert sha(read_logical('full-dataset/manifest.json'))==EXPECTED_MANIFEST
-shapes=json.loads(read_logical('full-dataset/well-shape-overlays.json'))
-assert shapes['version']==1 and shapes['kind']=='well-shape-display-overlays'
-for key, name in [('manifestSHA256','manifest.json'),('overviewSHA256','overview.bin'),('metricsSHA256','metrics.json')]:
-    assert shapes['source'][key]==sha(read_logical('full-dataset/'+name)), key
-shape_wells={w['id']:w for w in json.loads(read_logical('full-dataset/manifest.json'))['wells']}
-assert sum(bool(b['uturnRanges']) for b in shapes['branches'])==18
-for branch in shapes['branches']:
-    assert all(branch[key]==shape_wells[branch['id']][key] for key in ('id','permit','api','branch','tile','offset','count'))
+if not HAVE_DATA:
+    print('note: prepared viewer data not present; checking code, pages and links only (use --require-data before a release)', file=sys.stderr)
+if HAVE_DATA:
+    assert index['version']==2
+    for name,asset in index['assets'].items():
+        parts=[]
+        for part in asset['parts']:
+            payload=(DIST/part['path']).read_bytes()
+            assert len(payload)==part['bytes'] and sha(payload)==part['sha256']
+            parts.append(payload)
+        stored=b''.join(parts)
+        assert asset['encoding']=='gzip'
+        assert len(stored)==asset['storedBytes'] and sha(stored)==asset['storedSHA256']
+        joined=gzip.decompress(stored)
+        assert len(joined)==asset['bytes'] and sha(joined)==asset['sha256']
+        assert not (DIST/name).exists(), 'Uncompressed logical data was duplicated in the artifact'
+        logical[name]=joined
+    def read_logical(name):
+        return logical[name] if name in logical else (DIST/name).read_bytes()
+    assert sha(read_logical('full-dataset/manifest.json'))==EXPECTED_MANIFEST
+    shapes=json.loads(read_logical('full-dataset/well-shape-overlays.json'))
+    assert shapes['version']==1 and shapes['kind']=='well-shape-display-overlays'
+    for key, name in [('manifestSHA256','manifest.json'),('overviewSHA256','overview.bin'),('metricsSHA256','metrics.json')]:
+        assert shapes['source'][key]==sha(read_logical('full-dataset/'+name)), key
+    shape_wells={w['id']:w for w in json.loads(read_logical('full-dataset/manifest.json'))['wells']}
+    assert sum(bool(b['uturnRanges']) for b in shapes['branches'])==18
+    for branch in shapes['branches']:
+        assert all(branch[key]==shape_wells[branch['id']][key] for key in ('id','permit','api','branch','tile','offset','count'))
 assert 'U-turn laterals' in (DIST/'viewer/index.html').read_text(encoding='utf8')
 assert (DIST/'viewer/well-shapes.js').exists()
 app_text=(DIST/'viewer/app.js').read_text(encoding='utf8')
 assert '\u00b7' in app_text and '\u2026' in app_text
 assert not any(token in app_text for token in ('\u00c2\u00b7','\u00e2\u20ac','\u00e2\u2020')), 'Viewer text is not clean UTF-8'
-for folder in ('full-dataset','viewer/data/sample','viewer/data/showcase'):
-    manifest_raw=read_logical(folder+'/manifest.json')
-    survey=json.loads(manifest_raw)
-    metadata=json.loads(read_logical(folder+'/well-names.json'))
-    assert metadata['survey']['manifestSHA256']==sha(manifest_raw)
-    assert metadata['survey']['branchCount']==len(survey['wells'])
-    assert set(metadata['names'])=={str(w['id']) for w in survey['wells']}
-    assert all(isinstance(n,str) and n.strip() for n in metadata['names'].values())
-    assert metadata['coverage']['matchedWellIdentities']==metadata['coverage']['datasetWellIdentities']
-production=json.loads(read_logical('full-dataset/production.json'))
-assert 'audit' not in production and 'auditFile' not in production
-for name in ('production-audit.json','refresh-validation.json'):
-    assert not (DIST/'full-dataset'/name).exists()
+if HAVE_DATA:
+    for folder in ('full-dataset','viewer/data/sample','viewer/data/showcase'):
+        manifest_raw=read_logical(folder+'/manifest.json')
+        survey=json.loads(manifest_raw)
+        metadata=json.loads(read_logical(folder+'/well-names.json'))
+        assert metadata['survey']['manifestSHA256']==sha(manifest_raw)
+        assert metadata['survey']['branchCount']==len(survey['wells'])
+        assert set(metadata['names'])=={str(w['id']) for w in survey['wells']}
+        assert all(isinstance(n,str) and n.strip() for n in metadata['names'].values())
+        assert metadata['coverage']['matchedWellIdentities']==metadata['coverage']['datasetWellIdentities']
+    production=json.loads(read_logical('full-dataset/production.json'))
+    assert 'audit' not in production and 'auditFile' not in production
+    for name in ('production-audit.json','refresh-validation.json'):
+        assert not (DIST/'full-dataset'/name).exists()
 assert not (DIST/'viewer/inventory-review.html').exists()
 assert 'local viewer' in (DIST/'viewer/index.html').read_text(encoding='utf-8')
 forbidden={'.las','.dbf','.xlsx','.ods','.csv','.env','.zip','.sqlite','.db','.py'}
 private=re.compile(r'(?i)(?:[A-Z]:[\\/]+Users[\\/]|(?:/Users/|/home/)[^/\s]+|github_pat_|ghp_[A-Za-z0-9]{30})')
 files=list(p for p in DIST.rglob('*') if p.is_file())
 assert sum(p.stat().st_size for p in files)<250*1024*1024, 'Stored release must stay below 250 MiB'
-for name,payload in logical.items():
-    if Path(name).suffix.lower() in {'.json','.geojson'}:
-        assert not private.search(payload.decode('utf-8')), name
+if HAVE_DATA:
+    for name,payload in logical.items():
+        if Path(name).suffix.lower() in {'.json','.geojson'}:
+            assert not private.search(payload.decode('utf-8')), name
 for path in files:
     assert path.stat().st_size<=20*1024*1024, path
     assert path.suffix.lower() not in forbidden, path
@@ -96,4 +105,4 @@ expected_urls={'https://bakkensubsurface.com/','https://bakkensubsurface.com/vie
 expected_urls.update('https://bakkensubsurface.com/eor/project/?project='+project for project in ('durant','clover-roadrunner','en-ortloff','nygaard','haley'))
 assert set(urls)==expected_urls
 assert 'https://bakkensubsurface.com/sitemap.xml' in (DIST/'robots.txt').read_text()
-print(json.dumps({'status':'passed','files':len(files),'bytes':sum(p.stat().st_size for p in files),'maximum_asset_bytes':max(p.stat().st_size for p in files),'split_assets_verified':len(index['assets']),'crawlable_pages':len(urls)}))
+print(json.dumps({'status':'passed','files':len(files),'bytes':sum(p.stat().st_size for p in files),'maximum_asset_bytes':max(p.stat().st_size for p in files),'data_checked':HAVE_DATA,'split_assets_verified':len(index['assets']) if HAVE_DATA else 0,'crawlable_pages':len(urls)}))

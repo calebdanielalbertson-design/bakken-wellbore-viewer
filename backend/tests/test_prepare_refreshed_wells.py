@@ -152,7 +152,9 @@ class RefreshedWellTests(unittest.TestCase):
             return {'release_id': 'fixture-release', 'counts': {},
                     'source_date_meaning': 'observed_at_not_verified_publication',
                     'measured_dsu_acres_status': 'unavailable_inventory_not_rebuilt'}
-        with mock.patch.object(bridge.builder, 'build_bundle', side_effect=build) as called:
+        # Execute mode only writes beneath the work directory; point it at this test's temp root.
+        with mock.patch.object(bridge.builder.wp, 'WORK', self.root), \
+                mock.patch.object(bridge.builder, 'build_bundle', side_effect=build) as called:
             result = self.prepare(execute=True, output=self.root / 'fresh-bundle')
         self.assertEqual(called.call_count, 1)
         self.assertFalse(result['cloud_updated'])

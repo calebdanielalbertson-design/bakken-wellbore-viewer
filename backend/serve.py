@@ -14,15 +14,18 @@ import sys
 from urllib.parse import parse_qs, unquote, urlsplit, urlencode
 
 ROOT = Path(__file__).resolve().parent
-WORKSPACE = ROOT.parents[1]
-SITE = WORKSPACE / 'sites' / 'bakken-subsurface' / 'dist'
-MANIFEST = WORKSPACE / 'outputs' / 'wellbore-viewer' / 'full-dataset' / 'manifest.json'
+import workspace_paths as wp
+SITE = wp.SITE_DIST
+MANIFEST = wp.FULL_DATASET / 'manifest.json'
 from backend import handle_api
 from branding import apply_branding
 sys.path.insert(0, str(ROOT / 'viewer'))
 
 
 def viewer_registry():
+    if not MANIFEST.is_file():
+        # Prepared dataset not present (fresh clone): no wells to link.
+        return {}
     records = json.loads(MANIFEST.read_text(encoding='utf-8'))['wells']
     registry = {}
     for well in records:
@@ -88,7 +91,7 @@ def page_bytes(route):
                       '/viewer/mobile-controls.js': 'mobile-controls.js',
                       '/viewer/public-assets-index.json': 'public-assets-index.json'}
     if route in baseline_names:
-        baseline = ROOT.parent / 'fracfocus-release/baseline/viewer' / baseline_names[route]
+        baseline = wp.WORK / 'fracfocus-release/baseline/viewer' / baseline_names[route]
         if baseline.is_file():
             target = baseline
     if not target.is_file():

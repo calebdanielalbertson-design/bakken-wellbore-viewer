@@ -6,8 +6,10 @@ from pathlib import Path
 import argparse,json,subprocess,sys
 from urllib.parse import urlsplit
 
-ROOT=Path(__file__).resolve().parents[2]
-CLI=ROOT/'work/railway-tools/node_modules/@railway/cli/bin/railway.exe'
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'backend'))
+import workspace_paths as wp
+ROOT=wp.REPO
+CLI=wp.railway_cli()
 PROJECT='e2cc4cb2-b22f-4ea4-99ed-329befa4cf60'
 ENV='78d48523-3b40-4010-8d4f-10c04d69fe23'
 SERVICE='f73fc3a9-e7ce-451f-a985-e46e08040ba0'
@@ -102,7 +104,7 @@ def main():
         elif args.operation=='deploy':
             probe()
             target=args.bundle.resolve() if args.bundle else None
-            allowed=ROOT/'work/connected-wells-deploy'
+            allowed=wp.WORK/'connected-wells-deploy'
             if not target or not target.is_dir() or not target.is_relative_to(allowed.resolve()) or not (target/'BUNDLE-MANIFEST.json').is_file():
                 raise ValueError('Expected an allowlisted staging bundle beneath work/connected-wells-deploy.')
             output=invoke(['up',str(target),'--path-as-root',*TARGET,'--detach','--json','--message','Connected well profiles, staging only'],timeout=180)
@@ -144,7 +146,7 @@ def main():
                 except (ValueError,AttributeError,TypeError):continue
                 if isinstance(item,dict) and ('verification' in item or item.get('verified') is True): result.append(item)
             if result:
-                (ROOT/'work/bakken-forward-preview/railway-wells-reader-verification.json').write_text(json.dumps(result[-1],indent=2))
+                (wp.BACKEND/'railway-wells-reader-verification.json').write_text(json.dumps(result[-1],indent=2))
     except Exception:
         raise SystemExit('Scoped staging operation failed; credentials/provider output withheld.')
     print(json.dumps(result,indent=2))

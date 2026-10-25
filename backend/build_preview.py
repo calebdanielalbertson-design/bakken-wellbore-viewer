@@ -3,7 +3,8 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parent
-SITE = ROOT.parents[1] / 'sites/bakken-subsurface/dist'
+import workspace_paths as wp
+SITE = wp.SITE_DIST
 html = (SITE/'index.html').read_text(encoding='utf-8')
 html = html.replace('<a href="#explore">Capabilities</a>', '<a href="/forward/">Bakken Forward</a>', 1)
 html = html.replace('<body>', '<body><div class="local-preview-note"><div class="page-width"><strong>LOCAL PREVIEW</strong><span>A possible Bakken Forward addition · the public website is unchanged</span></div></div>', 1)

@@ -23,8 +23,9 @@ import urllib.request
 import uuid
 import zipfile
 
-WORKSPACE = Path(__file__).resolve().parents[2]
-VIEWER = WORKSPACE / 'outputs' / 'wellbore-viewer'
+import workspace_paths as wp
+WORKSPACE = wp.REPO
+VIEWER = wp.EXPLORER
 VERSION = 'staging-gis-refresh-1'
 CLASSIFIER_VERSION = '2.0'
 DEFAULT_ORIGIN = [-102.99897097700921, 47.91137672734358]
@@ -265,7 +266,7 @@ def validate_outputs(run_dir):
 def execute(args):
     runs = args.runs_dir.resolve()
     # Keep this tool confined to staging work, even if a caller supplies a live path.
-    staging_root = (WORKSPACE / 'work').resolve()
+    staging_root = (wp.WORK if WORKSPACE == wp.REPO else WORKSPACE / 'work').resolve()
     if not runs.is_relative_to(staging_root) or runs == staging_root:
         raise ValueError('--runs-dir must be a dedicated child of this workspace work directory')
     overrides = {}
@@ -364,7 +365,7 @@ def parser():
     result.add_argument('--archive', action='append', default=[], metavar='SOURCE=PATH',
                         help='Explicit local wells|horizontals|dsu archive; overrides --source-dir for that source')
     result.add_argument('--previous', type=Path, help='Previous validated run directory for no-change detection')
-    result.add_argument('--runs-dir', type=Path, default=WORKSPACE / 'work' / 'staging-gis-runs')
+    result.add_argument('--runs-dir', type=Path, default=wp.WORK / 'staging-gis-runs')
     result.add_argument('--viewer-source', type=Path, default=VIEWER)
     result.add_argument('--classifier-config', type=Path, default=VIEWER / 'classifier-settings.json')
     result.add_argument('--origin', nargs=2, type=float, default=DEFAULT_ORIGIN, metavar=('LONGITUDE', 'LATITUDE'))
