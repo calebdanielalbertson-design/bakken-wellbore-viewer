@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+<title id="title">Owan U-turn: actual recorded STK1 survey detail</title><desc id="desc">Projected actual survey coordinates. Separate recorded branches and gaps remain separate. Line widths are enlarged for visibility. No reference-elevation correction is applied.</desc>
+<defs><clipPath id="scene"><rect width="1200" height="622"/></clipPath></defs>
+<rect width="1200" height="700" fill="#071724"/>
+<g clip-path="url(#scene)">
+<path d="M381.33,555.06 L380.60,525.55" fill="none" stroke="#eb1f26" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M812.21,505.81 L811.66,535.02" fill="none" stroke="#1fe9eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M811.04,563.61 L810.31,592.50" fill="none" stroke="#1fe8eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M811.66,535.02 L811.04,563.61" fill="none" stroke="#1fe7eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M812.77,477.54 L812.21,505.81" fill="none" stroke="#1fe8eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M813.51,448.96 L812.77,477.54" fill="none" stroke="#1fe9eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M814.60,420.08 L813.51,448.96" fill="none" stroke="#1fe6eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M815.80,391.20 L814.60,420.08" fill="none" stroke="#1fe4eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M380.60,525.55 L380.32,496.35 L380.65,466.84 L380.97,437.63 L381.25,408.43" fill="none" stroke="#eb1f1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M816.98,362.64 L815.80,391.20" fill="none" stroke="#1fe5eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M819.41,305.20 L819.01,314.83 L818.21,333.77 L816.98,362.64" fill="none" stroke="#1fe4eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M819.68,295.57 L819.41,305.20" fill="none" stroke="#1fe5eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M819.67,285.94 L819.68,295.57" fill="none" stroke="#1fe9eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M819.33,276.31 L819.67,285.94" fill="none" stroke="#1febe5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M818.65,266.71 L819.33,276.31" fill="none" stroke="#1febde" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M381.25,408.43 L381.63,378.91" fill="none" stroke="#eb201f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M817.62,257.13 L818.65,266.71" fill="none" stroke="#1febd8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M816.14,247.62 L817.62,257.13" fill="none" stroke="#1febcf" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M814.25,238.17 L816.14,247.62" fill="none" stroke="#1febc6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M381.63,378.91 L382.06,349.70 L382.42,320.50 L382.75,291.00" fill="none" stroke="#eb1f1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M811.97,228.83 L814.25,238.17" fill="none" stroke="#1febbf" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M809.23,219.60 L811.97,228.83" fill="none" stroke="#1febb5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M806.09,210.49 L809.23,219.60" fill="none" stroke="#1febac" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M794.53,184.02 L798.78,192.67" fill="none" stroke="#1feb94" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M798.78,192.67 L802.62,201.50" fill="none" stroke="#1feb9e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M802.62,201.50 L806.09,210.49" fill="none" stroke="#1feba4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M789.91,175.57 L794.53,184.02" fill="none" stroke="#1feb8b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M784.95,167.31 L789.91,175.57" fill="none" stroke="#1feb83" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M779.86,159.50 L784.95,167.31" fill="none" stroke="#1feb7c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M774.35,151.61 L779.86,159.50" fill="none" stroke="#1feb75" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M382.75,291.00 L383.31,261.81" fill="none" stroke="#eb221f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M768.57,143.90 L774.35,151.61" fill="none" stroke="#1feb6f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M762.68,136.66 L768.57,143.90" fill="none" stroke="#1feb68" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M756.30,129.44 L762.68,136.66" fill="none" stroke="#1feb60" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M749.82,122.73 L756.30,129.44" fill="none" stroke="#1feb57" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M742.82,116.11 L749.82,122.73" fill="none" stroke="#1feb4f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M735.49,109.85 L742.82,116.11" fill="none" stroke="#1feb45" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M728.11,104.15 L735.49,109.85" fill="none" stroke="#1feb3c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M720.23,98.60 L728.11,104.15" fill="none" stroke="#1feb32" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M383.31,261.81 L383.80,251.89" fill="none" stroke="#eb2b1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M711.94,93.10 L720.23,98.60" fill="none" stroke="#1feb2a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M703.73,88.05 L711.94,93.10" fill="none" stroke="#1feb27" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M649.58,65.61 L659.11,68.46" fill="none" stroke="#4aeb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M659.11,68.46 L668.23,71.59" fill="none" stroke="#43eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M383.80,251.89 L384.66,242.30" fill="none" stroke="#eb311f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M668.23,71.59 L677.24,75.02" fill="none" stroke="#3ceb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M639.93,63.17 L649.58,65.61" fill="none" stroke="#52eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M695.02,83.24 L703.73,88.05" fill="none" stroke="#20eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M677.24,75.02 L686.37,78.98" fill="none" stroke="#31eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M686.37,78.98 L695.02,83.24" fill="none" stroke="#29eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M435.81,128.05 L442.35,120.97" fill="none" stroke="#ebb31f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M429.33,135.60 L435.81,128.05" fill="none" stroke="#eba91f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M384.66,242.30 L385.90,232.44" fill="none" stroke="#eb391f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M423.32,143.13 L429.33,135.60" fill="none" stroke="#eba41f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M630.50,61.17 L639.93,63.17" fill="none" stroke="#5aeb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M442.35,120.97 L449.21,114.21" fill="none" stroke="#ebbc1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M385.90,232.44 L387.53,222.94" fill="none" stroke="#eb431f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M387.53,222.94 L389.65,213.23" fill="none" stroke="#eb4a1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M417.50,151.19 L423.32,143.13" fill="none" stroke="#eb9b1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M389.65,213.23 L392.12,203.91" fill="none" stroke="#eb541f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M392.12,203.91 L395.20,194.46" fill="none" stroke="#eb601f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M412.09,159.54 L417.50,151.19" fill="none" stroke="#eb911f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M395.20,194.46 L398.72,185.49" fill="none" stroke="#eb6b1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M449.21,114.21 L456.63,107.58" fill="none" stroke="#ebc51f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M620.68,59.56 L630.50,61.17" fill="none" stroke="#61eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M398.72,185.49 L402.83,176.43" fill="none" stroke="#eb751f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M407.25,167.88 L412.09,159.54" fill="none" stroke="#eb871f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M591.54,57.50 L601.17,57.78" fill="none" stroke="#7beb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M402.83,176.43 L407.25,167.88" fill="none" stroke="#eb7f1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M515.08,72.56 L524.40,69.08" fill="none" stroke="#c7eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M506.23,76.37 L515.08,72.56" fill="none" stroke="#d1eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M581.59,57.74 L591.54,57.50" fill="none" stroke="#86eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M601.17,57.78 L610.79,58.48" fill="none" stroke="#75eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M610.79,58.48 L620.68,59.56" fill="none" stroke="#6deb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M456.63,107.58 L464.16,101.57" fill="none" stroke="#ebd21f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M571.97,58.46 L581.59,57.74" fill="none" stroke="#90eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M524.40,69.08 L533.60,66.19" fill="none" stroke="#bdeb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M497.29,80.75 L506.23,76.37" fill="none" stroke="#daeb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M562.10,59.76 L571.97,58.46" fill="none" stroke="#9aeb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M552.62,61.48 L562.10,59.76" fill="none" stroke="#a6eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M464.16,101.57 L472.23,95.75" fill="none" stroke="#ebd81f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M533.60,66.19 L543.21,63.61" fill="none" stroke="#b7eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M543.21,63.61 L552.62,61.48" fill="none" stroke="#adeb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M488.83,85.35 L497.29,80.75" fill="none" stroke="#e5eb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M472.23,95.75 L480.27,90.44" fill="none" stroke="#ebe11f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M480.27,90.44 L488.83,85.35" fill="none" stroke="#eaeb1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<path d="M36 640 H1164" stroke="#294352" stroke-opacity=".6"/>
+<text x="38" y="674" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="22" fill="#9ebaca">Azimuth · Plan view</text>
+</svg>

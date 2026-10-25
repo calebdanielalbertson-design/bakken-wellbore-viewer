@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Explore Owan, Nystuen, Torpedo and Hawkinson in guided 3D tours through North Dakota wellbore geometry.">
+  <title>Featured Tours · Bakken Subsurface Analytics</title>
+  <link rel="canonical" href="https://bakkensubsurface.com/tours/">
+  <link rel="icon" type="image/svg+xml" href="/assets/brand-mark.svg">
+  <link rel="stylesheet" href="./tours.css?v=20261021">
+  <script type="importmap">{"imports":{"three":"/viewer/vendor/three.module.js"}}</script>
+</head>
+<body>
+  <a class="skip-link" href="#scene-panel">Skip to the 3D view</a>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Bakken Subsurface Analytics home"><span class="brand-crop"><img src="/assets/bakken-logo-original.png" alt="Bakken Subsurface Analytics" width="1536" height="1024"></span></a>
+    <div class="header-heading"><span class="eyebrow">Explore the Bakken</span><span class="header-title">Featured tours</span></div>
+    <div class="header-actions"><a class="text-link home-link" href="/#featured-tours">Home</a><a href="/viewer/?dataset=full" class="text-link">Full viewer <span aria-hidden="true">↗</span></a></div>
+  </header>
+
+  <main>
+    <nav class="tour-nav" aria-label="Choose a featured tour">
+      <button type="button" class="tour-card" data-tour="owan" aria-pressed="true"><span class="tour-number">01</span><span><strong>Owan</strong><small>A lateral that turns back</small></span><span class="tour-arrow" aria-hidden="true">↗</span></button>
+      <button type="button" class="tour-card" data-tour="nystuen" aria-pressed="false"><span class="tour-number">02</span><span><strong>Nystuen</strong><small>Explore extended reach</small></span><span class="tour-arrow" aria-hidden="true">↗</span></button>
+      <button type="button" class="tour-card" data-tour="torpedo" aria-pressed="false"><span class="tour-number">03</span><span><strong>Torpedo</strong><small>A family of well paths</small></span><span class="tour-arrow" aria-hidden="true">↗</span></button>
+      <button type="button" class="tour-card" data-tour="hawkinson" aria-pressed="false"><span class="tour-number">04</span><span><strong>Hawkinson</strong><small>See the vertical dimension</small></span><span class="tour-arrow" aria-hidden="true">↗</span></button>
+    </nav>
+
+    <div class="tour-layout">
+      <aside class="story" aria-label="Tour story and details">
+        <div class="story-intro"><p id="subtitle" class="eyebrow">A different direction</p><h1 id="title">When the lateral turns back.</h1><p id="description" class="story-description">Explore an actual surveyed well path, then change the view to see how its direction and inclination tell different parts of the story.</p></div>
+        <div id="metrics" class="metrics" aria-label="Tour facts"></div>
+
+        <section class="guided-step" aria-label="Guided tour step">
+          <div class="step-heading"><span class="eyebrow">Look closer</span><span id="tour-step" class="step-counter">1 / 3</span></div>
+          <h2 id="step-title">Start with the whole well.</h2>
+          <p id="step-description">Drag the scene to explore the geometry, or follow the next view for a closer look.</p>
+          <div class="step-navigation"><button id="prev-step" class="step-back" type="button" aria-label="Previous tour step"><span aria-hidden="true">←</span> Previous</button><button id="next-step" class="step-next" type="button">Next view <span aria-hidden="true">→</span></button></div>
+        </section>
+
+        <div class="selection"><label class="eyebrow" for="well-select">Well under review</label><div class="well-controls"><select id="well-select"><option value="">All featured wells</option></select><button id="focus-well" type="button" disabled title="Center and zoom to the selected well">Focus well <span aria-hidden="true">↗</span></button></div><div id="selected-well">Loading surveyed well records…</div></div>
+
+        <details class="source-disclosure"><summary>About the data &amp; interpretation <span aria-hidden="true">+</span></summary><div id="source-details"><p>Well paths come from the North Dakota DMR survey dataset. Display colors and line widths help explain the geometry; they do not represent physical wellbore diameter or reservoir drainage.</p><p>Relative TVD is measured from each well’s own reference. It is not a common elevation datum across wells.</p></div></details>
+      </aside>
+
+      <section id="scene-panel" class="scene-panel" aria-label="Interactive 3D wellbore view" tabindex="-1">
+        <div class="scene-toolbar">
+          <div class="view-buttons" role="group" aria-label="Camera view"><button type="button" data-view="3d" aria-pressed="true">3D</button><button type="button" data-view="plan" aria-pressed="false">Plan</button><button type="button" data-view="side" aria-pressed="false">Side</button><button type="button" data-view="end" aria-pressed="false" title="Look along the laterals to compare their relative depth">End-on</button></div>
+          <div class="toolbar-fields"><label for="color-mode">Color by <select id="color-mode"><option value="section">Well section</option><option value="azimuth">Azimuth</option><option value="inclination">Inclination</option><option value="formation">Historical target</option></select></label><button id="reset-view" class="reset-button" type="button" title="Fit the selected tour in the view">Reset view <span aria-hidden="true">↺</span></button></div>
+        </div>
+
+        <div class="mobile-stepbar"><span id="mobile-step-title"></span><div><button id="mobile-prev" aria-label="Previous view" type="button">←</button><button id="mobile-next" aria-label="Next guided view" type="button">Next →</button></div></div>
+        <div id="hawkinson-comparison" class="design-switch" hidden><span>Compare geometry &amp; design</span><div role="group" aria-label="Hawkinson comparison"><button type="button" id="show-surveys" aria-pressed="true">Surveyed paths</button><button type="button" id="show-design" aria-pressed="false">Pilot spacing design</button></div></div>
+        <div id="hawkinson-notice" class="interpretation-notice" hidden><strong>Historical pilot targets.</strong> Colors follow the published numbered-well design. Survey paths use relative TVD without elevation correction; current branches are not verified as the original completed intervals.</div>
+
+        <div id="spacing-design" class="spacing-design" hidden>
+          <picture><source media="(max-width:760px)" srcset="./diagrams/hawkinson-spacing-mobile.svg" width="420" height="440"><img src="./diagrams/hawkinson-spacing.svg" width="900" height="560" alt="Hawkinson pilot end-on design. Middle Bakken wells 5, 8, 3 and 13; Three Forks 1 wells 1, 10 and 2; Three Forks 2 wells 4, 7, 11 and 14; Three Forks 3 wells 6, 9 and 12. Same-zone horizontal spacing 1,320 feet, with 660-foot stagger between adjacent zones. Schematic; vertical spacing is not to scale."></picture>
+          <p>Numbered wells from the published pilot design · Colors identify targets, not monitoring roles.<br><a href="https://ndlegis.gov/files/committees/63-2013nma/appendices/15_5090_03000appendixl.pdf#page=4" target="_blank" rel="noopener">Source: Continental / EERC presentation, 2014 · slide 7 ↗</a></p>
+        </div>
+
+        <div id="survey-scene" class="scene-wrap">
+          <div id="scene" aria-label="3D survey geometry. Drag to rotate, use the wheel to zoom, or use the camera buttons above."></div>
+          <div class="scene-label"><span class="scene-live-dot"></span><span id="view-label">Survey geometry</span></div>
+          <div id="legend" class="scene-legend" aria-label="Color legend"></div>
+          <div class="locator-box"><canvas id="locator" width="240" height="156" aria-label="North-up locator for the featured wells"></canvas><span>Local plan view <i aria-hidden="true">↑ N</i></span></div>
+          <div class="scene-help"><span>Drag to rotate</span><span>Scroll to zoom</span><span>Right-drag to pan</span></div>
+          <div id="status" class="scene-status" role="status" aria-live="polite">Loading tour geometry…</div>
+        </div>
+
+        <div class="display-toolbar"><div class="display-options"><label for="exaggeration">Vertical scale <select id="exaggeration"><option value="1">1× · True scale</option><option value="5">5×</option><option value="10">10×</option><option value="50">50×</option></select></label><label class="check-option"><input id="show-context" type="checkbox" checked><span>Surface context</span></label><label class="check-option"><input id="lateral-only" type="checkbox"><span>Laterals only</span></label></div><span class="depth-label">Depth: relative TVD</span></div>
+        <p id="scene-caption" class="scene-caption">Actual survey geometry. Line widths are enlarged for readability. Change the camera or color mode to explore.</p>
+      </section>
+    </div>
+
+    <footer class="page-footer"><span>North Dakota. A deeper perspective.</span><span>Actual mapped paths · Sources and interpretation explained</span></footer>
+  </main>
+  <script type="module" src="./tours.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#20262b">
+  
+  <title>EOR Project Explorer | Bakken Subsurface Analytics</title>
+  <meta name="description" content="Explore Bakken EOR project evidence, surveyed well paths and clearly labeled illustrative injection and production mechanisms.">
+  <link rel="icon" href="/assets/brand-mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./viewer.css">
+  <script type="importmap">{"imports":{"three":"/viewer/vendor/three.module.js"}}</script>
+  <link rel="canonical" href="https://bakkensubsurface.com/eor/project/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bakken Subsurface Analytics">
+  <meta property="og:title" content="EOR Project Explorer | Bakken Subsurface Analytics">
+  <meta property="og:description" content="Explore Bakken EOR project evidence, surveyed well paths and clearly labeled illustrative injection and production mechanisms.">
+  <meta property="og:url" content="https://bakkensubsurface.com/eor/project/">
+  <meta property="og:image" content="https://bakkensubsurface.com/assets/social-preview.png">
+  <meta property="og:image:alt" content="North Dakota surveyed well paths in the Bakken Subsurface viewer.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="EOR Project Explorer | Bakken Subsurface Analytics">
+  <meta name="twitter:description" content="Explore Bakken EOR project evidence, surveyed well paths and clearly labeled illustrative injection and production mechanisms.">
+  <meta name="twitter:image" content="https://bakkensubsurface.com/assets/social-preview.png">
+</head>
+<body>
+  <a class="skip-link" href="#projectControls">Skip to project controls</a>
+  <div class="context-note">EOR PROJECTS <span>Illustrative operating concepts</span></div>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Bakken Subsurface Analytics home"><span class="brand-logo"><img src="/assets/bakken-logo-original.png" width="1536" height="1024" alt="Bakken Subsurface Analytics"></span></a>
+    <nav aria-label="Main navigation"><a href="/eor/">← All EOR projects</a><a href="/viewer/?dataset=full">Regional viewer <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main>
+    <section class="project-heading" id="projectControls" aria-labelledby="projectTitle">
+      <div><p class="eyebrow">THE WELLS BEHIND THE RESEARCH</p><h1 id="projectTitle">EOR project explorer</h1><p id="projectMeta" class="subtle">Loading project evidence and surveyed paths…</p></div>
+      <label class="project-picker">Explore a project<select id="projectSelect" disabled><option>Loading projects…</option></select></label>
+    </section>
+    <div class="explorer-layout">
+      <section class="viewer" aria-label="Focused project survey viewer">
+        <div class="view-controls">
+          <div class="button-group" role="group" aria-label="Camera view"><button id="view3D" type="button" aria-pressed="true">3D</button><button id="viewPlan" type="button" aria-pressed="false">Plan</button><button id="viewSide" type="button" aria-pressed="false">Side</button></div>
+          <button type="button" id="fitProject" title="Clear well selection and reset the camera">Reset view</button>
+          <div class="button-group zoom-controls" role="group" aria-label="Zoom"><button id="zoomIn" type="button" aria-label="Zoom in">+</button><button id="zoomOut" type="button" aria-label="Zoom out">−</button></div>
+          <label class="inline-control">Show<select id="pathScope"><option value="lateral">Laterals</option><option value="whole">Whole wells</option></select></label>
+          <label class="depth-control" for="depthScale">Depth <output id="depthValue">1×</output><input type="range" id="depthScale" min="1" max="8" step="0.5" value="1" aria-label="Vertical exaggeration"></label>
+        </div>
+        <div id="canvasHost" class="canvas-host">
+          <div class="view-caption"><span class="data-dot"></span> SURVEYED WELL PATHS <span class="caption-divider">/</span> <span id="canvasMode">Illustrative well roles</span></div>
+          <div id="canvasState" class="canvas-state" role="status">Loading the project’s surveyed well paths…</div>
+          <div id="wellLabel" class="well-label" hidden></div>
+          <div class="map-inset" id="mapInset"><div class="map-title">PROJECT PLAN <span aria-hidden="true">↑ N</span></div><svg id="projectMap" viewBox="0 0 180 124" role="img" aria-label="Plan view of the actual surveyed project paths"></svg><span id="mapScale">Survey coordinates</span></div>
+          <div class="orientation"><span id="viewOrientation">3D perspective</span><small id="scaleNote">Relative TVD · 1× vertical scale</small></div>
+        </div>
+        <div class="viewer-underbar"><span>Drag to orbit · Scroll / pinch to zoom · Select a well to focus</span><strong id="geometrySummary">Reading survey snapshot…</strong></div>
+        <div class="role-legend" aria-label="Illustrative operating roles"><span><i class="inject"></i>Injecting</span><span><i class="produce"></i>Producing</span><span><i class="hold"></i>Shut in / hold</span><span><i class="monitor"></i>Monitoring</span><span><i class="unknown"></i>Role unverified</span></div>
+        <section class="sequence" aria-labelledby="sequenceTitle">
+          <div class="sequence-heading"><div><p class="eyebrow">ILLUSTRATIVE STAGE · NOT LIVE OPERATIONS</p><h2 id="sequenceTitle">Reading the project concept…</h2></div><span id="stageCount" class="stage-count"></span></div>
+          <p id="stageDescription" class="stage-description"></p>
+          <div class="sequence-navigation"><button id="playStages" type="button" disabled aria-pressed="false"><span aria-hidden="true">▶</span> Play stages</button><button id="previousStage" type="button" disabled aria-label="Previous stage">←</button><div id="stageDots" aria-label="Choose an illustrative stage"></div><button id="nextStage" type="button" disabled aria-label="Next stage">→</button><span id="playStatus" class="play-status">Step through the concept</span></div>
+          <p class="stage-basis" id="stageBasis"></p>
+          <div class="mechanism" id="mechanismPanel">
+            <div class="mechanism-art">
+              <div class="mechanism-caption">RESERVOIR MECHANISM <span>Conceptual · not spatially scaled</span></div>
+              <svg id="mechanismDiagram" viewBox="0 0 430 190" role="img" aria-labelledby="mechanismSVGTitle mechanismSVGDesc">
+                <title id="mechanismSVGTitle">Conceptual fluid contact around a well</title><desc id="mechanismSVGDesc">A separate teaching diagram shows fluid exchange through fractures and oil-bearing rock. It is not mapped onto the project survey.</desc>
+                <defs><marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#64c6f3"/></marker><marker id="arrowLime" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#a4d929"/></marker></defs>
+                <rect x="119" y="32" width="283" height="122" rx="5" fill="#2f393f" stroke="#52616a"/>
+                <g fill="none" stroke="#46545d" stroke-width="1"><path d="M169 32v122M220 32v122M270 32v122M321 32v122M371 32v122M119 72h283M119 113h283"/></g>
+                <g fill="#a4d929" opacity=".7"><circle cx="191" cy="53" r="4"/><circle cx="244" cy="132" r="4"/><circle cx="294" cy="53" r="4"/><circle cx="345" cy="132" r="4"/><circle cx="386" cy="53" r="4"/></g>
+                <path d="M22 103H370" stroke="#8595a0" stroke-width="12" fill="none"/><path d="M22 103H370" stroke="#20262b" stroke-width="6" fill="none"/>
+                <g stroke="#9aadb7" stroke-width="2" fill="none"><path d="M192 103L177 79L186 62M192 103L202 124L195 145M282 103L269 78L277 43M282 103L295 128L291 148M357 103L346 82L350 62"/></g>
+                <g class="inject-flow" stroke="#64c6f3" stroke-width="2.5" fill="none" marker-end="url(#arrowBlue)"><path d="M34 103H155"/><path d="M192 96L183 77"/><path d="M282 96L273 73"/><path d="M287 112L298 134"/></g>
+                <g class="produce-flow" stroke="#a4d929" stroke-width="2.5" fill="none" marker-end="url(#arrowLime)"><path d="M154 103H36"/><path d="M184 75L192 95"/><path d="M274 70L283 96"/><path d="M298 135L287 112"/></g>
+                <g fill="#cfdae1" font-size="11" font-family="Inter,Segoe UI,Arial,sans-serif"><text x="23" y="85">Well</text><text x="122" y="21">Oil-bearing rock</text><text x="236" y="177">Fractures provide contact pathways</text></g>
+                <text id="mechanismDirection" x="23" y="144" fill="#64c6f3" font-size="11" font-family="Inter,Segoe UI,Arial,sans-serif">Fluid enters the well</text>
+              </svg>
+              <p id="mechanismTitle" class="mechanism-role">From the well to the reservoir</p>
+            </div>
+            <div class="mechanism-copy"><h3>Across this illustrative stage</h3><ul id="reservoirEffects"></ul></div>
+          </div>
+          <p class="sequence-note">Colors and moving markers explain roles and flow direction only. They do not show measured rates, displaced fluid, pressure fronts, plumes, or predicted recovery. Each stage has equal screen time; real cycle durations are not implied.</p>
+          <p class="sequence-note" id="motionNote" hidden>Reduced motion is enabled. Stage changes remain available; moving markers are suppressed.</p>
+        </section>
+      </section>
+      <aside class="project-information" aria-label="Project evidence and wells">
+        <div class="evidence-header"><p class="eyebrow">PROJECT RECORD</p><span id="projectStatus" class="status-tag">Checking sources</span></div>
+        <p id="projectSummary" class="project-summary"></p><p id="statusDetail" class="status-detail"></p><p id="reviewedAt" class="subtle"></p>
+        <section class="well-section" aria-labelledby="wellsTitle"><div class="section-heading"><h2 id="wellsTitle">Project wells</h2><button id="clearWell" type="button" class="quiet" hidden>Clear focus</button></div><p class="subtle">Select a well to inspect its survey and role.</p><div id="wellList" class="well-list"></div><div id="wellDetails" class="well-details" aria-live="polite" hidden></div></section>
+        <details open><summary>What the project is testing</summary><ul id="findingsList"></ul></details>
+        <details><summary>What remains to be established</summary><ul id="watchList"></ul><ul id="limitationsList"></ul></details>
+        <details><summary>Sources and survey provenance</summary><ul id="sourceList" class="source-list"></ul><p id="geometryProvenance" class="subtle"></p><p class="subtle">Separate survey branches remain separate. Paths start at the first available survey station. No missing surface sections are invented. TVD is relative to each well’s reference; reference elevations are not applied.</p></details>
+      </aside>
+    </div>
+  </main>
+  <footer><a href="/eor/">← All EOR projects</a><span>Public survey geometry. Sourced project evidence. Illustrative mechanisms.</span><a href="/methodology/">Data methodology ↗</a></footer>
+  <noscript><p class="noscript">JavaScript is required to display the project explorer. Visit the <a href="/eor/">EOR project directory</a> for source links.</p></noscript>
+  <script type="module" src="./viewer.js"></script>
+</body>
+</html>

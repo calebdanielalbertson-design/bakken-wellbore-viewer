@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "surveyManifestSHA256": "328deaf1f1d2bf9c9d7d5e961cd25be653f082a51fb6966f13be9e495ef4599c",
+  "dsuSHA256": "6100d83db8c2647dc88e86dafd84ede5513fff610cfc28f6c9efb498d2bc8fd2",
+  "sourceDate": "2026-10-17",
+  "preparedFileCount": 516,
+  "maximumPreparedFileBytes": 15846126,
+  "preparedBytesBeforeReleaseNote": 231377574,
+  "compressedLogicalAssetCount": 450,
+  "logicalBytesInCompressedAssets": 410770414,
+  "storedBytesInCompressedAssets": 228755708,
+  "checks": [
+    "gzip payloads and decompressed originals independently hashed",
+    "all numerical binaries preserved",
+    "exact survey manifest preserved",
+    "footage and membership fingerprints preserved",
+    "production audit removed without changing observations",
+    "no private local paths",
+    "no raw LAS/DBF or local audit files",
+    "every stored asset at most 20 MiB",
+    "total stored site below 250 MiB"
+  ],
+  "omittedLocalArtifacts": [
+    "viewer/data/sample/metrics-binary-verification.json",
+    "viewer/data/sample/metrics-validation.json",
+    "viewer/data/sample/section-metric-scales-validation.json",
+    "viewer/data/showcase/metrics-validation.json",
+    "viewer/data/showcase/production-audit.json",
+    "viewer/data/showcase/verification.json",
+    "viewer/inventory-review.html",
+    "full-dataset/metrics-validation.json",
+    "full-dataset/production-audit.json",
+    "full-dataset/refresh-validation.json",
+    "full-dataset/section-metric-scales-validation.json"
+  ],
+  "sanitizedMetadata": [
+    "viewer/data/showcase/production.json",
+    "full-dataset/production.json"
+  ],
+  "logs": "Public static edition excludes raw LAS, survey DBF and log API dependencies."
+}

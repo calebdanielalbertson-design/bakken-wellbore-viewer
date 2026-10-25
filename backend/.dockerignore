@@ -1,0 +1,10 @@
+**
+!backend.py
+!import_snapshot.py
+!schema_postgres.sql
+!requirements.txt
+!Dockerfile
+!railway.toml
+!data/
+data/**
+!data/forward-snapshot.json

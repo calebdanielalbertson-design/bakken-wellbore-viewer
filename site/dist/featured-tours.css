@@ -1,0 +1,28 @@
+/* Homepage entry points for the reviewed, data-backed guided tours. */
+.brand-home .featured-tours{padding:96px 0 78px;background:#eff5f8;border-top:1px solid #dce6ed;border-bottom:1px solid #dce6ed;scroll-margin-top:24px}
+.featured-tours-intro{display:grid;grid-template-columns:1.15fr 1fr;align-items:end;gap:64px;margin-bottom:40px}
+.featured-tours-intro .eyebrow{color:#075b88;margin-bottom:18px}
+.brand-home .featured-tours-intro h2{font-size:clamp(36px,4.1vw,55px);line-height:1.1;letter-spacing:-.045em;color:#263d49}
+.featured-tours-lead{max-width:470px;padding-bottom:4px;color:#566c79;font-size:15px;line-height:1.8}
+.featured-tours-lead>span{display:block;font-size:11px;color:#42677b;margin-top:18px;letter-spacing:.01em}
+.featured-tours-lead i{font-style:normal;margin:0 9px;color:#87aabb}
+.featured-tours-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px}
+.featured-tour{display:flex;flex-direction:column;min-width:0;border:1px solid #d2e0e8;border-radius:7px;overflow:hidden;background:#fff;color:#273d49;box-shadow:0 6px 20px #1c4b6510;text-decoration:none;transition:border-color .18s,box-shadow .18s}
+.featured-tour:hover{text-decoration:none;border-color:#8dc5de;box-shadow:0 9px 24px #1c4b6520}
+.featured-tour:focus-visible{outline:3px solid #075b88;outline-offset:5px}
+.featured-tour-image{position:relative;overflow:hidden;aspect-ratio:12/7;background:#071724;border-bottom:1px solid #253f50}
+.featured-tour-image>img{width:100%;height:100%;object-fit:cover;transition:transform .25s}
+.featured-tour:hover .featured-tour-image>img{transform:scale(1.025)}
+.featured-tour-number{position:absolute;top:16px;left:17px;padding:5px 9px;border:1px solid #5e829d70;border-radius:3px;background:#0a1b28d9;color:#d3e8f2;font-size:10px;font-weight:550;letter-spacing:.03em}
+.featured-tour-copy{display:flex;flex-direction:column;flex:1;padding:26px 28px 22px}
+.featured-tour-copy .eyebrow{color:#237297;font-size:10px;letter-spacing:.12em;margin-bottom:9px}
+.brand-home .featured-tour-copy h3{font-size:24px;line-height:1.25;letter-spacing:-.025em;font-weight:600;max-width:450px}
+.featured-tour-copy>p:not(.eyebrow){color:#627481;font-size:13px;line-height:1.8;margin-top:12px;max-width:480px}
+.featured-tour-action{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:auto;padding-top:23px;color:#075b88;font-size:12px;font-weight:650}
+.featured-tour-action>span{display:grid;place-items:center;width:29px;height:29px;border:1px solid #c9dde7;border-radius:50%;color:#075b88;font-size:16px;transition:background .18s}
+.featured-tour:hover .featured-tour-action>span{background:#a4d929;border-color:#a4d929}
+.featured-tours-note{color:#738894;font-size:11px;line-height:1.8;margin-top:24px;max-width:900px}
+@media(max-width:1100px){.featured-tours-intro{gap:35px}.featured-tour-copy{padding:23px}.brand-home .featured-tour-copy h3{font-size:22px}.featured-tour-image{aspect-ratio:1.65}}
+@media(max-width:800px){.brand-home .featured-tours{padding:60px 0 50px}.featured-tours-intro{grid-template-columns:1fr;gap:22px;margin-bottom:30px}.featured-tours-lead{max-width:620px;font-size:14px}.brand-home .featured-tours-intro h2{font-size:39px}.featured-tours-grid{gap:18px}.featured-tour-copy{padding:21px}.brand-home .featured-tour-copy h3{font-size:20px}.featured-tour-copy>p:not(.eyebrow){font-size:12px}.featured-tour-number{font-size:9px;top:12px;left:12px}}
+@media(max-width:580px){.featured-tours-grid{grid-template-columns:1fr;gap:22px}.featured-tour-image{aspect-ratio:12/7}.featured-tour-copy{padding:24px}.brand-home .featured-tour-copy h3{font-size:23px}.featured-tour-copy>p:not(.eyebrow){font-size:13px}.featured-tours-lead>span{font-size:10px}.featured-tours-note{font-size:10px}.brand-home .featured-tours-intro h2{font-size:35px}.featured-tours-intro h2 br{display:none}}
+@media(prefers-reduced-motion:reduce){.featured-tour,.featured-tour-image>img,.featured-tour-action>span{transition:none}.featured-tour:hover .featured-tour-image>img{transform:none}}
