@@ -69,6 +69,12 @@ if HAVE_DATA:
         assert set(metadata['names'])=={str(w['id']) for w in survey['wells']}
         assert all(isinstance(n,str) and n.strip() for n in metadata['names'].values())
         assert metadata['coverage']['matchedWellIdentities']==metadata['coverage']['datasetWellIdentities']
+    # Every geometry and metrics tile the viewer can request must ship, either as split
+    # gzip parts or as a small plain file in dist/full-dataset/.
+    tiles=json.loads(read_logical('full-dataset/manifest.json'))['tiles']
+    for tile in tiles:
+        for name in (tile['file'], tile['file'].replace('.bin','.metrics.bin')):
+            assert 'full-dataset/'+name in logical or (DIST/'full-dataset'/name).is_file(), 'missing tile '+name
     production=json.loads(read_logical('full-dataset/production.json'))
     assert 'audit' not in production and 'auditFile' not in production
     for name in ('production-audit.json','refresh-validation.json'):
