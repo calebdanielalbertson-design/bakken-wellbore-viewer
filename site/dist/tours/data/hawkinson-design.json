@@ -1,0 +1,357 @@
+{
+  "version": 1,
+  "historicalDesign": {
+    "source": {
+      "id": "continental-hawkinson-slide7-2014",
+      "title": "Hawkinson Unit — Continental Resources slide 7",
+      "hostDocument": "EERC briefing, April 8, 2014; Continental Resources presentation material",
+      "url": "https://ndlegis.gov/files/committees/63-2013nma/appendices/15_5090_03000appendixl.pdf#page=4",
+      "pdfPage": 4,
+      "slideNumber": 7,
+      "verification": "Numbered target rows visually verified against the primary slide; file/API identities matched to the existing OGD well-name records."
+    },
+    "status": "published_historical_design",
+    "unit": {
+      "sections": [
+        22,
+        27
+      ],
+      "township": 147,
+      "range": 96,
+      "townshipDirection": "N",
+      "rangeDirection": "W",
+      "statedAcres": 1280
+    },
+    "rows": [
+      {
+        "targetCode": "MB",
+        "target": "Middle Bakken",
+        "wellNumbersLeftToRight": [
+          5,
+          8,
+          3,
+          13
+        ]
+      },
+      {
+        "targetCode": "TF1",
+        "target": "Three Forks 1",
+        "wellNumbersLeftToRight": [
+          1,
+          10,
+          2
+        ]
+      },
+      {
+        "targetCode": "TF2",
+        "target": "Three Forks 2",
+        "wellNumbersLeftToRight": [
+          4,
+          7,
+          11,
+          14
+        ]
+      },
+      {
+        "targetCode": "TF3",
+        "target": "Three Forks 3",
+        "wellNumbersLeftToRight": [
+          6,
+          9,
+          12
+        ]
+      }
+    ],
+    "targetCounts": {
+      "Middle Bakken": 4,
+      "Three Forks 1": 3,
+      "Three Forks 2": 4,
+      "Three Forks 3": 3
+    },
+    "publishedDimensions": {
+      "sameZoneSpacingFt": 1320,
+      "adjacentRowOffsetFt": 660,
+      "verticalInsetFt": 68,
+      "illustratedStackHeightApproxFt": 200,
+      "unitLengthMiles": 2,
+      "unitWidthMiles": 1,
+      "status": "Published schematic/design dimensions; not measured from current mapped surveys."
+    },
+    "caveats": [
+      "Historical design targets belong to numbered wells, not independently verified present-day sidetracks or active completion intervals. The current selected branches remain a display choice.",
+      "No formation surfaces, common elevation datum, completed intervals, or branch-specific geological picks are inferred from the historical schematic.",
+      "The original depth proxy is retained unchanged for comparison. Its per-well relative TVD split is not a reliable substitute for the cited historical target assignment.",
+      "Slide colors encode monitoring/production/microseismic roles, not formations. Three Forks 4 is drawn but none of the 14 numbered wells is assigned to it.",
+      "Row order follows the source schematic; it is not a surveyed geographic cross-section or exact well-to-well separation."
+    ]
+  },
+  "wells": [
+    {
+      "pilotWellNumber": 1,
+      "file": "18275",
+      "api": "33025009620000",
+      "name": "HAWKINSON  1-22H",
+      "historicalTarget": "Three Forks 1",
+      "historicalTargetCode": "TF1",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 6594,
+      "selectedSurveyBranch": "STK1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11296.5,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 2,
+      "file": "20208",
+      "api": "33025012580000",
+      "name": "HAWKINSON 2-27H",
+      "historicalTarget": "Three Forks 1",
+      "historicalTargetCode": "TF1",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 10487,
+      "selectedSurveyBranch": "LAT1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11428.3,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 3,
+      "file": "20211",
+      "api": "33025012600000",
+      "name": "HAWKINSON  3-27H",
+      "historicalTarget": "Middle Bakken",
+      "historicalTargetCode": "MB",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 10493,
+      "selectedSurveyBranch": "LAT1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11372.6,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 4,
+      "file": "24223",
+      "api": "33025019530000",
+      "name": "HAWKINSON 4-22H2",
+      "historicalTarget": "Three Forks 2",
+      "historicalTargetCode": "TF2",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 17966,
+      "selectedSurveyBranch": "STK1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11414.9,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 5,
+      "file": "24224",
+      "api": "33025019540000",
+      "name": "HAWKINSON 5-22H",
+      "historicalTarget": "Middle Bakken",
+      "historicalTargetCode": "MB",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 17970,
+      "selectedSurveyBranch": "STK2",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11273.7,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 6,
+      "file": "24225",
+      "api": "33025019550000",
+      "name": "HAWKINSON 6-22H3",
+      "historicalTarget": "Three Forks 3",
+      "historicalTargetCode": "TF3",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 17972,
+      "selectedSurveyBranch": "LAT1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11428.6,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 7,
+      "file": "24282",
+      "api": "33025019650000",
+      "name": "HAWKINSON 7-22H2",
+      "historicalTarget": "Three Forks 2",
+      "historicalTargetCode": "TF2",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 18076,
+      "selectedSurveyBranch": "LAT1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11271.2,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 8,
+      "file": "24283",
+      "api": "33025019660000",
+      "name": "HAWKINSON 8-22H",
+      "historicalTarget": "Middle Bakken",
+      "historicalTargetCode": "MB",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 18079,
+      "selectedSurveyBranch": "STK1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11132.8,
+      "preservedDepthProxy": {
+        "group": "upper",
+        "label": "Bakken · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 9,
+      "file": "24284",
+      "api": "33025019670000",
+      "name": "HAWKINSON 9-22H3",
+      "historicalTarget": "Three Forks 3",
+      "historicalTargetCode": "TF3",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 18081,
+      "selectedSurveyBranch": "LAT1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11293.1,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 10,
+      "file": "24285",
+      "api": "33025019680000",
+      "name": "HAWKINSON 10-22H1",
+      "historicalTarget": "Three Forks 1",
+      "historicalTargetCode": "TF1",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 18084,
+      "selectedSurveyBranch": "STK1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11210.4,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 11,
+      "file": "24286",
+      "api": "33025019690000",
+      "name": "HAWKINSON 11-22H2",
+      "historicalTarget": "Three Forks 2",
+      "historicalTargetCode": "TF2",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 18086,
+      "selectedSurveyBranch": "LAT1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11226.8,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 12,
+      "file": "24350",
+      "api": "33025019860000",
+      "name": "HAWKINSON 12-22H3",
+      "historicalTarget": "Three Forks 3",
+      "historicalTargetCode": "TF3",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 18185,
+      "selectedSurveyBranch": "LAT1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11264.4,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 13,
+      "file": "24455",
+      "api": "33025020060000",
+      "name": "HAWKINSON 13-22H",
+      "historicalTarget": "Middle Bakken",
+      "historicalTargetCode": "MB",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 18373,
+      "selectedSurveyBranch": "STK1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11088.4,
+      "preservedDepthProxy": {
+        "group": "upper",
+        "label": "Bakken · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    },
+    {
+      "pilotWellNumber": 14,
+      "file": "24456",
+      "api": "33025020070000",
+      "name": "HAWKINSON 14-22H2",
+      "historicalTarget": "Three Forks 2",
+      "historicalTargetCode": "TF2",
+      "historicalTargetSourceId": "continental-hawkinson-slide7-2014",
+      "selectedSurveyBranchId": 18375,
+      "selectedSurveyBranch": "LAT1",
+      "selectionRule": "longest mapped lateral; completion status unverified",
+      "medianLateralTVDFt": 11216.1,
+      "preservedDepthProxy": {
+        "group": "lower",
+        "label": "Three Forks · provisional depth grouping",
+        "status": "unverified_depth_proxy"
+      }
+    }
+  ],
+  "preservedDepthGrouping": {
+    "method": "Median lateral relative TVD of each selected branch; split at largest adjacent depth gap, with at least two wells on each side and gap >=30 ft. Eligible branches need >=1000 classified lateral MD feet and >=3 lateral stations.",
+    "thresholdRelativeTVDFt": 11171.6,
+    "splitGapFt": 77.6,
+    "upperLabel": "Bakken (provisional)",
+    "lowerLabel": "Three Forks (provisional)",
+    "eligibleWells": 14,
+    "counts": {
+      "upper": 2,
+      "lower": 12,
+      "unknown": 0
+    },
+    "warning": "User-requested illustrative labels, not formation picks. Relative TVD uses per-well references without elevation correction. Topography/reference elevations and branch choice can change apparent group separation. No confirmed target or completion assignment is made."
+  },
+  "comparisonNote": "The published four-target design supersedes the provisional two-group display interpretation, without altering survey coordinates, branch choices, or the original proxy fields. Historical targets are not verification of the current selected branch's completed formation."
+}

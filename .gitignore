@@ -1,5 +1,8 @@
 # Large prepared data (not versioned in Git)
 data/
+# ...except small page content that ships with the public site
+!site/dist/eor/data/
+!site/dist/tours/data/
 full-dataset/
 explorer/gamma-data/*
 !explorer/gamma-data/*.py
