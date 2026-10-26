@@ -50,6 +50,11 @@ if HAVE_DATA:
     for branch in shapes['branches']:
         assert all(branch[key]==shape_wells[branch['id']][key] for key in ('id','permit','api','branch','tile','offset','count'))
 assert 'U-turn laterals' in (DIST/'viewer/index.html').read_text(encoding='utf8')
+# Page content that the tours and EOR pages fetch at runtime (not covered by the HTML link check).
+for name in ('tours/data/tours.json','tours/data/shoreline.json','tours/data/hawkinson-design.json'):
+    assert (DIST/name).is_file(), name
+for project in json.loads((DIST/'eor/projects.json').read_text(encoding='utf-8'))['projects']:
+    assert (DIST/'eor/data'/(project['id']+'.json')).is_file(), project['id']
 assert (DIST/'viewer/well-shapes.js').exists()
 app_text=(DIST/'viewer/app.js').read_text(encoding='utf8')
 assert '\u00b7' in app_text and '\u2026' in app_text
