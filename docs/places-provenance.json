@@ -1,0 +1,62 @@
+{
+  "retrievedAt": "2026-10-20T23:28:43.100086+00:00",
+  "coordinateReferenceSystem": "EPSG:4269 (NAD83), longitude/latitude",
+  "sources": [
+    {
+      "sourceLayer": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/4",
+      "query": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/4/query?where=STATE%3D%2738%27+AND+BASENAME+IN+%28%27Williston%27%2C%27Dickinson%27%2C%27Minot%27%2C%27Bismarck%27%2C%27Watford+City%27%2C%27Stanley%27%2C%27Tioga%27%2C%27Powers+Lake%27%2C%27Alexander%27%2C%27Cartwright%27%2C%27New+Town%27%2C%27Killdeer%27%2C%27Ray%27%2C%27Crosby%27%2C%27Parshall%27%2C%27Belfield%27%2C%27Arnegard%27%2C%27Mandaree%27%2C%27Keene%27%29&outFields=NAME%2CBASENAME%2CSTATE%2CGEOID%2CINTPTLAT%2CINTPTLON&returnGeometry=false&f=json",
+      "rawResponse": "census-layer-4.json",
+      "sha256": "583e4973009a9016fe40f5f2c00f1c8ae758552afae17335543959cfca96b000",
+      "featureCount": 16
+    },
+    {
+      "sourceLayer": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/5",
+      "query": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/5/query?where=STATE%3D%2738%27+AND+BASENAME+IN+%28%27Williston%27%2C%27Dickinson%27%2C%27Minot%27%2C%27Bismarck%27%2C%27Watford+City%27%2C%27Stanley%27%2C%27Tioga%27%2C%27Powers+Lake%27%2C%27Alexander%27%2C%27Cartwright%27%2C%27New+Town%27%2C%27Killdeer%27%2C%27Ray%27%2C%27Crosby%27%2C%27Parshall%27%2C%27Belfield%27%2C%27Arnegard%27%2C%27Mandaree%27%2C%27Keene%27%29&outFields=NAME%2CBASENAME%2CSTATE%2CGEOID%2CINTPTLAT%2CINTPTLON&returnGeometry=false&f=json",
+      "rawResponse": "census-layer-5.json",
+      "sha256": "09cae8da3d7690790751d273a96cc761996e5a09441df64a96016cacc87a5015",
+      "featureCount": 1
+    },
+    {
+      "sourceLayer": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3",
+      "query": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3/query?where=gaz_name%3D%27Cartwright%27+AND+state_alpha%3D%27ND%27&outFields=gaz_id%2Cgaz_name%2Cgaz_featureclass%2Cstate_alpha%2Ccounty_name%2Cisunknowncoords&returnGeometry=true&outSR=4269&f=json",
+      "rawResponse": "gnis-cartwright.json",
+      "sha256": "0e441914bdeb84461e733c517ce443834727bdbe6311b6c899cd5df52888b8b8",
+      "featureCount": 1
+    },
+    {
+      "sourceLayer": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3",
+      "query": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3/query?where=gaz_name%3D%27Keene%27+AND+state_alpha%3D%27ND%27&outFields=gaz_id%2Cgaz_name%2Cgaz_featureclass%2Cstate_alpha%2Ccounty_name%2Cisunknowncoords&returnGeometry=true&outSR=4269&f=json",
+      "rawResponse": "gnis-keene.json",
+      "sha256": "32b42fe72fedc9e054b8c736a8b7f186f3cd0fe38bd9515896529a44de8ca242",
+      "featureCount": 1
+    }
+  ],
+  "featureCount": 19,
+  "names": [
+    "Williston",
+    "Dickinson",
+    "Minot",
+    "Bismarck",
+    "Watford City",
+    "Stanley",
+    "Tioga",
+    "Powers Lake",
+    "Alexander",
+    "Cartwright",
+    "New Town",
+    "Killdeer",
+    "Ray",
+    "Crosby",
+    "Parshall",
+    "Belfield",
+    "Arnegard",
+    "Mandaree",
+    "Keene"
+  ],
+  "sha256": "fae75d4ee3b5f967560eec8fcb4bf6e52a7a8f5d7a61af1c77be38e3fed2b605",
+  "notes": [
+    "Census INTPTLON/INTPTLAT are internal points, not surveyed city-center landmarks.",
+    "Cartwright and Keene have no matching Census places and use GNIS official populated-place locations, requested from the USGS service in NAD83.",
+    "Points are for geographic orientation; no municipal or oil-field boundaries are implied."
+  ]
+}
