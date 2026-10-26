@@ -5,12 +5,16 @@
     "site-viewer-data": {
       "path": "site/dist/viewer/data",
       "description": "Public site viewer data as released on bakkensubsurface.com (split, gzip-compressed parts plus reference and showcase files).",
-      "version": "2026-10-17",
-      "key": "datasets/site-viewer-data/2026-10-17/site-viewer-data.tar.gz",
-      "sha256": "faadfb961c59ec95c3d45a992784e8e20c45bdd248cfcc6c756cd2ad0afe2d13",
-      "bytes": 227871698,
-      "files": 456,
-      "contentBytes": 228767115
+      "version": "2026-10-25",
+      "key": "datasets/site-viewer-data/2026-10-25/site-viewer-data.tar.gz",
+      "sha256": "a1b594b5fda85ec91d7531b131e126f4b8f4ac1c0fcaec86ac28cf2d390f9e01",
+      "bytes": 227869892,
+      "files": 454,
+      "contentBytes": 228762961,
+      "exclude": [
+        "reference/places.geojson",
+        "reference/metadata.json"
+      ]
     },
     "explorer-full-dataset": {
       "path": "explorer/full-dataset",
@@ -25,12 +29,16 @@
     "explorer-viewer-data": {
       "path": "explorer/viewer/data",
       "description": "Development viewer layers: DSUs, footage inventory, reference plane, sample and showcase datasets.",
-      "version": "2026-10-17",
-      "key": "datasets/explorer-viewer-data/2026-10-17/explorer-viewer-data.tar.gz",
-      "sha256": "367185cb1f3cd3c3330b4ef7d8fbef73ae7dd1b6e1f987f4219000846d5e0ed9",
-      "bytes": 13059682,
-      "files": 46,
-      "contentBytes": 60449187
+      "version": "2026-10-25",
+      "key": "datasets/explorer-viewer-data/2026-10-25/explorer-viewer-data.tar.gz",
+      "sha256": "3030f6ff249e6935f1277461d4fe945a13c6674b1b051e39dce8c3cc33e1eba5",
+      "bytes": 13056618,
+      "files": 44,
+      "contentBytes": 60445097,
+      "exclude": [
+        "reference/places.geojson",
+        "reference/metadata.json"
+      ]
     },
     "explorer-gamma-data": {
       "path": "explorer/gamma-data",

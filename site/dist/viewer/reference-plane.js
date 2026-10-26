@@ -15,7 +15,10 @@ export function projectReference(lon, lat, manifest) {
 }
 
 export function createReferencePlane(scene, labelHost) {
-  let group=new THREE.Group(),labels=[],bounds=null,visible=true,generation=0;
+  let group=new THREE.Group(),labels=[],bounds=null,visible=true,generation=0,labelSizeKey='';
+  const overlays=[...labelHost.parentElement.querySelectorAll('.view-top,.view-bottom,.selected-toolbar,.production-timeline,.mobile-bottom-controls,.axis,#message')];
+  const overlaps=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+  document.fonts?.ready.then(()=>{labelSizeKey='';});
   scene.add(group);
   const data=Promise.all(['north-dakota.geojson','places.geojson'].map(async name=>{
     const response=await fetch(new URL('./data/reference/'+name,import.meta.url));
@@ -25,10 +28,11 @@ export function createReferencePlane(scene, labelHost) {
   // A missing reference asset should not create an unhandled promise rejection
   // or prevent survey data from loading.
   data.catch(()=>{});
-  function clear(){group.traverse(o=>{o.geometry?.dispose();o.material?.dispose()});group.clear();labels=[];labelHost.replaceChildren();bounds=null;}
+  function clear(){group.traverse(o=>{o.geometry?.dispose();o.material?.dispose()});group.clear();labels=[];labelHost.replaceChildren();bounds=null;labelSizeKey='';}
   return {
     get bounds(){return bounds},
     get visible(){return visible},
+    get placeCount(){return labels.length},
     setVisible(value){visible=value;group.visible=value;labelHost.hidden=!value;},
     async setDataset(manifest){
       const version=++generation;clear();
@@ -53,16 +57,34 @@ export function createReferencePlane(scene, labelHost) {
       for(const place of places.features){
         const c=place.geometry.coordinates,position=new THREE.Vector3(...projectReference(c[0],c[1],manifest));
         const label=document.createElement('span');label.className='place-label';label.textContent=place.properties.BASENAME||place.properties.NAME;
-        labelHost.append(label);labels.push({label,position});
+        labelHost.append(label);labels.push({label,position,priority:Number(place.properties.labelPriority)||0,width:0,height:0});
       }
+      labels.sort((a,b)=>b.priority-a.priority);
       group.visible=visible;labelHost.hidden=!visible;
     },
     updateLabels(camera){
       if(!visible)return;
       const width=labelHost.clientWidth,height=labelHost.clientHeight;
-      for(const {label,position} of labels){
+      if(!width||!height)return;
+      // Measure as a batch only when created, fonts load, or responsive font size changes.
+      const sizeKey=`${window.innerWidth<=800}`;
+      if(labelSizeKey!==sizeKey){
+        for(const item of labels)item.label.hidden=false;
+        for(const item of labels){item.width=item.label.offsetWidth;item.height=item.label.offsetHeight;}
+        labelSizeKey=sizeKey;
+      }
+      const hostRect=labelHost.getBoundingClientRect(),occupied=[];
+      for(const element of overlays){
+        const rect=element.getBoundingClientRect();
+        if(rect.width&&rect.height)occupied.push({left:rect.left-hostRect.left-6,right:rect.right-hostRect.left+6,top:rect.top-hostRect.top-6,bottom:rect.bottom-hostRect.top+6});
+      }
+      // Keep each label anchored to its survey-map location. Lower priorities appear
+      // naturally as zooming creates space, rather than shifting names to other towns.
+      for(const {label,position,width:labelWidth,height:labelHeight} of labels){
         const p=position.clone().project(camera),x=(p.x+1)*width/2,y=(1-p.y)*height/2;
-        const show=p.z>=-1&&p.z<=1&&x>15&&x<width-80&&y>75&&y<height-70;
+        const rect={left:x-4,right:x+labelWidth+12,top:y-12,bottom:y+labelHeight-4};
+        const show=p.z>=-1&&p.z<=1&&rect.left>12&&rect.right<width-12&&rect.top>12&&rect.bottom<height-12&&!occupied.some(other=>overlaps(rect,other));
+        if(show)occupied.push(rect);
         label.hidden=!show;if(show)label.style.transform=`translate(${x+8}px,${y-8}px)`;
       }
     }

@@ -1,0 +1,108 @@
+{
+  "title": "North Dakota orientation references",
+  "source": "U.S. Census Bureau TIGERweb; USGS Geographic Names Information System",
+  "attribution": "State boundary and Census place internal points: U.S. Census Bureau, TIGERweb. Cartwright and Keene populated-place locations: USGS GNIS. State geometry generalized for display.",
+  "retrievedAt": "2026-09-12T04:59:57.290Z",
+  "coordinateReferenceSystem": {
+    "name": "NAD83",
+    "authority": "EPSG:4269",
+    "axes": [
+      "longitude",
+      "latitude"
+    ],
+    "units": "decimal degrees",
+    "format": "GeoJSON with an explicit legacy crs member; do not assume RFC 7946 WGS84"
+  },
+  "boundary": {
+    "file": "north-dakota.geojson",
+    "sourceLayer": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0",
+    "sourceDescription": "States (or statistically equivalent entities); January 1, 2026 vintage",
+    "query": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0/query?where=STATE%3D%2738%27&outFields=NAME%2CSTATE%2CSTUSAB&returnGeometry=true&outSR=4269&maxAllowableOffset=0.001&geometryPrecision=6&f=geojson",
+    "stateFips": "38",
+    "vintage": "2026-01-01",
+    "geometryType": "Polygon",
+    "polygonCount": 1,
+    "ringCount": 1,
+    "vertexCount": 1313,
+    "bbox": [
+      -104.048692,
+      45.935245,
+      -96.554411,
+      49.000454
+    ],
+    "simplification": {
+      "method": "ArcGIS query maxAllowableOffset",
+      "toleranceDegrees": 0.001,
+      "coordinateDecimalPlaces": 6
+    },
+    "sha256": "beaae588148a112ea8c79ac8f889388c248d0b4c0decd479646e41b01247458d"
+  },
+  "places": {
+    "file": "places.geojson",
+    "retrievedAt": "2026-10-20T23:28:43.100086+00:00",
+    "featureCount": 19,
+    "names": [
+      "Williston",
+      "Dickinson",
+      "Minot",
+      "Bismarck",
+      "Watford City",
+      "Stanley",
+      "Tioga",
+      "Powers Lake",
+      "Alexander",
+      "Cartwright",
+      "New Town",
+      "Killdeer",
+      "Ray",
+      "Crosby",
+      "Parshall",
+      "Belfield",
+      "Arnegard",
+      "Mandaree",
+      "Keene"
+    ],
+    "positioning": "Census internal points for 17 communities; GNIS official feature locations for Cartwright and Keene. These are orientation references, not surveyed landmarks or municipal boundaries.",
+    "coordinateReferenceSystem": "EPSG:4269 (NAD83)",
+    "sources": [
+      {
+        "sourceLayer": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/4",
+        "query": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/4/query?where=STATE%3D%2738%27+AND+BASENAME+IN+%28%27Williston%27%2C%27Dickinson%27%2C%27Minot%27%2C%27Bismarck%27%2C%27Watford+City%27%2C%27Stanley%27%2C%27Tioga%27%2C%27Powers+Lake%27%2C%27Alexander%27%2C%27Cartwright%27%2C%27New+Town%27%2C%27Killdeer%27%2C%27Ray%27%2C%27Crosby%27%2C%27Parshall%27%2C%27Belfield%27%2C%27Arnegard%27%2C%27Mandaree%27%2C%27Keene%27%29&outFields=NAME%2CBASENAME%2CSTATE%2CGEOID%2CINTPTLAT%2CINTPTLON&returnGeometry=false&f=json",
+        "sha256": "583e4973009a9016fe40f5f2c00f1c8ae758552afae17335543959cfca96b000",
+        "featureCount": 16
+      },
+      {
+        "sourceLayer": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/5",
+        "query": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/5/query?where=STATE%3D%2738%27+AND+BASENAME+IN+%28%27Williston%27%2C%27Dickinson%27%2C%27Minot%27%2C%27Bismarck%27%2C%27Watford+City%27%2C%27Stanley%27%2C%27Tioga%27%2C%27Powers+Lake%27%2C%27Alexander%27%2C%27Cartwright%27%2C%27New+Town%27%2C%27Killdeer%27%2C%27Ray%27%2C%27Crosby%27%2C%27Parshall%27%2C%27Belfield%27%2C%27Arnegard%27%2C%27Mandaree%27%2C%27Keene%27%29&outFields=NAME%2CBASENAME%2CSTATE%2CGEOID%2CINTPTLAT%2CINTPTLON&returnGeometry=false&f=json",
+        "sha256": "09cae8da3d7690790751d273a96cc761996e5a09441df64a96016cacc87a5015",
+        "featureCount": 1
+      },
+      {
+        "sourceLayer": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3",
+        "query": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3/query?where=gaz_name%3D%27Cartwright%27+AND+state_alpha%3D%27ND%27&outFields=gaz_id%2Cgaz_name%2Cgaz_featureclass%2Cstate_alpha%2Ccounty_name%2Cisunknowncoords&returnGeometry=true&outSR=4269&f=json",
+        "sha256": "0e441914bdeb84461e733c517ce443834727bdbe6311b6c899cd5df52888b8b8",
+        "featureCount": 1
+      },
+      {
+        "sourceLayer": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3",
+        "query": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3/query?where=gaz_name%3D%27Keene%27+AND+state_alpha%3D%27ND%27&outFields=gaz_id%2Cgaz_name%2Cgaz_featureclass%2Cstate_alpha%2Ccounty_name%2Cisunknowncoords&returnGeometry=true&outSR=4269&f=json",
+        "sha256": "32b42fe72fedc9e054b8c736a8b7f186f3cd0fe38bd9515896529a44de8ca242",
+        "featureCount": 1
+      }
+    ],
+    "sha256": "fae75d4ee3b5f967560eec8fcb4bf6e52a7a8f5d7a61af1c77be38e3fed2b605",
+    "labelBehavior": "Labels remain anchored to their reference point. Higher-priority labels are retained when labels overlap; zooming reveals more communities."
+  },
+  "purpose": "Geographic orientation for the Bakken well viewer; this state boundary does not represent the Bakken formation or field extent.",
+  "validation": {
+    "stateNameAndFips": true,
+    "finiteCoordinates": true,
+    "closedRings": true,
+    "bboxPlausible": true,
+    "allPlacesInsideState": true,
+    "nineteenUniqueCommunities": true,
+    "allRequestedCommunitiesIncluded": true,
+    "originalFourCoordinatesPreserved": true
+  },
+  "updatedAt": "2026-10-20T23:28:43.100086+00:00"
+}
