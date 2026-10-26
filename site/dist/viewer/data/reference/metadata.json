@@ -1,7 +1,7 @@
 {
   "title": "North Dakota orientation references",
   "source": "U.S. Census Bureau TIGERweb; USGS Geographic Names Information System",
-  "attribution": "State boundary and Census place internal points: U.S. Census Bureau, TIGERweb. Cartwright and Keene populated-place locations: USGS GNIS. State geometry generalized for display.",
+  "attribution": "State boundary and Census place internal points: U.S. Census Bureau, TIGERweb. Cartwright, Keene, Zahl, Grassy Butte, Manning, Twin Buttes populated-place locations: USGS GNIS. State geometry generalized for display.",
   "retrievedAt": "2026-09-12T04:59:57.290Z",
   "coordinateReferenceSystem": {
     "name": "NAD83",
@@ -39,8 +39,8 @@
   },
   "places": {
     "file": "places.geojson",
-    "retrievedAt": "2026-10-20T23:28:43.100086+00:00",
-    "featureCount": 19,
+    "retrievedAt": "2026-10-26T02:04:11.346245+00:00",
+    "featureCount": 49,
     "names": [
       "Williston",
       "Dickinson",
@@ -60,22 +60,52 @@
       "Belfield",
       "Arnegard",
       "Mandaree",
-      "Keene"
+      "Keene",
+      "Portal",
+      "Epping",
+      "Grenora",
+      "Columbus",
+      "Lignite",
+      "Bowbells",
+      "Kenmare",
+      "Fortuna",
+      "Wildrose",
+      "White Earth",
+      "Ross",
+      "Plaza",
+      "Halliday",
+      "Dunn Center",
+      "South Heart",
+      "Trenton",
+      "Alamo",
+      "Ambrose",
+      "Noonan",
+      "Tolley",
+      "Mohall",
+      "Berthold",
+      "Ryder",
+      "Makoti",
+      "Four Bears Village",
+      "Twin Buttes",
+      "Taylor",
+      "Zahl",
+      "Grassy Butte",
+      "Manning"
     ],
-    "positioning": "Census internal points for 17 communities; GNIS official feature locations for Cartwright and Keene. These are orientation references, not surveyed landmarks or municipal boundaries.",
+    "positioning": "Census internal points for 43 communities; GNIS official feature locations for Cartwright, Keene, Zahl, Grassy Butte, Manning, Twin Buttes. These are orientation references, not surveyed landmarks or municipal boundaries.",
     "coordinateReferenceSystem": "EPSG:4269 (NAD83)",
     "sources": [
       {
         "sourceLayer": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/4",
-        "query": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/4/query?where=STATE%3D%2738%27+AND+BASENAME+IN+%28%27Williston%27%2C%27Dickinson%27%2C%27Minot%27%2C%27Bismarck%27%2C%27Watford+City%27%2C%27Stanley%27%2C%27Tioga%27%2C%27Powers+Lake%27%2C%27Alexander%27%2C%27Cartwright%27%2C%27New+Town%27%2C%27Killdeer%27%2C%27Ray%27%2C%27Crosby%27%2C%27Parshall%27%2C%27Belfield%27%2C%27Arnegard%27%2C%27Mandaree%27%2C%27Keene%27%29&outFields=NAME%2CBASENAME%2CSTATE%2CGEOID%2CINTPTLAT%2CINTPTLON&returnGeometry=false&f=json",
-        "sha256": "583e4973009a9016fe40f5f2c00f1c8ae758552afae17335543959cfca96b000",
-        "featureCount": 16
+        "query": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/4/query?where=STATE%3D%2738%27+AND+BASENAME+IN+%28%27Williston%27%2C%27Dickinson%27%2C%27Minot%27%2C%27Bismarck%27%2C%27Watford+City%27%2C%27Stanley%27%2C%27Tioga%27%2C%27Powers+Lake%27%2C%27Alexander%27%2C%27New+Town%27%2C%27Killdeer%27%2C%27Ray%27%2C%27Crosby%27%2C%27Parshall%27%2C%27Belfield%27%2C%27Arnegard%27%2C%27Mandaree%27%2C%27Portal%27%2C%27Epping%27%2C%27Grenora%27%2C%27Columbus%27%2C%27Lignite%27%2C%27Bowbells%27%2C%27Kenmare%27%2C%27Fortuna%27%2C%27Wildrose%27%2C%27White+Earth%27%2C%27Ross%27%2C%27Plaza%27%2C%27Halliday%27%2C%27Dunn+Center%27%2C%27South+Heart%27%2C%27Trenton%27%2C%27Alamo%27%2C%27Ambrose%27%2C%27Noonan%27%2C%27Tolley%27%2C%27Mohall%27%2C%27Berthold%27%2C%27Ryder%27%2C%27Makoti%27%2C%27Four+Bears+Village%27%2C%27Taylor%27%29&outFields=NAME%2CBASENAME%2CSTATE%2CGEOID%2CINTPTLAT%2CINTPTLON&returnGeometry=false&f=json",
+        "sha256": "ff71703a33c532da180857ae48803b9679308c24f3e034dc91c7a4067475c5a5",
+        "featureCount": 40
       },
       {
         "sourceLayer": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/5",
-        "query": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/5/query?where=STATE%3D%2738%27+AND+BASENAME+IN+%28%27Williston%27%2C%27Dickinson%27%2C%27Minot%27%2C%27Bismarck%27%2C%27Watford+City%27%2C%27Stanley%27%2C%27Tioga%27%2C%27Powers+Lake%27%2C%27Alexander%27%2C%27Cartwright%27%2C%27New+Town%27%2C%27Killdeer%27%2C%27Ray%27%2C%27Crosby%27%2C%27Parshall%27%2C%27Belfield%27%2C%27Arnegard%27%2C%27Mandaree%27%2C%27Keene%27%29&outFields=NAME%2CBASENAME%2CSTATE%2CGEOID%2CINTPTLAT%2CINTPTLON&returnGeometry=false&f=json",
-        "sha256": "09cae8da3d7690790751d273a96cc761996e5a09441df64a96016cacc87a5015",
-        "featureCount": 1
+        "query": "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer/5/query?where=STATE%3D%2738%27+AND+BASENAME+IN+%28%27Williston%27%2C%27Dickinson%27%2C%27Minot%27%2C%27Bismarck%27%2C%27Watford+City%27%2C%27Stanley%27%2C%27Tioga%27%2C%27Powers+Lake%27%2C%27Alexander%27%2C%27New+Town%27%2C%27Killdeer%27%2C%27Ray%27%2C%27Crosby%27%2C%27Parshall%27%2C%27Belfield%27%2C%27Arnegard%27%2C%27Mandaree%27%2C%27Portal%27%2C%27Epping%27%2C%27Grenora%27%2C%27Columbus%27%2C%27Lignite%27%2C%27Bowbells%27%2C%27Kenmare%27%2C%27Fortuna%27%2C%27Wildrose%27%2C%27White+Earth%27%2C%27Ross%27%2C%27Plaza%27%2C%27Halliday%27%2C%27Dunn+Center%27%2C%27South+Heart%27%2C%27Trenton%27%2C%27Alamo%27%2C%27Ambrose%27%2C%27Noonan%27%2C%27Tolley%27%2C%27Mohall%27%2C%27Berthold%27%2C%27Ryder%27%2C%27Makoti%27%2C%27Four+Bears+Village%27%2C%27Taylor%27%29&outFields=NAME%2CBASENAME%2CSTATE%2CGEOID%2CINTPTLAT%2CINTPTLON&returnGeometry=false&f=json",
+        "sha256": "15f4d13594833435a56d386ece5fb5938dc69fe95b8c5be1aec46a53b435edf0",
+        "featureCount": 3
       },
       {
         "sourceLayer": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3",
@@ -88,9 +118,33 @@
         "query": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3/query?where=gaz_name%3D%27Keene%27+AND+state_alpha%3D%27ND%27&outFields=gaz_id%2Cgaz_name%2Cgaz_featureclass%2Cstate_alpha%2Ccounty_name%2Cisunknowncoords&returnGeometry=true&outSR=4269&f=json",
         "sha256": "32b42fe72fedc9e054b8c736a8b7f186f3cd0fe38bd9515896529a44de8ca242",
         "featureCount": 1
+      },
+      {
+        "sourceLayer": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3",
+        "query": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3/query?where=gaz_name%3D%27Zahl%27+AND+state_alpha%3D%27ND%27&outFields=gaz_id%2Cgaz_name%2Cgaz_featureclass%2Cstate_alpha%2Ccounty_name%2Cisunknowncoords&returnGeometry=true&outSR=4269&f=json",
+        "sha256": "448df95d31240352638d65643e67ede8c88a143216fb02098eff176790f36299",
+        "featureCount": 1
+      },
+      {
+        "sourceLayer": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3",
+        "query": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3/query?where=gaz_name%3D%27Grassy+Butte%27+AND+state_alpha%3D%27ND%27&outFields=gaz_id%2Cgaz_name%2Cgaz_featureclass%2Cstate_alpha%2Ccounty_name%2Cisunknowncoords&returnGeometry=true&outSR=4269&f=json",
+        "sha256": "ead7397a0863aa9fff7400bb95d3de1fd18dd7c6dd93459732ac89129315d72c",
+        "featureCount": 1
+      },
+      {
+        "sourceLayer": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3",
+        "query": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3/query?where=gaz_name%3D%27Manning%27+AND+state_alpha%3D%27ND%27&outFields=gaz_id%2Cgaz_name%2Cgaz_featureclass%2Cstate_alpha%2Ccounty_name%2Cisunknowncoords&returnGeometry=true&outSR=4269&f=json",
+        "sha256": "db64e8d90101d54d296fe1c1ac15e937b65084fd65cbb0647806392f965eb6ce",
+        "featureCount": 1
+      },
+      {
+        "sourceLayer": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3",
+        "query": "https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3/query?where=gaz_name%3D%27Twin+Buttes%27+AND+state_alpha%3D%27ND%27&outFields=gaz_id%2Cgaz_name%2Cgaz_featureclass%2Cstate_alpha%2Ccounty_name%2Cisunknowncoords&returnGeometry=true&outSR=4269&f=json",
+        "sha256": "9b8d43356ba9410ca0b80d108430ffafbee6e2b0934eda9bb5771a9310cf18f2",
+        "featureCount": 1
       }
     ],
-    "sha256": "fae75d4ee3b5f967560eec8fcb4bf6e52a7a8f5d7a61af1c77be38e3fed2b605",
+    "sha256": "fb0a5f6004e5a05192e0b14965500397cc5cb3b1ee7a4f781107a84a9e75a32a",
     "labelBehavior": "Labels remain anchored to their reference point. Higher-priority labels are retained when labels overlap; zooming reveals more communities."
   },
   "purpose": "Geographic orientation for the Bakken well viewer; this state boundary does not represent the Bakken formation or field extent.",

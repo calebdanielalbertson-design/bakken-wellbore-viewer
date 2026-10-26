@@ -36,7 +36,7 @@ export function createShowcase(api){
       const identity=w=>`${w.permit}|${w.api}|${w.branch}`,selected=new Set(s.manifest.wells.map(identity)),include=fullManifest.wells.map(w=>!selected.has(identity(w)));let count=0;for(let i=0;i<raw.length;i+=8)if(include[raw[i+7]])count++;
       const vertices=new Float32Array(count*6);let p=0;for(let i=0;i<raw.length;i+=8)if(include[raw[i+7]]){vertices.set(raw.subarray(i,i+6),p);p+=6}
       context=new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(vertices,3)),new THREE.LineBasicMaterial({color:'#63b8cb',transparent:true,opacity:.8,depthWrite:false}));context.name='Unpickable statewide tour context';s.scene.add(context);
-      const cities=await json('./data/reference/places.geojson');places=cities.features.map(f=>({name:f.properties.BASENAME||f.properties.NAME,point:new THREE.Vector3(...projectReference(...f.geometry.coordinates,s.manifest))}));
+      const cities=await json('./data/reference/places.geojson');places=cities.features.filter(f=>(f.properties.labelPriority??100)>=70).map(f=>({name:f.properties.BASENAME||f.properties.NAME,point:new THREE.Vector3(...projectReference(...f.geometry.coordinates,s.manifest))}));
       // Preload every advertised numeric mode before the recording starts.
       for(const key of Object.keys(METRICS))await s.surveyColors.setMode(key);
       await s.surveyColors.setMode('section');

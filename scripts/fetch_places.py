@@ -37,16 +37,20 @@ NAMES = [
     'Ray', 'Crosby', 'Parshall', 'Belfield', 'Arnegard', 'Mandaree', 'Keene',
     'Portal', 'Epping', 'Grenora', 'Columbus', 'Lignite', 'Bowbells', 'Kenmare', 'Fortuna', 'Wildrose',
     'White Earth', 'Ross', 'Plaza', 'Halliday', 'Dunn Center', 'South Heart',
+    'Trenton', 'Alamo', 'Ambrose', 'Noonan', 'Tolley', 'Mohall', 'Berthold', 'Ryder', 'Makoti',
+    'Four Bears Village', 'Twin Buttes', 'Taylor', 'Zahl', 'Grassy Butte', 'Manning',
 ]
 # Higher priority labels win when labels would overlap; zooming in makes room for the rest.
 PRIORITY = {
     **dict.fromkeys(['Williston', 'Dickinson', 'Minot', 'Bismarck'], 100),
-    **dict.fromkeys(['Watford City', 'Stanley', 'Tioga', 'Powers Lake', 'Alexander', 'Cartwright'], 90),
-    **dict.fromkeys(['New Town', 'Killdeer', 'Ray', 'Crosby', 'Parshall', 'Portal', 'Kenmare'], 70),
+    **dict.fromkeys(['Watford City', 'Stanley', 'Tioga', 'Powers Lake', 'Alexander', 'Arnegard', 'Cartwright',
+                     'Ray', 'Crosby', 'Portal'], 90),
+    **dict.fromkeys(['New Town', 'Killdeer', 'Parshall', 'Kenmare', 'Epping', 'Keene', 'Mandaree'], 70),
 }
 DEFAULT_PRIORITY = 50
 # Communities with no Census place record; located from USGS GNIS (county checked).
-GNIS_ONLY = {'Cartwright': 'McKenzie', 'Keene': 'McKenzie'}
+GNIS_ONLY = {'Cartwright': 'McKenzie', 'Keene': 'McKenzie', 'Zahl': 'Williams', 'Grassy Butte': 'McKenzie',
+             'Manning': 'Dunn', 'Twin Buttes': 'Dunn'}
 
 CENSUS = 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Places_CouSub_ConCity_SubMCD/MapServer'
 GNIS = 'https://carto.nationalmap.gov/arcgis/rest/services/geonames/MapServer/3'
@@ -102,6 +106,26 @@ def gnis_place(name: str, county: str, sources: list) -> dict:
             'geometry': {'type': 'Point', 'coordinates': points[0]}}
 
 
+def update_metadata(provenance: dict, sources: list) -> None:
+    """Keep the places section of each viewer's reference metadata.json in step with places.geojson."""
+    gnis = ', '.join(GNIS_ONLY)
+    census_count = len(NAMES) - len(GNIS_ONLY)
+    for target in TARGETS:
+        path = target / 'metadata.json'
+        if not path.exists():
+            continue
+        metadata = json.loads(path.read_text(encoding='utf-8'))
+        metadata['attribution'] = (f'State boundary and Census place internal points: U.S. Census Bureau, TIGERweb. '
+                                   f'{gnis} populated-place locations: USGS GNIS. State geometry generalized for display.')
+        metadata['places'].update({
+            'retrievedAt': provenance['retrievedAt'], 'featureCount': provenance['featureCount'], 'names': NAMES,
+            'positioning': (f'Census internal points for {census_count} communities; GNIS official feature locations for {gnis}. '
+                            'These are orientation references, not surveyed landmarks or municipal boundaries.'),
+            'sources': [{k: s[k] for k in ('sourceLayer', 'query', 'sha256', 'featureCount')} for s in sources],
+            'sha256': provenance['sha256']})
+        path.write_text(json.dumps(metadata, indent=2) + '\n', encoding='utf-8')
+
+
 def main() -> int:
     if len(set(NAMES)) != len(NAMES):
         raise SystemExit('NAMES contains duplicates')
@@ -134,6 +158,7 @@ def main() -> int:
                   'Communities in GNIS_ONLY have no matching Census place and use GNIS official populated-place locations in NAD83.',
                   'Points are for geographic orientation; no municipal or oil-field boundaries are implied.']}
     PROVENANCE.write_text(json.dumps(provenance, indent=2) + '\n', encoding='utf-8')
+    update_metadata(provenance, sources)
     print(f'Wrote {len(features)} places to {len(TARGETS)} viewers; provenance in {PROVENANCE.relative_to(REPO)}')
     return 0
 
