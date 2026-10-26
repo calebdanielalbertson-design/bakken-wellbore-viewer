@@ -47,6 +47,7 @@ $('wellContextMode').onchange=e=>setWellContext(e.target.value);
 $('mobileWellContext').onchange=e=>setWellContext(e.target.value);
 $('surveyColorMode').addEventListener('change',()=>setWellContext('normal'));
 let showcase=null;
+if(!new URLSearchParams(location.search).has('showcase'))import('./highlights.js').then(({installHighlights})=>installHighlights({state:()=>({camera,controls,manifest,planActive}),fit,select,clearSelection,orientView,surveyColors,setWellContext})).catch(e=>console.warn('Highlights unavailable:',e));
 if(new URLSearchParams(location.search).has('showcase'))import(new URLSearchParams(location.search).get('showcase')==='tour'?'./tour.js':'./showcase.js').then(({createShowcase})=>{showcase=createShowcase({state:()=>({renderer,scene,camera,controls,navigation,manifest,detail,busy,surveyColors,production,reference,root}),read,fit,clearSelection,referenceReady:()=>referenceReady,hideGrid(){if(grid)grid.visible=false;},hideReference(){reference.setVisible(false);dsu.setVisible(false);if(grid)grid.visible=false;}})});
 function onDSUSelection(unit,{interactive=true}={}){
   dsuWells.select(unit);
