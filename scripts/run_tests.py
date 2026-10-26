@@ -29,6 +29,7 @@ SUITES = [
     ('backend: python unit tests', 'backend', [PY, '-m', 'unittest', 'discover', '-s', 'tests'], False),
     ('backend: profiles frontend', 'backend/profiles', ['node', 'test_profiles.mjs'], False),
     ('backend: activity model', 'backend/viewer', ['node', 'test_activity.mjs'], False),
+    ('site: highlights', 'site', ['node', 'test_highlights.mjs'], False),
     ('site: release validator (code, pages, links)', 'site', [PY, 'validate_release.py'], False),
     ('site: release validator (with data)', 'site', [PY, 'validate_release.py', '--require-data'], True),
     ('site: public asset transport', 'site', ['node', 'test_public_transport.mjs'], True),

@@ -1,0 +1,27 @@
+/* Highlights: guided camera flights. Colors follow style.css. */
+.highlights-open{border-color:#86e3d7;color:#b2f7ec;font-size:12px;font-weight:600}
+.highlights-open:disabled{opacity:.5;cursor:default}
+.highlights-panel{position:absolute;z-index:30;top:62px;right:18px;width:min(360px,calc(100% - 36px));max-height:calc(100% - 90px);overflow:auto;background:#0c1e2ff2;border:1px solid #2f4a5d;border-radius:12px;padding:16px;box-shadow:0 12px 40px #0009}
+.highlights-head{display:flex;justify-content:space-between;align-items:center}
+.highlights-head h2{margin:0;font-size:17px;font-weight:600}
+.highlights-close{padding:2px 10px;font-size:20px;line-height:1.2;background:none;border-color:transparent}
+.highlights-panel .caption{margin:6px 0 12px;font-size:13px;line-height:1.5;color:#a0b7c7}
+.highlights-cards{display:grid;gap:10px}
+.highlight-card{display:grid;gap:4px;text-align:left;padding:13px 14px;border-radius:10px;background:#142a3c;border-color:#385062}
+.highlight-card strong{font-size:15px;font-weight:600;color:#e4eef6}
+.highlight-card span:last-child{font-size:13px;color:#a0b7c7;line-height:1.4}
+.highlight-card:hover,.highlight-card:focus-visible{background:#1d3a50;border-color:#86e3d7}
+.highlight-caption{position:absolute;z-index:25;left:50%;bottom:58px;transform:translateX(-50%);width:min(560px,calc(100% - 32px));background:#0c1e2ff0;border:1px solid #2f4a5d;border-radius:12px;padding:12px 14px 12px;box-shadow:0 10px 32px #0008}
+.highlight-progress{display:flex;gap:6px;margin-bottom:8px}
+.highlight-progress span{flex:1;height:3px;border-radius:2px;background:#2b4152;transition:background .4s}
+.highlight-progress span.on{background:#86e3d7}
+.highlight-text{margin:0 0 10px;font-size:14px;line-height:1.5;color:#dfeaf2;min-height:3em}
+.highlight-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.highlight-actions button,.highlight-actions .button{font-size:13px;padding:7px 12px;text-decoration:none}
+@media(max-width:800px){
+  .highlights-panel{top:auto;bottom:12px;right:12px;left:12px;width:auto;max-height:70%}
+  .highlight-caption{bottom:calc(env(safe-area-inset-bottom,0px) + 64px);width:calc(100% - 20px)}
+  .highlight-text{font-size:15px}
+  .highlight-actions button,.highlight-actions .button{flex:1;min-height:40px}
+}
+@media(prefers-reduced-motion:reduce){.highlight-progress span{transition:none}}
