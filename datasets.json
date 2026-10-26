@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "about": "Prepared datasets kept out of Git. Fetch with: python scripts/datasets.py fetch",
+  "datasets": {
+    "site-viewer-data": {
+      "path": "site/dist/viewer/data",
+      "description": "Public site viewer data as released on bakkensubsurface.com (split, gzip-compressed parts plus reference and showcase files).",
+      "version": "2026-10-17",
+      "key": "datasets/site-viewer-data/2026-10-17/site-viewer-data.tar.gz",
+      "sha256": "faadfb961c59ec95c3d45a992784e8e20c45bdd248cfcc6c756cd2ad0afe2d13",
+      "bytes": 227871698,
+      "files": 456,
+      "contentBytes": 228767115
+    },
+    "explorer-full-dataset": {
+      "path": "explorer/full-dataset",
+      "description": "Full North Dakota survey geometry, metrics, operators, well names and production for the development viewer.",
+      "version": "2026-10-17",
+      "key": "datasets/explorer-full-dataset/2026-10-17/explorer-full-dataset.tar.gz",
+      "sha256": "c57ab24a61199be199b4d141f6ecc590b58153611adabc1746165858d885e62c",
+      "bytes": 216257887,
+      "files": 447,
+      "contentBytes": 350453462
+    },
+    "explorer-viewer-data": {
+      "path": "explorer/viewer/data",
+      "description": "Development viewer layers: DSUs, footage inventory, reference plane, sample and showcase datasets.",
+      "version": "2026-10-17",
+      "key": "datasets/explorer-viewer-data/2026-10-17/explorer-viewer-data.tar.gz",
+      "sha256": "367185cb1f3cd3c3330b4ef7d8fbef73ae7dd1b6e1f987f4219000846d5e0ed9",
+      "bytes": 13059682,
+      "files": 46,
+      "contentBytes": 60449187
+    },
+    "explorer-gamma-data": {
+      "path": "explorer/gamma-data",
+      "description": "Gamma-ray and cement-bond log catalogs, survey index and averaged cache used by explorer/serve.py.",
+      "exclude": [
+        "*.py"
+      ],
+      "version": "2026-10-17",
+      "key": "datasets/explorer-gamma-data/2026-10-17/explorer-gamma-data.tar.gz",
+      "sha256": "acac33c2917c30767b195d6cdbf3fd6d06ecb3e0ac15b3c32129b1f6c80a3657",
+      "bytes": 21520474,
+      "files": 1876,
+      "contentBytes": 120829516
+    }
+  }
+}

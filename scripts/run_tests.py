@@ -19,6 +19,7 @@ PY = sys.executable
 
 # (name, working directory, command, needs prepared data)
 SUITES = [
+    ('scripts: dataset tool', 'scripts', [PY, '-m', 'unittest', 'discover', '-s', 'tests'], False),
     ('explorer: python unit tests', 'explorer', [PY, '-m', 'unittest', 'discover', '-s', 'tests'], False),
     ('explorer: dsu', 'explorer', ['node', 'tests/dsu.mjs', '--no-data'], False),
     ('explorer: dsu production', 'explorer', ['node', 'tests/dsu-production.mjs'], False),
