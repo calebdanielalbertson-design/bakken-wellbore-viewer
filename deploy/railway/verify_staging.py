@@ -3,9 +3,12 @@ import json
 import subprocess
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
+import sys
 
-ROOT = Path(__file__).resolve().parents[2]
-CLI = ROOT / "work/railway-tools/node_modules/@railway/cli/bin/railway.exe"
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'backend'))
+import workspace_paths as wp
+ROOT = wp.REPO
+CLI = wp.railway_cli()
 TARGET = ["-p", "e2cc4cb2-b22f-4ea4-99ed-329befa4cf60", "-e", "78d48523-3b40-4010-8d4f-10c04d69fe23", "-s", "f73fc3a9-e7ce-451f-a985-e46e08040ba0"]
 
 def read(args):

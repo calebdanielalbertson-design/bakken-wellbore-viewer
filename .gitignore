@@ -1,7 +1,8 @@
 # Large prepared data (not versioned in Git)
 data/
 full-dataset/
-gamma-data/
+explorer/gamma-data/*
+!explorer/gamma-data/*.py
 local-data/
 site/dist/viewer/data/
 *.tar.gz
@@ -13,6 +14,10 @@ site/dist/viewer/data/
 .env.*
 local-settings.json
 .openai/
+!site/.openai/
+
+# Scratch area for refresh runs and deploy bundles
+work/
 
 # Deployment run records
 backend/railway-*.json

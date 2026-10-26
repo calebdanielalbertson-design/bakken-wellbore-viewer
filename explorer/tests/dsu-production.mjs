@@ -60,7 +60,7 @@ class Element{
  append(...items){this.children.push(...items);}replaceChildren(...items){this._text='';this.children=items;}setAttribute(name,value){this.attributes[name]=String(value);}
 }
 const $=id=>{if(!elements.has(id)){const e=new Element();e.id=id;}return elements.get(id);};
-globalThis.document={getElementById:$,createElement:tag=>new Element(tag),createElementNS:(_,tag)=>new Element(tag),addEventListener(){}};
+globalThis.document={getElementById:$,createElement:tag=>new Element(tag),createElementNS:(_,tag)=>new Element(tag),addEventListener(){},dispatchEvent(){return true}};
 const texts=element=>element.textContent;
 const history=new Element();
 const historyProps={title:'Synthetic DSU',totalWells:2,matchedWells:1,months:metadata.months,summaries:productionModel.summaries,period:{start:0,end:3},month:1};

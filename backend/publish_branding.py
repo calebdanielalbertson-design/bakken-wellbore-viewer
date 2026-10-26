@@ -8,7 +8,8 @@ import json
 from branding import apply_branding
 
 ROOT = Path(__file__).resolve().parent
-SITE = ROOT.parents[1] / 'sites/bakken-subsurface'
+import workspace_paths as wp
+SITE = wp.SITE_DIST.parent
 DIST = SITE / 'dist'
 
 def sha(path):

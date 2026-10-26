@@ -2,6 +2,7 @@
 import argparse,hashlib,json,shutil
 from pathlib import Path
 from wells_store import bundle,sha_file
+import workspace_paths as wp
 
 BASE=Path(__file__).resolve().parent
 FILES=['backend.py','import_snapshot.py','schema_postgres.sql','wells_backend.py','wells_store.py',
@@ -22,7 +23,7 @@ CMD ["sh", "-c", "exec gunicorn --bind \\\"0.0.0.0:${PORT:-8080}\\\" --workers 2
 def prepare(release,destination):
     source,data,fingerprint=bundle(release)
     destination=Path(destination).resolve()
-    allowed=BASE.parents[1]/'work/connected-wells-deploy'
+    allowed=wp.WORK/'connected-wells-deploy'
     if not destination.is_relative_to(allowed.resolve()) or destination==allowed.resolve() or destination.exists():
         raise ValueError('Choose a new folder beneath work/connected-wells-deploy.')
     contents={name:(BASE/name).read_bytes() for name in FILES}

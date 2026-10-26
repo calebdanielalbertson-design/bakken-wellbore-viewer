@@ -1,8 +1,8 @@
 import hashlib,json,secrets
-from well_operations import ROOT,TARGET,invoke,probe,graphql,SERVICE,ENV
+from well_operations import ROOT,TARGET,invoke,probe,graphql,SERVICE,ENV,wp
 state=probe()
 if state['checks']['owner_reference_present']: raise SystemExit('Unexpected owner access.')
-folder=ROOT/'work/connected-wells-deploy/20261022-protected-preview'
+folder=wp.WORK/'connected-wells-deploy/20261022-protected-preview'
 manifest=json.loads((folder/'BUNDLE-MANIFEST.json').read_text())
 raw=(folder/'staging_gateway.py').read_bytes()
 manifest['files']['staging_gateway.py']={'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)}

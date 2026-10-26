@@ -2,12 +2,12 @@
 import hashlib
 import json
 import secrets
-from well_operations import ROOT,TARGET,invoke,probe,set_hook,graphql,SERVICE,ENV
+from well_operations import ROOT,TARGET,invoke,probe,set_hook,graphql,SERVICE,ENV,wp
 
 state=probe()
 if state['checks']['owner_reference_present'] or state['instance']['preDeployCommand']:
     raise SystemExit('Unexpected existing recovery settings.')
-bundle=ROOT/'work/connected-wells-deploy/20261022-recovery'
+bundle=wp.WORK/'connected-wells-deploy/20261022-recovery'
 manifest=json.loads((bundle/'BUNDLE-MANIFEST.json').read_text())
 raw=(bundle/'staging_rotate_reader.py').read_bytes()
 manifest['files']['staging_rotate_reader.py']={'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)}

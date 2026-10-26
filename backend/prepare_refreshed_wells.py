@@ -17,7 +17,7 @@ sys.dont_write_bytecode = True
 import build_well_bundle as builder
 import refresh_gis as refresh
 
-DEFAULT_AUDIT = builder.ROOT / 'work/nd-refresh-2026-10-17/production/production-audit.sqlite'
+DEFAULT_AUDIT = builder.wp.WORK / 'nd-refresh-2026-10-17/production/production-audit.sqlite'
 DEFAULT_PRODUCTION_META = builder.FULL / 'production.json'
 STEPS = ['geometry', 'metrics', 'section_scales', 'operators', 'well_names', 'dsu', 'membership']
 
@@ -183,7 +183,7 @@ def prepare(run_dir, *, output=None, execute=False, production_db=DEFAULT_AUDIT,
               'production_db': audit, 'production_meta': production, 'footage_path': None}
     destination = Path(output).resolve() if output else None
     if destination:
-        work = (builder.ROOT / 'work').resolve()
+        work = builder.wp.WORK.resolve()
         require(destination.is_relative_to(work) and destination != work and not destination.is_relative_to(root),
                 'Output must be a separate new child of the workspace work directory')
         require(not destination.exists(), 'Output must be a fresh directory')

@@ -1,0 +1,11 @@
+# Secret scanning config (used by the "Secret scan" check on every pull request).
+# Real credentials belong in Railway/Sites settings or local environment variables, never in Git.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Deliberately fake credentials used by unit tests"
+paths = [
+  '''^backend/tests/''',
+  '''^backend/test_staging_gateway\.py$''',
+]
