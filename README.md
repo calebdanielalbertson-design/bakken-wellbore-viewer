@@ -25,7 +25,15 @@ Useful entry points: `explorer/viewer/app.js` (viewer coordination), `explorer/c
 
 ## Data is not in Git
 
-Prepared datasets (`full-dataset/`, `gamma-data/`, `site/dist/viewer/data/`, backend `data/`) are hundreds of MB to several GB and are excluded. A fresh clone shows the code but not a populated viewer. Either regenerate the data from DMR downloads with the `explorer/prepare_*.py` scripts (see `explorer/README.md`) or get a copy of the prepared datasets from Caleb.
+Prepared datasets are hundreds of MB, so they live in a private S3-compatible bucket (Cloudflare R2) as versioned archives. `datasets.json` records each archive's version and SHA-256, so every clone gets exactly the data the code was tested with.
+
+```
+pip install -r scripts/requirements-data.txt
+python scripts/datasets.py status    # what's present locally
+python scripts/datasets.py fetch     # download, verify and install everything
+```
+
+Fetching needs bucket credentials in environment variables (ask Caleb for a read-only key). See [docs/data.md](docs/data.md) for the variables, publishing a new data version, and what each dataset holds. The backend databases are not published yet.
 
 ## Running locally
 

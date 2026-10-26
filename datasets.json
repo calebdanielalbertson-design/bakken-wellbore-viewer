@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "about": "Prepared datasets kept out of Git. Fetch with: python scripts/datasets.py fetch",
+  "datasets": {
+    "site-viewer-data": {
+      "path": "site/dist/viewer/data",
+      "description": "Public site viewer data as released on bakkensubsurface.com (split, gzip-compressed parts plus reference and showcase files)."
+    },
+    "explorer-full-dataset": {
+      "path": "explorer/full-dataset",
+      "description": "Full North Dakota survey geometry, metrics, operators, well names and production for the development viewer."
+    },
+    "explorer-viewer-data": {
+      "path": "explorer/viewer/data",
+      "description": "Development viewer layers: DSUs, footage inventory, reference plane, sample and showcase datasets."
+    },
+    "explorer-gamma-data": {
+      "path": "explorer/gamma-data",
+      "description": "Gamma-ray and cement-bond log catalogs, survey index and averaged cache used by explorer/serve.py.",
+      "exclude": ["*.py"]
+    }
+  }
+}
