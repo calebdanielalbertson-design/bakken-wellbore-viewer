@@ -153,7 +153,10 @@ def extract(archive: Path, destination: Path, *, expected_files: int | None = No
                 target = (staging / member.name).resolve()
                 if not target.is_relative_to(staging.resolve()) or not (member.isfile() or member.isdir()):
                     raise DataError(f'Unsafe archive entry refused: {member.name}')
-            tar.extractall(staging, filter='data')
+            # The checks above already refuse unsafe entries; the 'data' filter adds defence in depth
+            # on Python versions that have it (3.12+, and 3.10.12+/3.11.4+ backports).
+            options = {'filter': 'data'} if hasattr(tarfile, 'data_filter') else {}
+            tar.extractall(staging, **options)
         count = len(included_files(staging, list(exclude)))
         if expected_files is not None and count != expected_files:
             raise DataError(f'Archive held {count} files; datasets.json expects {expected_files}')
