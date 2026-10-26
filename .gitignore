@@ -4,6 +4,7 @@ data/
 !site/dist/eor/data/
 !site/dist/tours/data/
 full-dataset/
+!site/dist/full-dataset/
 explorer/gamma-data/*
 !explorer/gamma-data/*.py
 local-data/

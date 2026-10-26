@@ -1,0 +1,29 @@
+{
+  "downloadPage": "https://gis.dmr.nd.gov/gisdownload.asp",
+  "retrievedOn": "2026-10-17",
+  "sourceDate": "2026-10-17",
+  "archives": [
+    {
+      "name": "OGD_Wells.zip",
+      "url": "https://gis.dmr.nd.gov/downloads/oilgas/shapefile/OGD_Wells.zip",
+      "bytes": 3700870,
+      "sha256": "3ba686d7c9b65c1b9e1fa195e6f15ebbc3d86794e5f96d39f16407c7c914d52b"
+    },
+    {
+      "name": "OGD_Horizontals.zip",
+      "url": "https://gis.dmr.nd.gov/downloads/oilgas/shapefile/OGD_Horizontals.zip",
+      "bytes": 354422444,
+      "sha256": "8354ab90a82207abb13f7acdef98f182f0e75b3dc066860242702cb2d20663f6"
+    }
+  ],
+  "sourceCRS": "NAD83",
+  "origin": [
+    -102.99897097700921,
+    47.91137672734358
+  ],
+  "originPolicy": "Retained original dataset tangent-plane origin so reference plane and well logs remain aligned.",
+  "tvdPolicy": "Positive source TVD in feet displayed downward; no surface elevation correction.",
+  "classifier": "Existing classifier 2.0 with unchanged classifier-settings.json",
+  "geometryCommand": "python prepare_data.py OGD_Horizontals.dbf DATASET --tvd-sign positive --source-crs NAD83 --origin -102.99897097700921 47.91137672734358 --classifier-config classifier-settings.json",
+  "productionPolicy": "Existing provided production exports will be rejoined to refreshed geometry; GIS refresh does not extend production beyond supplied December 2024."
+}
