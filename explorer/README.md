@@ -331,6 +331,100 @@ The Python helper requires prepared station tiles and aligned MD metrics. The
 generated index/audit stays in ignored `viewer/data/dsu/`. Synthetic Node tests
 need no external data; optional prepared data can be checked with `--data PATH`.
 
+### NDIC order links
+
+The selected-DSU card can show the NDIC order history and the latest stated well
+allowance for the unit, taken from the local order queue's unit atlas
+(`local_order_queue/unit_atlas/data.json`). The DMR shapefile carries order
+numbers on only 9 of 10,573 DSUs, so links are geometric: each atlas footprint
+(land description + pool) is matched to source DSU polygons by plan-view
+intersection over union. A footprint at 95% or more is an exact match; 80–95% is
+a close match. Both are linked, to every DSU at or above 80%. Footprints at 50–80%
+go to the `review` list without a link.
+
+The unit allowance is the most recent dated latest event across its linked
+footprints, using the atlas's own latest-event order (date, then order number).
+Same-day conflicts stay without a value. `mixed` marks units whose footprints
+state different allowances. The card compares the allowance with the September
+model's capacity and assigned wells. **Color DSUs by → Wells allowed · NDIC
+orders** and **Show units → Units with an NDIC order allowance** use the same
+values. Allowances are machine-extracted from order text and not human-reviewed.
+A stated allowance does not prove that the order governs today.
+
+```sh
+python prepare_dsu_orders.py "C:/Users/User/Desktop/Cases and orders/local_order_queue/unit_atlas/data.json" viewer/data/dsu/drilling-spacing-units.geojson viewer/data/dsu/dsu-orders.json
+python serve.py --orders-db "C:/Users/User/Desktop/Cases and orders/local_order_queue/queue.sqlite3"
+```
+
+The atlas is read without changes. The link file records the atlas and DSU
+hashes, and the viewer rejects it for a different DSU snapshot. `--orders-db`
+opens the queue read-only so order numbers in the card open the source PDF.
+Without it the card still shows order numbers, but without links.
+
+#### Order history from the land index (preferred)
+
+`prepare_dsu_order_history.py` writes the same `dsu-orders.json` from the order
+queue's land index (`local_order_queue/land_index`) instead of the atlas. The
+index parses every extracted order's operative clauses into PLSS tracts,
+including quarter and half sections, units spanning townships, pooled units and
+pool zone tables, and builds their geometry from the BLM CadNSDI sections the
+atlas cached. Each DSU collects every order whose unit overlaps it (80% or more)
+and every Bakken zone table whose listed land contains it. A zone also has to
+match the DSU's acreage (within 15%) and, when the header says STANDUP or
+LAYDOWN, the DSU's plan-view shape.
+
+Events are ordered by order number. The latest order that states a count sets
+the allowance, and a later termination ends it. Within one order, a count stated
+for the unit itself outranks a zone-table count. A zone header without a count
+(for example `ZONE III (1280H-STANDUP)`) states acreage only and never sets or
+resets an allowance. The atlas read those headers as one well. The file also
+carries order applicants, which `prepare_dsu_headroom.py` uses for undrilled
+units.
+
+```sh
+cd "C:/Users/User/Desktop/Cases and orders/local_order_queue/land_index"
+python parse_all.py && python build_geometry.py
+cd -
+python prepare_dsu_order_history.py "C:/Users/User/Desktop/Cases and orders/local_order_queue/land_index/data/land_index.sqlite3" viewer/data/dsu/drilling-spacing-units.geojson viewer/data/dsu/dsu-orders.json
+```
+
+Rebuild `dsu-headroom.json` afterwards. Orders still pending in the queue are
+missing until they are extracted and the index is rebuilt.
+
+### Remaining permitted wells
+
+For each DSU with a single linked allowance, `prepare_dsu_headroom.py` subtracts
+the wells drilled there: distinct Bakken-pool wells with at least 660 ft of
+surveyed lateral inside, from `dsu-well-membership.json`. Wells whose Well Index
+`ProducedPools` names only another pool (Madison, Red River and others) are not
+counted. `SANISH` counts as Bakken, and blank or confidential pools are kept.
+
+Overlapping units share wells, so statewide totals assign each well to one unit:
+the one holding the largest share of its lateral, with ties going to the smaller
+unit. Units with a stated allowance take precedence over overlapping units without
+one. The card shows both counts. `remainingConservative` instead subtracts every
+well from every unit it crosses, giving a lower bound. Well Index `LOC`, `DRL`
+and confidential horizontal permits not yet in the survey count as pending, by
+surface location. The holder is the operator group of most wells in the unit, or
+the latest order's applicant for undrilled units. County comes from Well Index
+records in the order's sections.
+
+**Color DSUs by → Remaining permitted wells** maps the balance (red is over the
+allowance). **Show units → Units with remaining permitted wells** filters to units
+with room. **Remaining permitted wells · statewide** lists totals by county,
+operator or pool; clicking a row shows only its units. Units over their allowance
+carry a review hint. A large overlapping unit authorized for one or two wells
+usually means the underlying units' orders are not linked yet.
+
+```sh
+python prepare_dsu_headroom.py viewer/data/dsu/dsu-orders.json viewer/data/dsu/dsu-well-membership.json viewer/data/dsu/drilling-spacing-units.geojson full-dataset "C:/Users/User/Downloads/Well_Index (14).zip" "C:/Users/User/Desktop/Cases and orders/local_order_queue/unit_atlas/data.json" viewer/data/dsu/dsu-headroom.json
+```
+
+A positive balance is room under the latest linked order, not a verified
+drillable location. The holder is not legal unit operatorship. The
+`local_order_queue/well_inventory/` preview computed the same comparison per
+atlas footprint; this build replaces it inside the viewer.
+
 ### Inventory methodology review
 
 The September scenario is retained as a legacy model under review, not a current

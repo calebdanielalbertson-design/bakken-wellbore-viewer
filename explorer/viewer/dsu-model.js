@@ -7,6 +7,9 @@ export const DSU_PALETTES={
   confidence:['#440154','#482878','#3e4989','#31688e','#26828e','#1f9e89','#35b779','#6ece58','#b5de2b','#fde725']
 };
 DSU_PALETTES.remaining=DSU_PALETTES.acres;
+// Diverging over the headroom range [-5, 10]: index 2 sits at zero.
+DSU_PALETTES.headroom=['#b2182b','#ef8a62','#d9d9d9','#c7e9c0','#74c476','#31a354','#006d2c'];
+DSU_PALETTES.orderWells=['#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a'];
 export const DSU_ACREAGE_COLORS={640:'#18a8a6',1280:'#12ca2c',1920:'#277df4',2560:'#ff8b1f',3840:'#9d63de',5120:'#db4b94'};
 const finite=v=>typeof v==='number'&&Number.isFinite(v);
 export function zoneInterval(zone,topOffset=0,bottomOffset=0){
@@ -49,10 +52,14 @@ export function dsuScale(units,mode){
     const values=units.map(u=>u.properties.acres).filter(finite).sort((a,b)=>a-b);
     return [values[0]??0,Math.max((values[0]??0)+1,values[Math.floor((values.length-1)*.98)]??2560)];
   }
-  return mode==='remaining'?[0,16]:[0,100];
+  if(mode==='headroom')return [-5,10];
+  return mode==='remaining'||mode==='orderWells'?[0,16]:[0,100];
 }
 export function dsuValue(unit,mode){
   if(mode==='acres'||mode==='acreage')return unit.properties.acres;
+  // Order allowances come from the separate dsu-orders.json link file, attached as unit.orders.
+  if(mode==='orderWells')return unit.orders?.allowance?.wells??null;
+  if(mode==='headroom')return unit.headroom?.assignedBalance??null;
   const inventory=unit.properties.inventory;
   if(!inventory?.matched||inventory.underReview||!inventory.eligible)return null;
   return inventory[{remaining:'remainingWells',development:'developmentPercent',confidence:'confidence'}[mode]]??null;

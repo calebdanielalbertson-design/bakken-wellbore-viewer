@@ -19,7 +19,9 @@ const temporaryUrl=name=>pathToFileURL(path.join(temporary,name)).href;
 try{
 await fs.writeFile(path.join(temporary,'reference.mjs'),(await fs.readFile(path.join(viewerPath,'reference-plane.js'),'utf8')).replace("from 'three'",`from '${sourceUrl('vendor/three.module.js')}'`));
 await fs.writeFile(path.join(temporary,'model.mjs'),(await fs.readFile(path.join(viewerPath,'dsu-model.js'),'utf8')).replace("from 'three'",`from '${sourceUrl('vendor/three.module.js')}'`).replace("from './reference-plane.js'",`from '${temporaryUrl('reference.mjs')}'`));
-await fs.writeFile(path.join(temporary,'controller.mjs'),(await fs.readFile(path.join(viewerPath,'dsu.js'),'utf8')).replace("from 'three'",`from '${sourceUrl('vendor/three.module.js')}'`).replace("from './dsu-model.js'",`from '${temporaryUrl('model.mjs')}'`));
+await fs.copyFile(path.join(viewerPath,'dsu-orders.js'),path.join(temporary,'orders.mjs'));
+await fs.writeFile(path.join(temporary,'controller.mjs'),(await fs.readFile(path.join(viewerPath,'dsu.js'),'utf8')).replace("from 'three'",`from '${sourceUrl('vendor/three.module.js')}'`).replace("from './dsu-model.js'",`from '${temporaryUrl('model.mjs')}'`).replace("from './dsu-orders.js'",`from '${temporaryUrl('orders.mjs')}'`));
+const {attachDSUOrders}=await import(temporaryUrl('orders.mjs'));
 const {prepareDSUs,buildDSUPrisms,zoneInterval,dsuDisplayInterval,dsuScale,dsuValue,dsuColor,DSU_ACREAGE_COLORS}=await import(temporaryUrl('model.mjs'));
 const {projectReference}=await import(temporaryUrl('reference.mjs'));
 const {createDSUController}=await import(temporaryUrl('controller.mjs'));
@@ -190,10 +192,65 @@ if(hasData){
 class Element{constructor(){this.children=[];this.style={};this.value='';this.checked=false;this.textContent='';this.hidden=false;}append(...items){this.children.push(...items);}replaceChildren(...items){this.children=items;}setAttribute(){} }
 const elements=new Map(),$=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
 globalThis.document={getElementById:$,createElement:()=>new Element(),addEventListener(){},dispatchEvent(){return true}};
-globalThis.fetch=async()=>({ok:true,json:async()=>structuredClone(fixtures)});
+// Order links: one stated allowance on 'hole', none on the others.
+const orderHistory=[{date:'2011-05-01',order:'15000',case:'13000',event:'spacing',wells:2,documentId:7,clauses:['CURRENT_OPERATIVE:1:0']},
+  {date:'2014-03-01',order:'23000',case:'21000',event:'spacing',wells:8,documentId:9,clauses:['CURRENT_OPERATIVE:2:1']}];
+const orderLinks={version:1,atlas:{built:'2026-10-29T16:14:21'},dsu:{featureCount:fixtures.features.length},summary:{footprints:1,dsusWithAllowance:1},
+  units:{hole:{allowance:{wells:8,order:'23000',case:'21000',date:'2014-03-01',qualifier:'stated',mixed:false,footprints:1},
+    footprints:[{footprint:'fp',pool:'Test-Bakken',zone:'Zone I',acres:1280,iou:.98,match:'exact',latest:orderHistory[1],history:orderHistory}]}}};
+{
+  const probe=[{id:'hole'},{id:'multipart'}];
+  assert.throws(()=>attachDSUOrders(probe,orderLinks),/different DSU snapshot/);
+  assert.throws(()=>attachDSUOrders(probe,{...orderLinks,dsu:{featureCount:2},units:{missing:{}}}),/not installed/);
+  const meta=attachDSUOrders(probe,{...orderLinks,dsu:{featureCount:2}});
+  assert.equal(meta.linked,1);assert.equal(probe[0].orders.allowance.wells,8);assert.equal(probe[1].orders,null);
+  assert.equal(dsuValue(probe[0],'orderWells'),8);assert.equal(dsuValue(probe[1],'orderWells'),null);
+}
+const headroomRow={name:'Testcounty',units:1,allowed:8,assignedWells:5,pending:0,remaining:3,remainingAfterPending:3,overAllowance:0,unitsWithRoom:1};
+const headroomFile={version:1,dsu:{featureCount:fixtures.features.length},survey:{sourceDate:'2026-10-17'},
+  totals:{units:1,allowed:8,assignedWells:5,pending:0,remaining:3,remainingAfterPending:3,remainingConservative:2,overAllowance:0,unitsWithRoom:1},
+  units:{hole:{allowed:8,order:'23000',wellsInside:6,assignedWells:5,pending:0,balance:2,assignedBalance:3,holder:'Group A',holderSource:'wells',county:'Testcounty',pool:'Test-Bakken',acres:1280,review:null}},
+  rollups:{county:[headroomRow],operator:[{...headroomRow,name:'Group A'}],pool:[{...headroomRow,name:'Test-Bakken'}]}};
+const fixtureFetch=source=>async url=>{const u=String(url);
+  if(u.includes('dsu-orders.json'))return{ok:true,json:async()=>structuredClone(orderLinks)};
+  if(u.includes('dsu-headroom.json'))return{ok:true,json:async()=>structuredClone(headroomFile)};
+  if(u.includes('/api/orders/status'))return{ok:true,json:async()=>({available:true})};
+  return{ok:true,json:async()=>structuredClone(source)};};
+const allText=node=>typeof node==='string'?node:(node.textContent||'')+' '+(node.children||[]).map(allText).join(' ');
+globalThis.fetch=fixtureFetch(fixtures);
 const root=new THREE.Group();root.scale.y=8;const messages=[],focuses=[];
 const controller=createDSUController(root,{say:message=>messages.push(message),focus:b=>focuses.push(b)});
 controller.setDataset(manifest);await controller.setVisible(true);$('dsuInspect').checked=true;
+assert.match($('dsuStatus').textContent,/1 linked to NDIC orders/);
+await controller.openUnit('hole',false);
+{
+  const panel=allText($('dsuSelection'));
+  assert.match(panel,/NDIC ORDERS/);assert.match(panel,/Latest order allows 8 wells/);assert.match(panel,/Order 23000/);
+  const links=[];const walk=n=>{if(n&&typeof n==='object'){if(n.href)links.push(n.href);(n.children||[]).forEach(walk)}};walk($('dsuSelection'));
+  assert.ok(links.includes('/api/orders/document?id=9'),'order rows link to the local PDF route');
+  assert.match(panel,/Room for 3 more wells/);assert.match(panel,/also cross an overlapping unit/);
+}
+assert.match($('dsuHeadroomTotals').textContent,/3 wells of room after 0 pending permits/);
+{
+  const rows=$('dsuRollupTable').children[0].children[0].children;assert.equal(rows.length,2,'header plus one county row');
+  rows[1].onclick();
+  const mesh=()=>root.children.find(child=>child.name==='Approximate DSU zones').children.find(child=>child.isMesh);
+  assert.equal(mesh().geometry.attributes.position.count,buildDSUPrisms([units[0]],{layout:'nested'}).geometry.attributes.position.count,'county row keeps only its units');
+  assert.match(messages.at(-1),/Showing units in Testcounty/);
+  $('dsuRollupTable').children[0].children[0].children[1].onclick();assert.match(messages.at(-1),/Showing all DSUs/);
+}
+assert.equal(dsuValue({headroom:{assignedBalance:-2},properties:{}},'headroom'),-2);
+await controller.openUnit('multipart',false);assert.match(allText($('dsuSelection')),/No processed order footprint/);
+$('dsuFilter').onchange({target:{value:'ordered'}});
+assert.equal(root.children.find(child=>child.name==='Approximate DSU zones').children.find(child=>child.isMesh).geometry.attributes.position.count,buildDSUPrisms([units[0]],{layout:'nested'}).geometry.attributes.position.count,'ordered filter keeps only units with an allowance');
+$('dsuFilter').onchange({target:{value:'all'}});
+$('dsuColor').onchange({target:{value:'orderWells'}});assert.match($('dsuLegend').textContent,/wells allowed by the latest linked order/);
+$('dsuColor').onchange({target:{value:'headroom'}});assert.match($('dsuLegend').textContent,/room for 1–10\+ more wells/);
+$('dsuFilter').onchange({target:{value:'room'}});
+assert.equal(root.children.find(child=>child.name==='Approximate DSU zones').children.find(child=>child.isMesh).geometry.attributes.position.count,buildDSUPrisms([units[0]],{layout:'nested'}).geometry.attributes.position.count,'room filter keeps units with a positive balance');
+$('dsuFilter').onchange({target:{value:'all'}});
+$('dsuColor').onchange({target:{value:'acreage'}});
+controller.clearSelection();
 const camera=new THREE.OrthographicCamera(-6000,6000,6000,-6000,.1,100000);
 camera.position.set(0,10000,0);camera.up.set(0,0,-1);camera.lookAt(0,-1000,0);camera.updateProjectionMatrix();camera.updateMatrixWorld();
 const rect={left:0,top:0,width:1000,height:1000};
@@ -238,7 +295,7 @@ assert.equal(controller.inspecting(),false);
 
 // A delayed prior dataset fetch cannot overwrite a newer dataset projection.
 let releaseFirst,fetches=0;
-globalThis.fetch=async()=>{fetches++;if(fetches===1)await new Promise(resolve=>releaseFirst=resolve);return{ok:true,json:async()=>structuredClone(fixtures)};};
+globalThis.fetch=async url=>{if(!String(url).includes('drilling-spacing-units'))return{ok:false};fetches++;if(fetches===1)await new Promise(resolve=>releaseFirst=resolve);return{ok:true,json:async()=>structuredClone(fixtures)};};
 controller.setDataset(manifest);const oldLoad=controller.setVisible(true);await Promise.resolve();
 const shifted={sourceCRS:'NAD83',origin:[lon+.5,lat]};controller.setDataset(shifted);await controller.setVisible(true);
 const group=root.children.find(child=>child.name==='Approximate DSU zones');
@@ -250,7 +307,7 @@ controller.setDataset(null);assert.equal(group.children.length,0);assert.equal(c
 // Overlapping source records remain independently selectable, including identical footprints.
 const duplicate=structuredClone(fixtures.features[0]);duplicate.id=duplicate.properties.id='overlap';duplicate.properties.sourceRecord='overlap';
 const overlapping={...fixtures,features:[fixtures.features[0],duplicate]};
-globalThis.fetch=async()=>({ok:true,json:async()=>structuredClone(overlapping)});
+globalThis.fetch=async url=>String(url).includes('drilling-spacing-units')?{ok:true,json:async()=>structuredClone(overlapping)}:{ok:false};
 const overlapRoot=new THREE.Group();overlapRoot.scale.y=8;
 const overlapController=createDSUController(overlapRoot,{say(){},focus(){}});
 overlapController.setDataset(manifest);await overlapController.setVisible(true);$('dsuInspect').checked=true;
@@ -261,7 +318,7 @@ const overlapGroup=overlapRoot.children.find(child=>child.name==='Approximate DS
 selectedButton().onclick();assert.equal($('dsuFilter').value,'selected');
 assert.equal(overlapGroup.children.find(child=>child.isMesh).geometry.attributes.position.count,buildDSUPrisms([units[0]],{layout:'nested'}).geometry.attributes.position.count);
 overlapController.setDataset(null);assert.equal($('dsuFilter').value,'all');assert.equal(overlapGroup.children.length,0);
-console.log(`PASS: DSU holes/multipart/concavity, nested bands/fallback/source preservation, acreage colors, lifted source picking, triangle owners, depth offsets/root scaling, zero vs missing/review, overlap selection/isolation, visibility and stale dataset replacement; ${realSummary}.`);
+console.log(`PASS: DSU holes/multipart/concavity, nested bands/fallback/source preservation, acreage colors, lifted source picking, triangle owners, depth offsets/root scaling, zero vs missing/review, overlap selection/isolation, NDIC order links/filter/color, visibility and stale dataset replacement; ${realSummary}.`);
 }finally{
   // Validate the resolved temporary target before recursive cleanup on Windows.
   const resolved=await fs.realpath(temporary);

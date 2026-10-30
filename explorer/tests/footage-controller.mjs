@@ -15,7 +15,8 @@ try {
 for(const [source,target,replacements] of [
   ['reference-plane.js','reference.mjs',[]],
   ['dsu-model.js','dsu-model.mjs',[['./reference-plane.js','reference.mjs']]],
-  ['dsu.js','dsu.mjs',[['./dsu-model.js','dsu-model.mjs']]],
+  ['dsu-orders.js','dsu-orders.mjs',[]],
+  ['dsu.js','dsu.mjs',[['./dsu-model.js','dsu-model.mjs'],['./dsu-orders.js','dsu-orders.mjs']]],
   ['footage-model.js','footage-model.mjs',[]],
   ['footage.js','footage.mjs',[['./dsu-model.js','dsu-model.mjs'],['./footage-model.js','footage-model.mjs']]]
 ]) {
