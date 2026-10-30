@@ -17,7 +17,7 @@ ROOT=pathlib.Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('headroom_builder',ROOT.parent/'prepare_dsu_headroom.py')
 builder=importlib.util.module_from_spec(spec); spec.loader.exec_module(builder)
 
-FIELDS=['FileNo','CurrentOperator','CountyName','Township','Range','Section','ProducedPools','Wellbore','WellStatus','Latitude','Longitude']
+FIELDS=['FileNo','CurrentOperator','CountyName','Township','Range','Section','ProducedPools','Wellbore','WellStatus','Latitude','Longitude','SpudDate']
 
 
 def rect(x0,y0,x1,y1):
@@ -29,10 +29,14 @@ def member(permit,inside,fraction,branches):
             'intersectingBranchIds':branches,'insideFt':inside,'totalFt':inside/fraction,'fraction':fraction}
 
 
-def link(wells,order='30000',mixed=False,township=150,sections=(1,12)):
-    return {'allowance':{'wells':wells,'order':order,'case':'1','date':'2020-01-01','qualifier':'stated','mixed':mixed,'footprints':1},
+def link(wells,order='30000',mixed=False,township=150,sections=(1,12),history=None,date='2020-01-01'):
+    return {'allowance':{'wells':wells,'order':order,'case':'1','date':date,'qualifier':'stated','mixed':mixed,'footprints':1},
             'footprints':[{'footprint':'fp-'+order,'pool':'Test-Bakken','zone':'Zone I','acres':1280,'iou':1,'match':'exact',
-                           'land':{'township':township,'range':100,'sections':list(sections)},'latest':{},'history':[]}]}
+                           'land':{'township':township,'range':100,'sections':list(sections)},'latest':{},'history':history or []}]}
+
+
+def event(order,date,event='spacing',wells=None,verb='designated'):
+    return {'order':str(order),'date':date,'event':event,'wells':wells,'verb':verb}
 
 
 class HeadroomTests(unittest.TestCase):
@@ -77,13 +81,6 @@ class HeadroomTests(unittest.TestCase):
         self.assertEqual(result['totals']['remaining'],6)
         self.assertEqual(result['totals']['remainingConservative'],5)
 
-    def test_allowance_unit_takes_precedence_over_overlap_without_one(self):
-        result=self.run_build([('governed',rect(0,0,2,2),2560),('plain',rect(0,0,1,2),1280)],{'governed':link(1)},
-            {'governed':[member(1,9000,1,[0]),member(2,9000,1,[1])],'plain':[member(1,9000,1,[0]),member(2,9000,1,[1])]},[])
-        u=result['units']['governed']
-        self.assertEqual((u['assignedWells'],u['assignedBalance'],u['review']),(2,-1,'overlapping_unit_small_allowance'))
-        self.assertEqual(result['totals']['wellsAssignedToUnitsWithoutAllowance'],0)
-
     def test_mixed_or_missing_allowance_is_omitted(self):
         result=self.run_build([('a',rect(0,0,1,2),1280),('b',rect(3,0,4,2),1280)],{'a':link(4,mixed=True),'b':link(None)},{},[])
         self.assertEqual(result['units'],{})
@@ -110,6 +107,40 @@ class HeadroomTests(unittest.TestCase):
         names=[r['name'] for r in result['rollups']['operator']]
         self.assertEqual(names,['Group A'])
         self.assertEqual(result['rollups']['operator'][0]['remaining'],7)
+
+    def test_timeline_and_allowance_in_force(self):
+        t=builder.unit_timeline(link(8,history=[event(14000,'2010-03-10',wells=1,verb='established'),event(18000,'2012-05-01',wells=4),
+                                                event(26000,'2016-01-01',wells=8,verb='established'),event(30000,'2020-01-01','zone')]))
+        self.assertEqual(t['start'],'2010-03-10', 're-establishing the same land does not start a new unit')
+        self.assertEqual(builder.allowance_at(t['steps'],'2011-06-01'),1)
+        self.assertEqual(builder.allowance_at(t['steps'],'2013-06-01'),4)
+        self.assertEqual(builder.allowance_at(t['steps'],'2021-06-01'),8)
+        self.assertIsNone(builder.allowance_at(t['steps'],'2009-01-01'))
+        ended=builder.unit_timeline(link(None,history=[event(14000,'2010-03-10',wells=2,verb='established'),event(15000,'2011-01-01','termination')]))
+        self.assertIsNone(builder.allowance_at(ended['steps'],'2012-01-01'))
+
+    def test_geometry_decides_even_against_an_allowance_unit(self):
+        small=rect(0,0,1,2); large=rect(0,0,2,2)
+        # The well lies wholly in the small unit, which has no allowance; the overlapping large unit has one.
+        orders={'large':link(1,'2',history=[event(2,'2015-01-01',wells=1,verb='established')],date='2015-01-01')}
+        members={'small':[member(1,9000,1,[0])],'large':[member(1,9000,1,[0])]}
+        result=self.run_build([('small',small,1280),('large',large,2560)],orders,members,[])
+        self.assertEqual(result['units']['large']['assignedWells'],0)
+        self.assertEqual(result['counts']['wellsAssignedDifferentlyThanAllowanceFirst'],1)
+
+    def test_timing_flags_and_review_tags(self):
+        orders={'a':link(1,'14000',history=[event(14000,'2010-03-10',wells=1,verb='established')],date='2010-03-10')}
+        members={'a':[member(n,9000,1,[n-1]) for n in (1,2,3)]}
+        rows=[{'FileNo':str(n),'SpudDate':d} for n,d in ((1,'05/01/2011'),(2,'05/01/2014'),(3,'05/01/2018'))]
+        u=self.run_build([('a',rect(0,0,1,2),1280)],orders,members,rows)['units']['a']
+        self.assertEqual((u['wellsAfterLatestOrder'],u['drilledBeyondOrderInForce'],u['review']),(3,2,'later_order_likely_missing'))
+        orders={'a':link(1,'30000',history=[event(30000,'2020-01-01',wells=1,verb='established')])}
+        u=self.run_build([('a',rect(0,0,1,2),1280)],orders,members,rows)['units']['a']
+        self.assertEqual((u['wellsBeforeFirstOrder'],u['review']),(3,'wells_predate_linked_orders'))
+
+    def test_answer_key_scores_both_rules(self):
+        score=builder.score_attribution([{'permit':'1','dsu':'old'},{'permit':'9','dsu':'x'}],{'1|33000000001':'old'},{'1|33000000001':'new'})
+        self.assertEqual(score,{'wells':1,'geometry':1,'allowanceFirst':0})
 
     def test_dsu_snapshot_mismatch_is_rejected(self):
         with self.assertRaisesRegex(ValueError,'different DSU snapshots'):

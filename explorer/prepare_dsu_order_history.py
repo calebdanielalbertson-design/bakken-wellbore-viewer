@@ -70,12 +70,39 @@ def history_rows(events):
     rows = {}
     for e in sorted(events, key=event_key):
         k = (e['order'], e['event'], e['wells'])
-        row = rows.setdefault(k, {'date': e['date'], 'order': e['order'], 'case': e['case'], 'event': e['event'], 'wells': e['wells'],
+        row = rows.setdefault(k, {'date': e['date'], 'order': e['order'], 'case': e['case'], 'event': e['event'], 'verb': e.get('verb'), 'wells': e['wells'],
                                   'qualifier': 'stated' if e['wells'] is not None else None, 'method': e['method'], 'viaOrder': None,
                                   'documentId': e['document_id'], 'clauses': []})
         if e['clause'] and e['clause'] not in row['clauses']:
             row['clauses'].append(e['clause'])
-    return list(rows.values())
+    return compact(list(rows.values()))
+
+
+RESTATING = ('designated', 'affirmed', 'redefined', None)
+
+
+def compact(rows):
+    """Drop history rows that change nothing. Field-rule orders restate every zone and
+    re-designate every unit, so a unit collects such rows from each one. A zone row is
+    kept only when it states a new count; of the countless re-designations, the first
+    and the latest are kept. Rows that set a count, establish, pool, terminate or add
+    density always stay. resolve_allowance reads the full events, not these rows."""
+    out, current, seen_counts = [], None, set()
+    for row in rows:
+        same_order_count = (row['order'], row['wells']) in seen_counts
+        if row['event'] == 'zone' and (row['wells'] is None or row['wells'] == current or same_order_count):
+            continue
+        restating = row['event'] == 'spacing' and row.get('verb') in RESTATING
+        if restating and row['wells'] is not None and (row['wells'] == current or same_order_count):
+            continue
+        out.append(row)
+        if row['event'] == 'termination':
+            current = None
+        elif row['wells'] is not None:
+            current = row['wells']; seen_counts.add((row['order'], row['wells']))
+    restated = [i for i, r in enumerate(out) if r['event'] == 'spacing' and r['wells'] is None and r.get('verb') in RESTATING]
+    drop = set(restated[1:-1])
+    return [r for i, r in enumerate(out) if i not in drop]
 
 
 def orientation(geometry):
@@ -158,7 +185,7 @@ def build(index_path, dsu_path, output_path):
         d = docs[doc]
         for s, j in linked:
             add(j, {'document_id': doc, 'order': d['order'], 'case': d['case'], 'date': d['date'], 'event': event, 'wells': wells,
-                     'method': method, 'clause': clause, 'pool': pools[0] if len(pools) == 1 else None, 'zone': zone}, s, json.loads(tracts))
+                     'method': method, 'clause': clause, 'pool': pools[0] if len(pools) == 1 else None, 'zone': zone, 'verb': verb}, s, json.loads(tracts))
         counters['linkedUnits_' + kind] += 1
 
     orientations = [orientation(p) for p in polygons]
@@ -223,11 +250,14 @@ def build(index_path, dsu_path, output_path):
                                          'A stated allowance is not proof that the order governs today, nor a drillable-location estimate.',
                                          'Orders not yet extracted (pending in the queue) are missing.']},
               'summary': summary, 'applicants': {d['order']: d['applicant'] for d in docs.values() if d['applicant'] and d['order']},
-              'units': dict(sorted(units.items())), 'review': sorted(review, key=lambda r: -r['iou'])}
+              'units': dict(sorted(units.items()))}
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(result, separators=(',', ':'), ensure_ascii=False), encoding='utf-8')
     report = {**summary, 'reviewCount': len(review), 'outputBytes': output_path.stat().st_size, 'totalSeconds': round(time.perf_counter() - started, 1)}
-    output_path.with_suffix('.audit.json').write_text(json.dumps({**report, 'atlas': result['atlas'], 'dsu': result['dsu']}, indent=2), encoding='utf-8')
+    # Partial unit-to-DSU matches (50-80% overlap) are for manual review, not the viewer: they go in the audit file.
+    output_path.with_suffix('.audit.json').write_text(json.dumps({**report, 'atlas': result['atlas'], 'dsu': result['dsu'],
+                                                                  'review': sorted(review, key=lambda r: -r['iou'])}, indent=2), encoding='utf-8')
+    result['review'] = review
     print(json.dumps(report, indent=2))
     return result
 

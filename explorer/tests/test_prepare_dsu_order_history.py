@@ -55,6 +55,18 @@ class AllowanceTests(unittest.TestCase):
         self.assertEqual((a['wells'], a['terminated']), (4, False))
 
 
+class CompactTests(unittest.TestCase):
+    def test_zone_rows_kept_only_when_they_change_the_count(self):
+        rows = builder.history_rows([ev(20000, wells=6), ev(25000, 'zone', None, 'zone_table'), ev(26000, 'zone', 6, 'zone_table'),
+                                     ev(30000, 'zone', 8, 'zone_table'), ev(31000, 'zone', 8, 'zone_table'), ev(32000, 'pooling')])
+        self.assertEqual([(r['order'], r['event'], r['wells']) for r in rows],
+                         [('20000', 'spacing', 6), ('30000', 'zone', 8), ('32000', 'pooling', None)])
+        restated = builder.history_rows([ev(20000, wells=6), ev(25000, wells=6), ev(30000, wells=8), ev(31000, wells=8)])
+        self.assertEqual([(r['order'], r['wells']) for r in restated], [('20000', 6), ('30000', 8)], 'a re-designation restating the count is dropped')
+        # The allowance read from the full events is unchanged by compaction.
+        self.assertEqual(builder.resolve_allowance([ev(20000, wells=6), ev(30000, 'zone', 8, 'zone_table'), ev(31000, 'zone', 8, 'zone_table')])['wells'], 8)
+
+
 class OrientationTests(unittest.TestCase):
     def test_standup_zone_skips_laydown_dsu_on_same_land(self):
         from shapely.geometry import shape
@@ -102,7 +114,8 @@ class BuildTests(unittest.TestCase):
         unit = result['units']['a']
         self.assertEqual((unit['allowance']['wells'], unit['allowance']['order'], unit['allowance']['method']), (8, '31000', 'zone_table_same_order'))
         events = [(h['order'], h['event'], h['wells']) for h in unit['footprints'][0]['history']]
-        self.assertIn(('30000', 'zone', None), events)
+        self.assertNotIn(('30000', 'zone', None), events, 'a count-free zone restatement changes nothing and is compacted away')
+        self.assertIn(('20000', 'spacing', 2), events)
         self.assertNotIn('C10', [c for h in unit['footprints'][0]['history'] for c in h['clauses']])
         self.assertNotIn('b', result['units'], 'zone acreage must match the DSU')
         self.assertEqual(unit['footprints'][0]['land'], {'township': 150, 'township_direction': 'N', 'range': 100, 'range_direction': 'W', 'sections': [1, 12]})
