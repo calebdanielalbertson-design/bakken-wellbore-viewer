@@ -84,9 +84,7 @@ assert not (DIST/'viewer/inventory-review.html').exists()
 # (scripts/prepare_3d_viewer.py). The data folder is fetched like the survey viewer's, so it is checked when present.
 release3d=json.loads((DIST/'3d/release.json').read_text(encoding='utf-8'))
 assert release3d['kind']=='bakken-subsurface-3d' and release3d['wells']>0
-page3d=(DIST/'3d/index.html').read_bytes().replace(b'
-',b'
-')  # hash the text, not the checkout's line endings
+page3d=(DIST/'3d/index.html').read_bytes().replace(bytes([13,10]),bytes([10]))  # hash the text, not the checkout's line endings
 assert page3d.startswith(b'<!doctype html>') and sha(page3d)==release3d['page']['sha256']
 assert b"inflate('data/meta.gz.bin')" in page3d and b"fetch('meta.json'" not in page3d
 HAVE_3D=(DIST/'3d/data/meta.gz.bin').is_file()
