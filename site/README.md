@@ -75,6 +75,29 @@ test exercises browser-compatible decompression and failure handling. Preserve m
 membership and footage snapshots. The immutable public-parts cache rule remains
 valid; the index and application files should continue to revalidate.
 
+`/3d/` is Bakken Subsurface 3D: every Bakken-system lateral (20,266 on the
+2026-10-31 build) in subsea depth over the gridded Bakken and Dakota surfaces,
+with the depletion and Dakota injection planes, disposal wells, projected wells
+and a timeline. The page comes from the LAS catalog project's `map3d/` folder;
+`scripts/prepare_3d_viewer.py <map3d folder>` rewrites it for this site (document
+skeleton, gzip transport) and writes `dist/3d/data/*.gz.bin` plus `dist/3d/release.json`
+(sizes and SHA-256s, checked by `validate_release.py`). The data folder is
+git-ignored and published as the `site-3d-data` dataset (`scripts/datasets.py`).
+Like the survey viewer's transport, the page inflates the gzip objects in the
+browser with `DecompressionStream`; three.js 0.147 and the Inter/IBM Plex Mono
+fonts load from jsDelivr and Google Fonts.
+
+The site carries the viewer's **public edition** only (`release.json` says
+`public-level-1`, and `validate_release.py` refuses anything else). The NDIC
+subscription agreement bars practices that substantially duplicate the Division's
+subscription services, so the public copy keeps the picture and drops the
+subscription-only numbers: disposal-well volumes, rates and pressures become
+five size classes with basin totals precomputed for the timeline; lateral log
+readings become 16 colour levels; the cement study's numeric fields are nulled
+(classes stay); the card loses its per-well Inyan Kara top and log lines; casing
+shoe depths are rounded to 100 ft; "About the data" names the sources. Production,
+completion and geometry are public-record or derived and stay as they are.
+
 Local preview:
 
 ```sh

@@ -5,6 +5,7 @@ The viewers render prepared files (survey geometry tiles, metrics, operators, pr
 | Dataset | Installed at | Contents |
 | --- | --- | --- |
 | `site-viewer-data` | `site/dist/viewer/data/` | Public site viewer data as released (split gzip parts, reference, showcase) |
+| `site-3d-data` | `site/dist/3d/data/` | Bakken Subsurface 3D (`/3d/`): one gzip object per data file, made by `scripts/prepare_3d_viewer.py` from the LAS catalog project's `map3d/` |
 | `explorer-full-dataset` | `explorer/full-dataset/` | Full ND survey geometry, metrics, operators, well names, production |
 | `explorer-viewer-data` | `explorer/viewer/data/` | Dev viewer layers: DSUs, footage inventory, reference plane, sample, showcase |
 | `explorer-gamma-data` | `explorer/gamma-data/` | Gamma-ray / cement-bond log catalogs, survey index, averaged cache (the `.py` services beside them are in Git) |
