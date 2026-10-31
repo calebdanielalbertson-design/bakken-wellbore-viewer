@@ -15,7 +15,7 @@ The viewer renders prepared geometry files (millions of survey stations), so the
 
 | Folder | What it is | Consolidated from (Caleb's workspace) |
 | --- | --- | --- |
-| `site/` | Public website source as last released: homepage, viewer, EOR projects, methodology, four featured tours. `site/dist/` is what Sites serves. | `sites/bakken-featured-release/` (live as of Oct 21, 2026) |
+| `site/` | Public website source as last released: homepage, viewer, Bakken Subsurface 3D (`/3d/`), EOR projects, methodology, four featured tours. `site/dist/` is what Sites serves. | `sites/bakken-featured-release/` (live as of Oct 21, 2026) |
 | `explorer/` | Development viewer (`explorer/viewer/`) plus the Python data-preparation pipeline: classification, survey metrics, operators, production, DSUs, footage inventory, well names. | `outputs/wellbore-viewer/` |
 | `backend/` | Connected well profiles: Python API (Gunicorn on Railway), PostgreSQL schema and importers, profile frontend, GIS refresh. | `work/bakken-forward-preview/` |
 | `deploy/railway/` | Railway staging configuration, verification, reader rotation and protected-preview launch scripts. | `work/railway-staging-context/` |

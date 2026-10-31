@@ -80,6 +80,37 @@ if HAVE_DATA:
     for name in ('production-audit.json','refresh-validation.json'):
         assert not (DIST/'full-dataset'/name).exists()
 assert not (DIST/'viewer/inventory-review.html').exists()
+# Bakken Subsurface 3D (/3d/): page plus one gzip object per data file, listed with hashes in release.json
+# (scripts/prepare_3d_viewer.py). The data folder is fetched like the survey viewer's, so it is checked when present.
+release3d=json.loads((DIST/'3d/release.json').read_text(encoding='utf-8'))
+assert release3d['kind']=='bakken-subsurface-3d' and release3d['wells']>0
+page3d=(DIST/'3d/index.html').read_bytes().replace(bytes([13,10]),bytes([10]))  # hash the text, not the checkout's line endings
+assert page3d.startswith(b'<!doctype html>') and sha(page3d)==release3d['page']['sha256']
+assert b"inflate('data/meta.gz.bin')" in page3d and b"fetch('meta.json'" not in page3d
+HAVE_3D=(DIST/'3d/data/meta.gz.bin').is_file()
+if HAVE_3D:
+    for name,entry in release3d['data'].items():
+        stored=(DIST/'3d/data'/name).read_bytes()
+        assert len(stored)==entry['storedBytes'] and sha(stored)==entry['storedSHA256'], name
+        original=gzip.decompress(stored)
+        assert len(original)==entry['bytes'] and sha(original)==entry['sha256'], name
+    meta3d=json.loads(gzip.decompress((DIST/'3d/data/meta.gz.bin').read_bytes()))
+    assert meta3d['n_wells']==release3d['wells']
+    # Public edition: no subscription-only numbers leave the site (see scripts/prepare_3d_viewer.py)
+    assert release3d.get('edition')=='public-level-1', 'only the public edition of the 3D viewer may be released'
+    assert meta3d.get('edition')=='public-level-1' and 'swd_year' in meta3d and 'swd_classes' in meta3d
+    assert all(set(s)<={'w','name','op','x','y','z','cls','cumc','r'} for s in meta3d['swd'])
+    assert all(v is None for key in ('cem_top','cem_ik','bond_good') for v in meta3d['wells'][key])
+    from array import array
+    paths3d=array('f'); paths3d.frombytes(gzip.decompress((DIST/'3d/data/paths.gz.bin').read_bytes()))
+    for col in (3,4,5):
+        assert len({v for v in paths3d[col::9] if v==v})<=16, ('log column not quantized', col)
+    for marker in (b'Lateral gamma ray, median', b'Inyan Kara top (subsea)', b'<option value="cem_top">', b'<option value="cem_ik">', b'<option value="bond_good">', b's.psi[', b's.cum['):
+        assert marker not in page3d, marker
+    assert b'class="prov"' in page3d
+else:
+    print('note: 3D viewer data not present (site/dist/3d/data); run scripts/prepare_3d_viewer.py or datasets.py fetch site-3d-data', file=sys.stderr)
+if REQUIRE_DATA: assert HAVE_3D, '3D viewer data is missing'
 assert 'local viewer' in (DIST/'viewer/index.html').read_text(encoding='utf-8')
 forbidden={'.las','.dbf','.xlsx','.ods','.csv','.env','.zip','.sqlite','.db','.py'}
 private=re.compile(r'(?i)(?:[A-Z]:[\\/]+Users[\\/]|(?:/Users/|/home/)[^/\s]+|github_pat_|ghp_[A-Za-z0-9]{30})')
@@ -112,8 +143,8 @@ for filename in ('index.html','methodology/index.html','eor/index.html','tours/i
         assert target.exists(), (filename,value)
 ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
 urls=[x.text for x in ET.parse(DIST/'sitemap.xml').findall('s:url/s:loc',ns)]
-expected_urls={'https://bakkensubsurface.com/','https://bakkensubsurface.com/viewer/','https://bakkensubsurface.com/methodology/','https://bakkensubsurface.com/eor/','https://bakkensubsurface.com/tours/'}
+expected_urls={'https://bakkensubsurface.com/','https://bakkensubsurface.com/viewer/','https://bakkensubsurface.com/3d/','https://bakkensubsurface.com/methodology/','https://bakkensubsurface.com/eor/','https://bakkensubsurface.com/tours/'}
 expected_urls.update('https://bakkensubsurface.com/eor/project/?project='+project for project in ('durant','clover-roadrunner','en-ortloff','nygaard','haley'))
 assert set(urls)==expected_urls
 assert 'https://bakkensubsurface.com/sitemap.xml' in (DIST/'robots.txt').read_text()
-print(json.dumps({'status':'passed','files':len(files),'bytes':sum(p.stat().st_size for p in files),'maximum_asset_bytes':max(p.stat().st_size for p in files),'data_checked':HAVE_DATA,'split_assets_verified':len(index['assets']) if HAVE_DATA else 0,'crawlable_pages':len(urls)}))
+print(json.dumps({'status':'passed','files':len(files),'bytes':sum(p.stat().st_size for p in files),'maximum_asset_bytes':max(p.stat().st_size for p in files),'data_checked':HAVE_DATA,'data_checked_3d':HAVE_3D,'split_assets_verified':len(index['assets']) if HAVE_DATA else 0,'crawlable_pages':len(urls)}))

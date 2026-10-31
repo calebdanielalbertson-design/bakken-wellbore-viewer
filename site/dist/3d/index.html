@@ -1,0 +1,1310 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bakken Subsurface 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one dark subsurface scene filling the screen. A control rail on the left is organised as a workflow
+   (Wells, Geology, Through time, Projected wells, Selected well, Map); a timeline bar sits along the bottom of the scene
+   and drives every time-dependent layer; layer chips at the top right mirror the on/off switches so a layer can be
+   toggled from anywhere. Deliberately single-theme: a lit 3D scene of rock reads best on a dark ground. */
+:root {
+  color-scheme: dark;
+  --bg: #071523;
+  --panel: rgba(10, 26, 41, 0.92);
+  --panel-solid: #0c1f31;
+  --line: #243a4c;
+  --line-strong: #35526a;
+  --fg: #e8f2f7;
+  --fg2: #c3d5e1;
+  --muted: #86a2b6;
+  --accent: #86e3d7;
+  --accent-ink: #063331;
+  --select: #ff6b6b;
+  --rail-w: 344px;
+  --font-display: "Inter", "Segoe UI", Arial, sans-serif;
+  --font-body: "Inter", "Segoe UI", Arial, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; overflow: hidden; }
+#scene { position: fixed; inset: 0; }
+#scene canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+*:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- control rail ---------- */
+.rail {
+  position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px));
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: var(--rail-w); overflow-y: auto; overscroll-behavior: contain;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 14px; backdrop-filter: blur(10px);
+  padding: 14px 14px 10px; display: flex; flex-direction: column; gap: 8px; box-sizing: border-box; scrollbar-width: thin;
+}
+.rail.collapsed { bottom: auto; }
+.rail.collapsed > :not(.head) { display: none; }
+.head { display: flex; flex-direction: column; gap: 8px; padding-bottom: 6px; }
+.head .row { align-items: flex-start; }
+.rail h1 { font-family: var(--font-display); font-weight: 600; font-size: 21px; line-height: 1.1; margin: 0; letter-spacing: -.02em; }
+.eyebrow { font-size: 10.5px; letter-spacing: 2px; color: #84aaaf; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+.help { font-size: 12.5px; color: var(--fg2); }
+.help summary { cursor: pointer; color: var(--accent); font-weight: 500; list-style: none; display: inline-flex; align-items: center; gap: 6px; }
+.help summary::-webkit-details-marker { display: none; }
+.help summary::before { content: '?'; display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--accent); font-size: 11px; }
+.help p { margin: 8px 0 0; line-height: 1.45; }
+.help kbd { font: 11px var(--font-data); border: 1px solid var(--line-strong); border-radius: 4px; padding: 1px 5px; background: #0f2a3d; }
+
+/* collapsible workflow sections */
+.sec { border-top: 1px solid var(--line); padding: 2px 0 10px; }
+.sec > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 10px 2px 8px; user-select: none; }
+.sec > summary::-webkit-details-marker { display: none; }
+.sec > summary .n { font: 600 11px var(--font-data); color: var(--accent-ink); background: var(--accent); width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; flex: none; }
+.sec > summary .t { font-family: var(--font-display); font-weight: 600; font-size: 13.5px; }
+.sec > summary .d { font-size: 11.5px; color: var(--muted); margin-left: auto; text-align: right; }
+.sec > summary::after { content: ''; width: 7px; height: 7px; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: rotate(-45deg); margin-left: 8px; transition: transform .15s; flex: none; }
+.sec[open] > summary::after { transform: rotate(45deg); }
+.sec[open] > summary .t { color: var(--accent); }
+.body { display: flex; flex-direction: column; gap: 9px; padding: 0 2px; }
+.sub { font-size: 12px; color: var(--muted); line-height: 1.45; margin: 0; }
+.label { font-family: var(--font-display); font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.6px; color: #84aaaf; }
+.group { display: flex; flex-direction: column; gap: 6px; }
+.group + .group { margin-top: 2px; }
+
+/* inputs */
+select, input[type=search] { font: inherit; font-size: 13px; color: var(--fg); background: #0f2a3d; border: 1px solid var(--line-strong); border-radius: 8px; padding: 8px 9px; width: 100%; box-sizing: border-box; }
+select:hover, input[type=search]:hover { border-color: #4d6c84; }
+input[type=range] { width: 100%; accent-color: var(--accent); margin: 2px 0; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--fg2); }
+.row output { font-family: var(--font-data); color: var(--fg); font-size: 12.5px; }
+.checks { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 10px; }
+.checks.one { grid-template-columns: 1fr; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--fg2); line-height: 1.25; cursor: pointer; }
+.check input { appearance: none; -webkit-appearance: none; width: 28px; height: 16px; border-radius: 9px; background: #2a4458; position: relative; flex: none; margin: 0; cursor: pointer; transition: background .15s; }
+.check input::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #c7d8e4; transition: transform .15s, background .15s; }
+.check input:checked { background: var(--accent); }
+.check input:checked::after { transform: translateX(12px); background: var(--accent-ink); }
+.check input:disabled { opacity: .35; cursor: not-allowed; }
+.sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+.legend canvas { width: 100%; height: 12px; border-radius: 3px; display: block; }
+.legend .ticks { display: flex; justify-content: space-between; font-family: var(--font-data); font-size: 11px; color: var(--fg2); margin-top: 3px; }
+.legend .cats { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--fg2); }
+.legend .cats span { display: flex; align-items: center; gap: 10px; }
+.legend .cats .sw { width: 22px; height: 3px; border-radius: 3px; }
+.note { font-size: 12px; color: var(--muted); line-height: 1.45; }
+.card { border: 1px solid var(--line); border-radius: 10px; padding: 11px; display: flex; flex-direction: column; gap: 8px; background: rgba(6, 14, 22, .55); }
+.card h2 { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.15; margin: 0; }
+.card .meta { color: var(--fg2); font-size: 12px; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 0; font-size: 12.5px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; text-align: right; font-family: var(--font-data); font-size: 12px; font-variant-numeric: tabular-nums; }
+.empty { color: var(--muted); font-size: 13px; margin: 0; }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; }
+button.b { font: 500 12.5px var(--font-body); color: var(--fg); background: #132b3e; border: 1px solid var(--line-strong); border-radius: 8px; padding: 7px 11px; cursor: pointer; }
+button.b:hover { background: #1d3d55; border-color: #5a7b94; }
+button.b.icon { padding: 6px 8px; line-height: 1; }
+.about { font-size: 11px; color: var(--muted); line-height: 1.45; border-top: 1px solid var(--line); padding-top: 8px; }
+.about summary { cursor: pointer; list-style: none; color: var(--fg2); font-weight: 500; font-size: 11.5px; }
+.about summary::-webkit-details-marker { display: none; }
+.about summary::before { content: '› '; }
+.about[open] summary::before { content: '⌄ '; }
+.about div { margin-top: 6px; }
+
+/* ---------- layer chips (top right) ---------- */
+.toolbar { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; max-width: calc(100vw - var(--rail-w) - 60px); z-index: 2; }
+.chip { font: 500 12px var(--font-body); color: var(--fg2); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 6px 11px 6px 9px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; backdrop-filter: blur(8px); transition: background .12s, border-color .12s; }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, #8ca6b9); opacity: .55; }
+.chip:hover { border-color: var(--line-strong); color: var(--fg); }
+.chip.on { background: #12403e; border-color: var(--accent); color: #e3fbf7; }
+.chip.on .dot { opacity: 1; box-shadow: 0 0 0 2px #12403e, 0 0 0 3px var(--c, var(--accent)); }
+.chip:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ---------- timeline (bottom) ---------- */
+.timeline {
+  position: fixed; left: calc(var(--rail-w) + 24px); right: max(14px, env(safe-area-inset-right, 0px)); bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  background: var(--panel); border: 1px solid var(--line); border-radius: 14px; backdrop-filter: blur(10px);
+  padding: 10px 14px 8px; display: grid; grid-template-columns: auto auto 1fr auto; grid-template-rows: auto auto; gap: 4px 14px; align-items: center; z-index: 2;
+}
+.rail.collapsed ~ .timeline { left: max(14px, env(safe-area-inset-left, 0px)); }
+.tl-year { font: 600 30px var(--font-display); letter-spacing: -.03em; line-height: 1; min-width: 86px; font-variant-numeric: tabular-nums; grid-row: 1 / 3; }
+.tl-year small { display: block; font: 600 10.5px var(--font-body); letter-spacing: 1.6px; text-transform: uppercase; color: #84aaaf; margin-bottom: 4px; }
+.tl-btns { display: flex; gap: 6px; grid-row: 1 / 3; }
+.tl-btns button { font: 600 13px var(--font-body); color: var(--fg); background: #132b3e; border: 1px solid var(--line-strong); border-radius: 8px; width: 34px; height: 34px; cursor: pointer; display: grid; place-items: center; }
+.tl-btns button:hover { background: #1d3d55; }
+.tl-btns button#play { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); width: 42px; }
+.tl-slider { grid-column: 3; grid-row: 1; display: flex; flex-direction: column; gap: 2px; }
+.tl-slider input[type=range] { margin: 0; }
+.tl-ticks { display: flex; justify-content: space-between; font: 10.5px var(--font-data); color: var(--muted); padding: 0 2px; }
+.tl-stats { grid-column: 3; grid-row: 2; font-size: 12px; color: var(--fg2); display: flex; gap: 16px; flex-wrap: wrap; min-height: 16px; }
+.tl-stats b { font-family: var(--font-data); font-weight: 500; color: var(--fg); }
+.tl-speed { grid-column: 4; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--muted); align-items: flex-end; }
+.tl-speed select { width: auto; padding: 5px 8px; font-size: 12px; }
+
+#mapLabels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+.place-label { position: absolute; left: 0; top: 0; font-size: 12.5px; color: #d2e9ed; white-space: nowrap; text-shadow: 0 1px 3px #061523, 0 0 5px #061523; background: #0715238c; padding: 2px 5px; border-radius: 3px; transform: translate(6px, -10px); }
+.place-label::before { content: ''; position: absolute; left: -7px; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: #c5e1e5; box-shadow: 0 0 0 2px #0a253b; }
+.status { position: fixed; inset: 0; display: grid; place-items: center; color: var(--fg2); font-size: 14px; pointer-events: none; }
+.compass { position: fixed; right: max(14px, env(safe-area-inset-right, 0px)); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); font-family: var(--font-data); font-size: 11px; color: var(--muted); text-align: right; line-height: 1.5; pointer-events: none; }
+
+@media (max-width: 860px) {
+  :root { --rail-w: 300px; }
+  .toolbar { max-width: calc(100vw - var(--rail-w) - 48px); }
+}
+@media (max-width: 760px) {
+  .rail { top: auto; left: max(8px, env(safe-area-inset-left, 0px)); right: max(8px, env(safe-area-inset-right, 0px));
+          bottom: calc(8px + env(safe-area-inset-bottom, 0px)); width: auto; max-height: 46vh; border-radius: 14px 14px 10px 10px; }
+  .rail.collapsed { max-height: none; }
+  .toolbar { top: calc(8px + env(safe-area-inset-top, 0px)); left: 8px; right: 8px; justify-content: flex-start; max-width: none; }
+  .timeline { left: 8px; right: 8px; bottom: calc(46vh + 18px + env(safe-area-inset-bottom, 0px)); grid-template-columns: auto auto 1fr; padding: 8px 10px 6px; }
+  .rail.collapsed ~ .timeline { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); left: 8px; }
+  .tl-speed { display: none; }
+  .tl-year { font-size: 24px; min-width: 70px; }
+  .compass { bottom: auto; top: calc(52px + env(safe-area-inset-top, 0px)); }
+}
+@media (max-width: 760px) {
+  .rail.collapsed { top: auto; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+  .toolbar { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .toolbar::-webkit-scrollbar { display: none; }
+  .chip { flex: none; }
+  .tl-ticks span:not(:first-child):not(:last-child) { display: none; }
+  .tl-stats { font-size: 11px; gap: 10px; }
+  .tl-stats span:nth-child(2) { display: none; }
+}
+</style>
+
+<div id="scene"></div>
+<div id="mapLabels"></div>
+<div class="status" id="status">Loading wellbores and surfaces…</div>
+
+<aside class="rail" id="rail">
+  <div class="head">
+    <div class="row">
+      <div><div class="eyebrow">Bakken Subsurface Analytics</div><h1>3D Well Viewer</h1></div>
+      <button class="b icon" id="toggle" type="button" aria-expanded="true" title="Collapse the panel">⟨</button>
+    </div>
+    <details class="help">
+      <summary>How to move around</summary>
+      <p>Drag to orbit, scroll or pinch to zoom, right-drag or two-finger drag to pan. Click a wellbore to inspect it. The timeline at the bottom plays the basin through time: <kbd>space</kbd> plays or pauses, <kbd>←</kbd> <kbd>→</kbd> step a year, <kbd>Esc</kbd> clears the selection. The chips at the top right switch layers on and off from anywhere.</p>
+    </details>
+  </div>
+
+  <details class="sec" open>
+    <summary><span class="n">1</span><span class="t">Wells</span><span class="d">colour, filter, find</span></summary>
+    <div class="body">
+      <p class="sub">Every Bakken-system lateral with a survey, in true subsea depth from the Dakota down to the toe.</p>
+      <div class="group">
+        <label class="label" for="colorBy">Colour wellbores by</label>
+        <select id="colorBy">
+          <optgroup label="Along the wellbore">
+            <option value="section" selected>Wellbore section (vertical, curve, lateral…)</option>
+            <option value="gr">Gamma ray (API)</option>
+            <option value="gas">Total gas (units)</option>
+            <option value="wet">Gas wetness (%)</option>
+            <option value="unit">Stratigraphic unit</option>
+            <option value="stiff">Rock stiffness (Young's modulus)</option>
+          </optgroup>
+          <optgroup label="Per well">
+            <option value="zone">Target zone</option>
+            <option value="year">Spud year</option>
+            <option value="logcov">Which digital logs NDIC holds</option>
+          </optgroup>
+          <optgroup label="Production and completion">
+            <option value="oil24">Oil, first 24 months (bbl)</option>
+            <option value="eur">Estimated ultimate recovery (bbl)</option>
+            <option value="oil">Cumulative oil (bbl)</option>
+            <option value="perf">Over / under the model (24-month)</option>
+            <option value="water">Frac water per foot (gal/ft)</option>
+            <option value="prop">Proppant per foot (lb/ft)</option>
+          </optgroup>
+          <optgroup label="Through time (follows the timeline)">
+            <option value="rate_y">Oil rate in the year (bopd)</option>
+            <option value="gor_y">GOR rise to date (x initial)</option>
+          </optgroup>
+          <optgroup label="Cement and casing (bond logs)">
+            <option value="cem_class">Cement top vs the Dakota</option>
+            <option value="bond">Dakota bond quality</option>
+            <option value="string">Logged casing string size</option>
+          </optgroup>
+          <optgroup label="Pore pressure (Eaton, sonic)">
+            <option value="pp_ik">Dakota pressure gradient (psi/ft)</option>
+            <option value="pp_bakken">Bakken pressure gradient (psi/ft)</option>
+          </optgroup>
+          <optgroup label="Wellbore geometry (machine-classified)">
+            <option value="wb">Wellbore shape class</option>
+            <option value="toe_up">Toe up / toe down (ft)</option>
+            <option value="porp">Porpoising amplitude (ft)</option>
+            <option value="tort">Lateral tortuosity</option>
+            <option value="dls90">Lateral dogleg, P90 (°/100 ft)</option>
+          </optgroup>
+        </select>
+        <div class="legend" id="legend"></div>
+        <div class="note" id="colorNote"></div>
+      </div>
+      <div class="group">
+        <span class="label">Show</span>
+        <div class="checks">
+          <label class="check" for="sWells"><input type="checkbox" id="sWells" checked><span class="sw" style="background:#86e3d7"></span>Wellbores</label>
+          <label class="check" for="showUpper"><input type="checkbox" id="showUpper" checked><span class="sw" style="background:#5d6870"></span>Hole above kickoff</label>
+        </div>
+        <span class="label" style="margin-top:4px">Target zone</span>
+        <div class="checks" id="zoneChecks"></div>
+      </div>
+      <div class="group">
+        <span class="label">Narrow the picture</span>
+        <select id="thin" title="Thin the wells">
+          <option value="1">Every well</option>
+          <option value="2">Every 2nd well</option>
+          <option value="4">Every 4th well</option>
+          <option value="8">Every 8th well</option>
+        </select>
+        <select id="county"><option value="-1">All counties</option></select>
+        <select id="operator"><option value="-1">All operators</option></select>
+        <select id="radius" title="Around the selected well">
+          <option value="0">Whole basin</option>
+          <option value="2">Within 2 miles of the selected well</option>
+          <option value="5">Within 5 miles of the selected well</option>
+          <option value="10">Within 10 miles of the selected well</option>
+        </select>
+      </div>
+      <div class="group">
+        <label class="label" for="search">Find a well</label>
+        <input type="search" id="search" list="wellList" placeholder="NDIC file number or well name" autocomplete="off">
+        <datalist id="wellList"></datalist>
+        <div class="btns">
+          <button class="b" id="reset" type="button">Whole basin view</button>
+          <button class="b" id="clear" type="button">Clear selection</button>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <details class="sec">
+    <summary><span class="n">2</span><span class="t">Geology</span><span class="d">surfaces, volumes, shading</span></summary>
+    <div class="body">
+      <p class="sub">Gridded tops from the auto-picked Bakken shales and NDIC Dakota picks. Raise the vertical exaggeration to see structure.</p>
+      <div class="group">
+        <span class="label">Surfaces</span>
+        <div class="checks">
+          <label class="check" for="sUbs"><input type="checkbox" id="sUbs"><span class="sw" style="background:#7d9bb3"></span>Upper Bakken top</label>
+          <label class="check" for="sLbs"><input type="checkbox" id="sLbs"><span class="sw" style="background:#b8926b"></span>Lower Bakken top</label>
+          <label class="check" for="sIkTop"><input type="checkbox" id="sIkTop"><span class="sw" style="background:#c9a96a"></span>Inyan Kara (Dakota) top</label>
+          <label class="check" for="sIkBase"><input type="checkbox" id="sIkBase"><span class="sw" style="background:#8c7a5a"></span>Inyan Kara base (Swift top)</label>
+        </div>
+        <span class="label" style="margin-top:4px">Volumes (isopach solids)</span>
+        <div class="checks">
+          <label class="check" for="vBakken"><input type="checkbox" id="vBakken"><span class="sw" style="background:#c98a2e"></span>Bakken volume</label>
+          <label class="check" for="vDakota"><input type="checkbox" id="vDakota"><span class="sw" style="background:#b7bf4a"></span>Dakota volume</label>
+        </div>
+        <div class="legend" id="volLegend" hidden></div>
+      </div>
+      <div class="group">
+        <label class="label" for="surfColor">Shade surfaces by</label>
+        <select id="surfColor">
+          <option value="depth">Depth</option>
+          <option value="toc">Bakken shale organic richness (TOC)</option>
+          <option value="ik_thick">Inyan Kara gross thickness</option>
+          <option value="ik_net_sand">Inyan Kara net sand (from gamma ray)</option>
+          <option value="ik_phih">Inyan Kara porosity x net sand</option>
+          <option value="pp_ik">Dakota pore-pressure gradient</option>
+          <option value="pp_bakken">Bakken pore-pressure gradient</option>
+          <option value="gor0">Initial GOR (fluid / maturity)</option>
+          <option value="gor_rise">GOR rise to date (depletion)</option>
+          <option value="resid">Residual structure (local highs and lows)</option>
+          <option value="curv">Structural curvature</option>
+          <option value="salt">Prairie salt thickness (dissolution)</option>
+          <option value="geotherm">Geothermal gradient</option>
+          <option value="btemp">Temperature at the Bakken</option>
+        </select>
+        <div class="legend" id="surfLegend"></div>
+      </div>
+      <div class="group">
+        <div class="row"><label for="opacity">Surface opacity</label><output id="opacityOut"></output></div>
+        <input type="range" id="opacity" min="0.1" max="1" step="0.05" value="0.45">
+        <div class="row"><label for="exag">Vertical exaggeration</label><output id="exagOut"></output></div>
+        <input type="range" id="exag" min="1" max="80" step="1" value="1">
+      </div>
+    </div>
+  </details>
+
+  <details class="sec">
+    <summary><span class="n">3</span><span class="t">Through time</span><span class="d">production, disposal</span></summary>
+    <div class="body">
+      <p class="sub">These layers follow the timeline at the bottom of the screen. Wells appear in the year they first produced.</p>
+      <div class="group">
+        <label class="check" for="sDepl"><input type="checkbox" id="sDepl"><span class="sw" style="background:#c4473a"></span>Production: depletion plane (withdrawal to date)</label>
+        <div class="legend" id="deplLegend"></div>
+        <div class="note">Every well's produced volume (1.5 x oil + water, reservoir bbl) spread along its lateral on a 1-mile grid, cumulative barrels per acre to the end of the year, just below the Bakken.</div>
+      </div>
+      <div class="group">
+        <label class="check" for="sInj"><input type="checkbox" id="sInj"><span class="sw" style="background:#26bddf"></span>Disposal: injection plane in the Dakota</label>
+        <select id="injMode">
+          <option value="dp">Pressure rise (psi, diffusive model)</option>
+          <option value="cum">Water disposed to date (bbl/acre)</option>
+        </select>
+        <div class="legend" id="injLegend"></div>
+      </div>
+      <div class="group">
+        <label class="check" for="sSwd"><input type="checkbox" id="sSwd"><span class="sw" style="background:#fe7d1c"></span>Disposal wells (ring = volume-equivalent radius)</label>
+        <div class="legend" id="swdLegend"></div>
+      </div>
+    </div>
+  </details>
+
+  <details class="sec">
+    <summary><span class="n">4</span><span class="t">Projected wells</span><span class="d">infill model</span></summary>
+    <div class="body">
+      <p class="sub">Synthetic laterals placed in the widest gaps of each NDIC spacing unit along its azimuth, at the density comparable finished units reached. Where, not when.</p>
+      <label class="check" for="sFuture"><input type="checkbox" id="sFuture"><span class="sw" style="background:#d7263d"></span>Show projected laterals</label>
+      <select id="futureTier">
+        <option value="0">Low: units operators are in, median density</option>
+        <option value="1" selected>Base: + half of undeveloped potential</option>
+        <option value="2">High: upper-quartile density everywhere viable</option>
+        <option value="3">Upside: modern-well productivity, every unit refillable, $75 floor</option>
+        <option value="4">Upside at upper-quartile density</option>
+        <option value="5">Basin model: economic at $55 WTI, $8.5 M well</option>
+        <option value="6">Basin model: economic at $65</option>
+        <option value="7">Basin model: economic at $75 and $7.0 M</option>
+      </select>
+      <select id="futureColor">
+        <option value="tier">Colour by scenario tier</option>
+        <option value="be">Colour by breakeven WTI (base curve, $8.5 M well)</option>
+      </select>
+      <div class="legend" id="futureLegend"></div>
+    </div>
+  </details>
+
+  <details class="sec" open>
+    <summary><span class="n">5</span><span class="t">Selected well</span><span class="d" id="selHint">click a wellbore</span></summary>
+    <div class="body">
+      <div id="detail"><p class="empty">Tap or click a wellbore to see its card.</p></div>
+    </div>
+  </details>
+
+  <details class="sec">
+    <summary><span class="n">6</span><span class="t">Map</span><span class="d">reference layers</span></summary>
+    <div class="body">
+      <div class="checks">
+        <label class="check" for="sGrid"><input type="checkbox" id="sGrid" checked><span class="sw" style="background:#294759"></span>Ground grid</label>
+        <label class="check" for="sTowns"><input type="checkbox" id="sTowns" checked><span class="sw" style="background:#c5e1e5"></span>Town labels</label>
+        <label class="check" for="sShoes"><input type="checkbox" id="sShoes"><span class="sw" style="background:#ffd166"></span>Casing shoes</label>
+      </div>
+    </div>
+  </details>
+
+  <details class="about">
+    <summary>About the data</summary>
+    <div id="foot"></div>
+    <p class="prov">Public edition. Sources: North Dakota Industrial Commission, Oil and Gas Division (well index, directional surveys and spacing units from the public GIS, monthly production reports to January 2026, formation tops and digital well logs under the Division's subscription service), FracFocus (March 2026) and USGS 3DEP. Everything shown is derived or modelled from those records: log readings appear as colour classes, cement and bond results as classes, disposal volumes as size classes, and the Dakota injection plane is a model. No NDIC logs, well files, tops tables or production or injection tables are redistributed here; the records are at <a href="https://www.dmr.nd.gov/oilgas/" rel="noopener">dmr.nd.gov/oilgas</a>. Free to use, no warranty.</p>
+  </details>
+</aside>
+
+<nav class="toolbar" aria-label="Layers">
+  <button class="chip" id="chipWells" type="button" style="--c:#86e3d7" aria-pressed="true"><span class="dot"></span>Wellbores</button>
+  <button class="chip" id="chipUbs" type="button" style="--c:#7d9bb3" aria-pressed="false"><span class="dot"></span>Bakken top</button>
+  <button class="chip" id="chipIk" type="button" style="--c:#c9a96a" aria-pressed="false"><span class="dot"></span>Dakota top</button>
+  <button class="chip" id="chipDepl" type="button" style="--c:#c4473a" aria-pressed="false"><span class="dot"></span>Depletion</button>
+  <button class="chip" id="chipInj" type="button" style="--c:#26bddf" aria-pressed="false"><span class="dot"></span>Injection</button>
+  <button class="chip" id="chipSwd" type="button" style="--c:#fe7d1c" aria-pressed="false"><span class="dot"></span>Disposal wells</button>
+  <button class="chip" id="chipFuture" type="button" style="--c:#d7263d" aria-pressed="false"><span class="dot"></span>Projected</button>
+  <button class="chip" id="chipTowns" type="button" style="--c:#c5e1e5" aria-pressed="true"><span class="dot"></span>Towns</button>
+</nav>
+
+<div class="timeline" aria-label="Timeline">
+  <div class="tl-year"><small>Year</small><output id="yearOut"></output></div>
+  <div class="tl-btns">
+    <button type="button" id="stepBack" title="Back one year (←)" aria-label="Back one year">‹</button>
+    <button type="button" id="play" title="Play (space)" aria-label="Play">▶</button>
+    <button type="button" id="stepFwd" title="Forward one year (→)" aria-label="Forward one year">›</button>
+  </div>
+  <div class="tl-slider">
+    <input type="range" id="year" min="2006" max="2026" step="1" value="2026" list="yearTicks">
+    <datalist id="yearTicks"></datalist>
+    <div class="tl-ticks" id="tlTicks"></div>
+  </div>
+  <div class="tl-stats" id="tlStats"></div>
+  <div class="tl-speed"><label for="speed">Speed</label><select id="speed"><option value="0.5">Slow</option><option value="1" selected>Normal</option><option value="2">Fast</option></select></div>
+</div>
+
+<div class="compass" id="compass"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const K = 1 / 1000; // scene units are thousands of feet
+  const fmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+  const fmt1 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
+  // Sequential scales use Google's Turbo colormap (polynomial fit by Mikhail Popov): dark purple (low) through blue,
+  // green and yellow to dark red (high). Sampled at 32 stops; the ramp helpers lerp between stops. "not logged" is a dim grey.
+  function turbo(x) {
+    x = Math.max(0, Math.min(1, x));
+    const x2 = x * x, x3 = x2 * x, x4 = x3 * x, x5 = x4 * x;
+    const r = 0.13572138 + 4.61539260 * x - 42.66032258 * x2 + 132.13108234 * x3 - 152.94239396 * x4 + 59.28637943 * x5;
+    const g = 0.09140261 + 2.19418839 * x + 4.84296658 * x2 - 14.18503333 * x3 + 4.27729857 * x4 + 2.82956604 * x5;
+    const b = 0.10667330 + 12.64194608 * x - 60.58204836 * x2 + 110.36276771 * x3 - 89.90310912 * x4 + 27.34824973 * x5;
+    return new THREE.Color(Math.max(0, Math.min(1, r)), Math.max(0, Math.min(1, g)), Math.max(0, Math.min(1, b)));
+  }
+  const TURBO = Array.from({ length: 32 }, (_, i) => turbo(i / 31));
+  const RAMP = TURBO;
+  const NOLOG = new THREE.Color('#3a444b');
+  const UNIT_COLORS = ['#a3b1bb', '#f4d35e', '#3987e5', '#ee964b', '#199e70', '#9085e9'].map((c) => new THREE.Color(c));
+  const ZONE_COLORS = [new THREE.Color('#3987e5'), new THREE.Color('#d95926'), new THREE.Color('#199e70'), new THREE.Color('#5d6870')];
+  const PP_RAMP = TURBO;
+  const MODES = {
+    logcov: { catWell: 'logcov', names: 'logcov_names', palette: ['#26bddf', '#97f94f', '#fe7d1c', '#b79cff', '#5d6870'], label: 'Digital log coverage', note: 'Which digital logs NDIC holds for the well: open-hole wireline (resistivity, porosity, sonic…), a mud log only, cement or casing logs only, other LAS only, or none. Catalogued 2026-10-31 from every township row 140N-164N.' },
+    cem_class: { catWell: 'cem_class', names: 'cem_names', palette: ['#2b9348', '#f2d43d', '#d7263d', '#26bddf', '#8a8f94'], label: 'Cement top vs the Dakota', note: 'From the cement bond log of the logged casing string (cement_bond.py): the depth where cement first holds a bond index of 0.5 over 100 ft, against the Inyan Kara top (NDIC pick, else the map). "Below" means this string’s cement does not reach the Dakota; an outer string may still cover it, so it is a flag to check in the well file, not a verdict.' },
+    bond: { catWell: 'bond', names: 'bond_names', palette: ['#2b9348', '#f2d43d', '#d7263d', '#5d6870'], label: 'Dakota bond quality', note: 'Median bond index across the Inyan Kara to Swift window on the logged string: good ≥ 0.8, partial 0.3-0.8, poor or free pipe < 0.3. Green cement at log time, a microannulus, or a production-string log inside an already cemented intermediate all read worse than the isolation really is.' },
+    bond_good: { well: 'bond_good', lo: 0, hi: 1, label: 'Dakota window: share of good bond', unit: '', note: 'Fraction of the Dakota window where the bond index is at least 0.8 on the logged string.', ticks: [0, 0.25, 0.5, 0.75, 1] },
+    cem_ik: { well: 'cem_ik', lo: -500, hi: 3000, label: 'Cement top above the Inyan Kara', unit: 'ft', note: 'Measured-depth distance from the Inyan Kara top up to the cement top. Positive: cement covers the Dakota by that much. Negative: the top sits below the Dakota top.', ticks: [-500, 500, 1500, 3000] },
+    cem_top: { well: 'cem_top', lo: 0, hi: 6000, label: 'Top of cement', unit: 'ft MD', note: 'Measured depth of the cement top on the logged string. Free pipe from surface to 2,000-3,500 ft is normal: the production string is usually cemented only from the intermediate shoe part way up.', ticks: [0, 2000, 4000, 6000] },
+    string: { catWell: 'string', names: 'string_names', palette: ['#5fd3d3', '#5fd3d3', '#f4d35e', '#f4d35e', '#ee964b', '#ee964b', '#8a8f94'], label: 'Logged casing string size', note: 'Size class of the string the bond log was run in, from the free-pipe travel time (reliable) or the LAS header (sparse).' },
+    gr: { col: 3, lo: 20, hi: 200, label: 'Gamma ray', unit: 'API', note: 'Median gamma ray over each stretch of the wellbore. The Upper and Lower Bakken shales show as bright bands on the build; a lateral that stays dim stayed in clean Middle Bakken or Three Forks rock.', ticks: [20, 80, 140, 200] },
+    gas: { col: 4, lo: 10, hi: 3000, log: true, label: 'Total gas', unit: 'units', note: 'Median mud-log total gas along the wellbore, log scale. Only wells logged in gas units; ppm-logged wells show as not logged.', ticks: [10, 100, 1000, 3000] },
+    wet: { col: 5, lo: 20, hi: 80, label: 'Gas wetness', unit: '%', note: 'Median (C2+C3+C4+C5) ÷ (C1+…+C5) along the wellbore. Unit-free, so every chromatograph log counts. Higher means wetter, more oil-prone gas.', ticks: [20, 40, 60, 80] },
+    unit: { catPath: true, col: 6, label: 'Stratigraphic unit', note: 'Unit at each point of the lateral, from the auto-picked Bakken shale surfaces (about ±18 ft uncertainty, so "in the shale" vs "just below it" is not reliable for one well). Build sections are not classified.' },
+    section: { catPath: true, col: 8, names: 'sections', palette: ['#65b9ff', '#b79cff', '#ffd84d', '#ff665e', '#a3ff12', '#35d8ed'], label: 'Wellbore section', note: 'Section class at each point from a bidirectional GRU trained on the website’s rule classifier over every NDIC survey station (vertical, directional upper hole, curve, drillback excursion, lateral, U-turn). Path points are 25 per well, so short sections can fall between points.' },
+    stiff: { col: 7, lo: 1.7, hi: 7.4, label: "Young's modulus", unit: 'M psi', note: "Stiffness of the unit at each lateral point: Upper Bakken Shale 1.7, Lower Bakken Shale 2.2, middle Three Forks 3.8, upper Three Forks 4.8, Middle Bakken 5.5, Lodgepole 7.4 million psi (Physical Properties of Rocks, 2015, Table 7.8, after Amendt et al. 2013).", ticks: [1.7, 3.6, 5.5, 7.4] },
+    zone: { cat: true, label: 'Target zone', note: 'Where the lateral sits relative to the auto-picked Bakken shales at its midpoint.' },
+    oil: { well: 'oil', lo: 50000, hi: 900000, log: true, label: 'Cumulative oil', unit: 'bbl', note: 'NDIC cumulative oil (well index, March 2026). Older wells have had longer to produce.', ticks: [50000, 150000, 400000, 900000] },
+    year: { well: 'year', lo: 2008, hi: 2026, label: 'Spud year', unit: '', note: 'From the NDIC well index.', ticks: [2008, 2014, 2020, 2026] },
+    oil24: { well: 'oil24', lo: 40000, hi: 400000, log: true, label: 'Oil, first 24 months', unit: 'bbl', note: 'Oil in the first 24 calendar months from first production (NDIC monthly production to January 2026). Comparable across vintages, unlike cumulative oil. Median rose from 90k bbl (2008 wells) to 265k (2020).', ticks: [40000, 100000, 200000, 400000] },
+    eur: { well: 'eur', lo: 150000, hi: 1200000, log: true, label: 'Estimated ultimate recovery', unit: 'bbl', note: 'Modified-Arps decline fit to the monthly rates (hyperbolic, exponential once the decline falls to 6%/yr), 30 years, 5 bopd limit; wells with at least two years of history. The least certain of the production measures.', ticks: [150000, 300000, 600000, 1200000] },
+    perf: { well: 'perf', lo: -60, hi: 60, div: true, label: 'Actual vs model, 24-month oil', unit: '%', note: 'How far the well’s first 24 months of oil landed above (orange) or below (blue) what the production-drivers model expected from its location, spacing, geometry, operator, mud log, zone, TOC and frac size. Big misses point at completion or mechanical differences the data does not carry, or at sweet spots.', ticks: [-60, -30, 0, 30, 60] },
+    water: { well: 'water_ft', lo: 100, hi: 1500, label: 'Frac water per foot', unit: 'gal/ft', note: 'FracFocus base water volume over the primary lateral length. Jobs grew from ~290 gal/ft (2012-13) to ~930 (2020+). Second strongest driver of 24-month oil after completion era.', ticks: [100, 500, 1000, 1500] },
+    rate_y: { year: 0, lo: 10, hi: 1000, log: true, label: 'Oil rate in the year', unit: 'bopd', note: 'Average oil rate (bbl per producing day) in the chosen year, from NDIC monthly production. Move the Year slider.', ticks: [10, 100, 300, 1000] },
+    gor_y: { year: 1, lo: 0.7, hi: 5, log: true, ramp: PP_RAMP, label: 'GOR rise to date', unit: 'x', note: 'That year\'s GOR divided by the well\'s initial GOR (months 3-12). Above about 1.5 the near-well pressure has fallen below the bubble point: solution gas is breaking out and oil mobility is dropping. A pressure gauge from production accounting.', ticks: [0.7, 1.5, 3, 5] },
+    pp_ik: { well: 'pp_ik', lo: 0.40, hi: 0.70, ramp: PP_RAMP, label: 'Dakota pore-pressure gradient', unit: 'psi/ft', note: 'Eaton (1975) pore pressure from shale sonic in the Inyan Kara and the 300 ft of shale above it, per well with a sonic log through the Dakota. 0.465 psi/ft is normal brine pressure; 0.52 is about 10 ppg mud, 0.62 about 12 ppg. A compaction-based estimate: it responds to disposal-raised pressure in the shales, not to the sand directly.', ticks: [0.4, 0.5, 0.6, 0.7] },
+    pp_bakken: { well: 'pp_bakken', lo: 0.40, hi: 0.75, ramp: PP_RAMP, label: 'Bakken pore-pressure gradient', unit: 'psi/ft', note: 'Eaton pore pressure from the Bakken shale sonic, wells with a deep sonic log. The known Bakken overpressure in the deep basin (0.6-0.75 psi/ft) shows; Eaton under-reads pressure that comes from hydrocarbon generation rather than compaction, so treat the deep values as a floor.', ticks: [0.4, 0.5, 0.6, 0.75] },
+    prop: { well: 'prop_ft', lo: 100, hi: 1500, label: 'Proppant per foot', unit: 'lb/ft', note: 'Proppant mass from the FracFocus ingredient percentages over the primary lateral length. Grew from ~300 lb/ft (2012-13) to ~1,000 (2020+).', ticks: [100, 500, 1000, 1500] },
+    wb: { catWell: 'wb', label: 'Wellbore shape class', note: 'K-means clusters of the lateral and build geometry from the NDIC surveys (kickoff depth, build rate and dogleg, lateral length, slope, toe up/down, dogleg, porpoising, tortuosity, turning, step-out). Names list each cluster’s three strongest traits relative to the basin average.' },
+    toe_up: { well: 'toe_up', lo: -150, hi: 150, div: true, label: 'Toe up / toe down', unit: 'ft', note: 'Toe TVD minus heel TVD along the primary lateral. Orange = toe deeper (toe down), blue = toe shallower (toe up). Toe-up laterals drain by gravity toward the heel; toe-down ones can load up with liquid at the toe.', ticks: [-150, -75, 0, 75, 150] },
+    porp: { well: 'porp', lo: 0, hi: 25, label: 'Porpoising amplitude', unit: 'ft', note: 'RMS of the lateral’s TVD about its own straight-line trend. High values mean the lateral snakes up and down through the target: geosteering corrections, or a target that rolls.', ticks: [0, 8, 16, 25] },
+    tort: { well: 'tort', lo: 0, hi: 0.02, label: 'Lateral tortuosity', unit: '', note: 'Path length over straight-line chord, minus one. 0.01 means the lateral is 1% longer than the straight line from heel to toe: a measure of wiggle that affects running casing and pumps.', ticks: [0, 0.005, 0.01, 0.02] },
+    dls90: { well: 'dls90', lo: 1, hi: 8, label: 'Lateral dogleg severity, P90', unit: '°/100 ft', note: '90th percentile dogleg severity between survey stations inside the lateral. The upper tail is what limits what can be run into the hole.', ticks: [1, 3, 5, 8] },
+  };
+  const WB_COLORS = ['#3987e5', '#ee964b', '#199e70', '#9085e9', '#f4d35e', '#e05a8a', '#5fd3d3', '#a3b1bb', '#c4473a'].map((c) => new THREE.Color(c));
+  const PALETTES = {}; for (const [k, m] of Object.entries(MODES)) if (m.palette) PALETTES[k] = m.palette.map((c) => new THREE.Color(c));
+  // Diverging ramp for the model residual: blue (under) through grey (as expected) to orange (over)
+  const DIV_RAMP = ['#2a78d6', '#6da0e0', '#8a8f94', '#e0955a', '#e8611f'].map((c) => new THREE.Color(c));
+
+  let meta, V, nW, offsets, W, S = 6;  // S: floats per path vertex
+  let YS = null, DQ = null, deplMesh = null;  // yearly per-well series, depletion plane bytes and mesh
+  let IQ = null, PQ = null, injMesh = null, swdPts = null, swdRings = null;  // Dakota injection plane bytes (psi, bbl/acre), its mesh, disposal-well markers
+  let FU = null, futureLines = null;           // projected laterals (future.bin) and their line segments
+  const TIER_COLORS = ['#d7263d', '#f28c28', '#f2d43d', '#35d8ed', '#b79cff', '#2b9348', '#f2d43d', '#f28c28'].map((c) => new THREE.Color(c));
+  const TIER_NAMES = ['low', 'base', 'high', 'upside, median density', 'upside, upper-quartile density', 'basin model, $55', 'basin model, + $65', 'basin model, + $75 / $7 M'];
+  const FAMILY = [0, 0, 0, 1, 1, 2, 2, 2];
+  const tierShown = (tier, t) => FAMILY[tier] === FAMILY[t] && tier <= t;   // three nested families
+  const BE_COLORS = ['#2b9348', '#f2d43d', '#f28c28', '#d7263d'].map((c) => new THREE.Color(c));  // <=55, <=65, <=75, >75
+  const beClass = (v) => v === null || v === undefined ? -1 : v <= 55 ? 0 : v <= 65 ? 1 : v <= 75 ? 2 : 3;
+  const yearIdx = () => Math.max(0, Math.min(meta.years.length - 1, +$('year').value - meta.years[0]));
+  let renderer, scene, camera, controls, group, lines, lineGeo, surfaces = {};
+  let selected = -1, selLine = null;
+  const zoneOn = [true, true, true, true];
+
+  function rampColor(t, out) {
+    t = Math.max(0, Math.min(1, t)) * (RAMP.length - 1);
+    const i = Math.min(RAMP.length - 2, Math.floor(t));
+    return out.copy(RAMP[i]).lerp(RAMP[i + 1], t - i);
+  }
+  function divColor(t, out) {
+    t = Math.max(0, Math.min(1, t)) * (DIV_RAMP.length - 1);
+    const i = Math.min(DIV_RAMP.length - 2, Math.floor(t));
+    return out.copy(DIV_RAMP[i]).lerp(DIV_RAMP[i + 1], t - i);
+  }
+  function norm(m, v) {
+    if (m.log) return (Math.log10(Math.max(v, 1e-6)) - Math.log10(m.lo)) / (Math.log10(m.hi) - Math.log10(m.lo));
+    return (v - m.lo) / (m.hi - m.lo);
+  }
+  function short(v) { return v >= 1e6 ? fmt1.format(v / 1e6) + 'M' : v >= 1e3 ? fmt.format(v / 1e3) + 'k' : fmt.format(v); }
+
+  async function load() {
+    // float32 arrays ship as base64 text (artifacts serve text, not raw binary)
+    // cache: 'no-cache' makes the browser revalidate each data file (If-Modified-Since -> 304 when unchanged); without it a
+    // browser that opened the viewer before keeps a stale meta.json / paths for hours after a rebuild
+    // bakkensubsurface.com edition (scripts/prepare_3d_viewer.py): the data files ship as gzip objects under data/ and
+    // are inflated in the browser, as the site's survey viewer does; cache: 'no-cache' keeps the revalidation behaviour
+    const inflate = (path) => fetch(path, { cache: 'no-cache' }).then((r) => {
+      if (!r.ok) throw new Error(path + ' ' + r.status);
+      if (typeof DecompressionStream !== 'function') throw new Error('this viewer needs a current browser with gzip DecompressionStream support');
+      return new Response(r.body.pipeThrough(new DecompressionStream('gzip')));
+    });
+    const f32 = (name) => inflate('data/' + name.replace(/\.b64\.txt$/, '.gz.bin')).then((r) => r.arrayBuffer());
+    const opt = (name) => f32(name).catch(() => null);
+    const [m, p, s, y, dq, fu, iq, pq] = await Promise.all([
+      inflate('data/meta.gz.bin').then((r) => r.json()),
+      f32('paths.b64.txt'),
+      f32('surfaces.b64.txt'),
+      opt('years.b64.txt'),
+      opt('depl.b64.txt'),
+      opt('future.b64.txt'),
+      opt('inj.b64.txt'),
+      opt('plume.b64.txt'),
+    ]);
+    meta = m; V = new Float32Array(p); W = meta.wells; nW = W.w.length; offsets = meta.offsets; S = meta.stride || 6;
+    if (y && meta.years) YS = new Float32Array(y);
+    if (dq && meta.depletion) DQ = new Uint8Array(dq);
+    if (fu && meta.future) FU = new Float32Array(fu);
+    if (iq && meta.injection) IQ = new Uint8Array(iq);
+    if (pq && meta.injection) PQ = new Uint8Array(pq);
+    return new Float32Array(s);
+  }
+
+  function initScene() {
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x071523, 1);
+    $('scene').appendChild(renderer.domElement);
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(45, 1, 0.05, 5000);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; controls.dampingFactor = 0.12; controls.screenSpacePanning = true;
+    controls.maxPolarAngle = Math.PI * 0.98;
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(-1, 2, 1.2); scene.add(sun);
+    group = new THREE.Group(); scene.add(group);
+    const resize = () => { const w = innerWidth, h = innerHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); };
+    addEventListener('resize', resize); resize();
+  }
+
+  // scene coords: x east, y up (z exaggerated by group scale), z south
+  function buildLines() {
+    const pos = new Float32Array(V.length / S * 3);
+    for (let i = 0, j = 0; i < V.length; i += S, j += 3) { pos[j] = V[i] * K; pos[j + 1] = V[i + 2] * K; pos[j + 2] = -V[i + 1] * K; }
+    lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    lineGeo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(pos.length), 3));
+    lines = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({ vertexColors: true }));
+    group.add(lines);
+  }
+
+  // Organic-richness ramp for the shale surfaces: dark brown (lean) to pale amber (rich)
+  const TOC_RAMP = TURBO;
+  const TOC_LO = 8, TOC_HI = 15;
+  function tocColor(v, out) {
+    let t = Math.max(0, Math.min(1, (v - TOC_LO) / (TOC_HI - TOC_LO))) * (TOC_RAMP.length - 1);
+    const i = Math.min(TOC_RAMP.length - 2, Math.floor(t));
+    return out.copy(TOC_RAMP[i]).lerp(TOC_RAMP[i + 1], t - i);
+  }
+
+  // Value drapes for the surfaces: which layer each surface takes, its ramp and scale
+  const SAND_RAMP = TURBO;
+  const VAL_MODES = {
+    toc: { ramp: TOC_RAMP, lo: TOC_LO, hi: TOC_HI, layers: { ubs: 'ubs_toc', lbs: 'lbs_toc' }, ticks: ['8', '10', '12', '15 wt% TOC'],
+           note: 'Present-day TOC of the Bakken shales from density logs (Schmoker & Hester 1983), mapped on a depth (maturity) trend: richer on the shallow margins, leaner in the deeper, more mature centre. Upper shale ±1.6 wt%, Lower ±2.0 wt% (holdout error). The Dakota surfaces keep their depth shading.' },
+    ik_thick: { ramp: SAND_RAMP, lo: 300, hi: 550, layers: { ik_top: 'ik_thick', ik_base: 'ik_thick' }, ticks: ['300', '380', '470', '550 ft'],
+                note: 'Inyan Kara top to Swift top, from NDIC picks in about 20,000 wells (LogTops). Gross interval, sand and shale together.' },
+    ik_net_sand: { ramp: SAND_RAMP, lo: 50, hi: 300, layers: { ik_top: 'ik_net_sand', ik_base: 'ik_net_sand' }, ticks: ['50', '130', '220', '300 ft'],
+                   note: 'Feet of the Inyan Kara with shale volume under 35% on the gamma ray (each well scaled between its own cleanest and shaliest readings), from the LAS vertical sections, mapped. Where to expect sand, not an exact count.' },
+    ik_phih: { ramp: SAND_RAMP, lo: 5, hi: 60, layers: { ik_top: 'ik_phih', ik_base: 'ik_phih' }, ticks: ['5', '25', '40', '60 ft'],
+               note: 'Density porosity (sandstone matrix) averaged over the net sand, times the net sand feet: a pore-volume thickness. Only wells with a density log through the Inyan Kara; mapped.' },
+    pp_ik: { ramp: PP_RAMP, lo: 0.40, hi: 0.70, layers: { ik_top: 'pp_ik', ik_base: 'pp_ik' }, ticks: ['0.40', '0.50', '0.60', '0.70 psi/ft'],
+             note: 'Eaton pore-pressure gradient in the Dakota from shale sonic (about 540 wells), mapped with heavy smoothing: a regional picture, with 0.465 psi/ft normal. Local disposal-driven highs show in the per-well colouring (Color wellbores by: Dakota pressure gradient) better than here.' },
+    gor0: { ramp: PP_RAMP, lo: 2.6, hi: 3.4, layers: { ubs: 'gor0', lbs: 'gor0' }, ticks: ['400', '800', '1,600', '2,500 scf/bbl'],
+            note: 'Initial producing GOR (months 3-12, log scale), kernel-smoothed over 4 miles from 18,700 wells; holdout error 0.125 log units vs 0.209 for a single value. Rises toward the deep, hotter basin centre: the oil gets lighter and gassier with maturity. A fluid map you cannot get from logs.' },
+    gor_rise: { ramp: PP_RAMP, lo: 0.0, hi: 0.7, layers: { ubs: 'gor_rise', lbs: 'gor_rise' }, ticks: ['1x', '1.8x', '3.2x', '5x'],
+                note: 'Latest-12-month GOR over initial GOR (log scale), 14,100 wells with 3+ years. Where it is high the near-well pressure has fallen below the bubble point across the area: depleted ground for the next well.' },
+    resid: { ramp: DIV_RAMP, lo: -120, hi: 120, layers: { ubs: 'resid', lbs: 'resid' }, ticks: ['-120', '-60', '0', '+60', '+120 ft'],
+             note: 'Upper Bakken top minus a 6-mile local-quadratic regional surface: orange = structurally high (crest), blue = low. The Nesson anticline runs N-S along 102.9 W; Little Knife and Billings structures to the south-west. Wells on local highs (top fifth, Middle Bakken) make 7-9% more 24-month oil than the model expects.' },
+    curv: { ramp: SAND_RAMP, lo: 0, hi: 40, layers: { ubs: 'curv', lbs: 'curv' }, ticks: ['0', '10', '20', '40 ft/mi²'],
+            note: 'Total curvature of the residual structure (ft per mile squared): where the surface bends most, and where natural fractures are expected. No measurable production signal at this map resolution.' },
+    salt: { ramp: SAND_RAMP, lo: 0, hi: 400, layers: { ubs: 'salt', lbs: 'salt' }, ticks: ['0', '100', '250', '400 ft'],
+            note: 'Prairie Evaporite salt thickness (Winnipegosis top minus Prairie top, 1,762 wells with both NDIC picks). Where it thins below ~50 ft the salt has dissolved and the overburden has collapsed; distance to that edge showed no production signal.' },
+    geotherm: { ramp: PP_RAMP, lo: 1.5, hi: 2.4, layers: { ubs: 'geotherm', lbs: 'geotherm' }, ticks: ['1.5', '1.8', '2.1', '2.4 °F/100 ft'],
+                note: 'Geothermal gradient from 6,819 logged bottom-hole temperatures ((BHT - 40 °F) / TVD). Logged BHTs read below true formation temperature, so this is a floor. McKenzie County is hottest (2.1 °F/100 ft), Mountrail coolest (1.8). Hotter areas have lower shale TOC (more mature); no direct production signal beyond location.' },
+    btemp: { ramp: PP_RAMP, lo: 180, hi: 290, layers: { ubs: 'btemp', lbs: 'btemp' }, ticks: ['180', '215', '250', '290 °F'],
+             note: 'Temperature at the Bakken top from the gradient map and the Bakken depth (6,344 wells). Drives oil viscosity, gas in solution and maturity.' },
+    pp_bakken: { ramp: PP_RAMP, lo: 0.40, hi: 0.75, layers: { ubs: 'pp_bakken', lbs: 'pp_bakken' }, ticks: ['0.40', '0.50', '0.60', '0.75 psi/ft'],
+                 note: 'Eaton pore-pressure gradient from the Bakken shale sonic (about 220 wells), mapped. Rises from normal on the flanks to 0.55-0.75 in the deep basin; Eaton under-reads generation-driven overpressure, so the deep values are a floor.' },
+  };
+  function valColor(m, v, out) {
+    let t = Math.max(0, Math.min(1, (v - m.lo) / (m.hi - m.lo))) * (m.ramp.length - 1);
+    const i = Math.min(m.ramp.length - 2, Math.floor(t));
+    return out.copy(m.ramp[i]).lerp(m.ramp[i + 1], t - i);
+  }
+
+  function buildSurface(name, Z, info, color, vals) {
+    const { nx, ny, x0, dx, y0, dy } = info;
+    const pos = new Float32Array(nx * ny * 3), col = new Float32Array(nx * ny * 3);
+    const draped = {};
+    for (const [mode, m] of Object.entries(VAL_MODES)) {
+      const v = vals[m.layers[name]];
+      if (!v) continue;
+      const a = new Float32Array(nx * ny * 3), c = new THREE.Color();
+      for (let k = 0; k < nx * ny; k++) {
+        if (Number.isFinite(v[k])) { valColor(m, v[k], c); a.set([c.r, c.g, c.b], k * 3); } else a.set([0.25, 0.27, 0.29], k * 3);
+      }
+      draped[mode] = a;
+    }
+    let zmin = Infinity, zmax = -Infinity;
+    for (const z of Z) if (Number.isFinite(z)) { zmin = Math.min(zmin, z); zmax = Math.max(zmax, z); }
+    const base = new THREE.Color(color), c = new THREE.Color();
+    for (let r = 0; r < ny; r++) for (let q = 0; q < nx; q++) {
+      const k = r * nx + q, z = Z[k];
+      pos[k * 3] = (x0 + q * dx) * K; pos[k * 3 + 1] = (Number.isFinite(z) ? z : zmin) * K; pos[k * 3 + 2] = -(y0 + r * dy) * K;
+      const t = Number.isFinite(z) ? (z - zmin) / (zmax - zmin) : 0;
+      c.copy(base).multiplyScalar(0.55 + 0.6 * t); col.set([c.r, c.g, c.b], k * 3);
+    }
+    const idx = [];
+    for (let r = 0; r < ny - 1; r++) for (let q = 0; q < nx - 1; q++) {
+      const a = r * nx + q, b = a + 1, d = a + nx, e = d + 1;
+      if ([a, b, d, e].every((k) => Number.isFinite(Z[k]))) idx.push(a, d, b, b, d, e);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    g.setIndex(idx); g.computeVertexNormals();
+    const mesh = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.45, side: THREE.DoubleSide, depthWrite: false }));
+    mesh.renderOrder = 1;
+    mesh.userData = { depth: col, draped };
+    group.add(mesh);
+    surfaces[name] = mesh;
+  }
+
+  // Layer volumes: the slab between a top and a base surface, closed with skirts along its edge, coloured by thickness
+  const VOL_RAMP = TURBO;
+  const volumes = {};
+  function buildVolume(name, Zt, Zb, info, lo, hi, label) {
+    const { nx, ny, x0, dx, y0, dy } = info, n = nx * ny;
+    const ok = new Uint8Array(n);
+    for (let k = 0; k < n; k++) ok[k] = Number.isFinite(Zt[k]) && Number.isFinite(Zb[k]) && Zt[k] > Zb[k] ? 1 : 0;
+    const pos = new Float32Array(n * 6), col = new Float32Array(n * 6), c = new THREE.Color();
+    for (let r = 0; r < ny; r++) for (let q = 0; q < nx; q++) {
+      const k = r * nx + q, x = (x0 + q * dx) * K, z = -(y0 + r * dy) * K;
+      const th = ok[k] ? Zt[k] - Zb[k] : 0;
+      valColor({ ramp: VOL_RAMP, lo, hi }, th, c);
+      pos[k * 3] = x; pos[k * 3 + 1] = (ok[k] ? Zt[k] : 0) * K; pos[k * 3 + 2] = z;           // top vertex k
+      pos[(n + k) * 3] = x; pos[(n + k) * 3 + 1] = (ok[k] ? Zb[k] : 0) * K; pos[(n + k) * 3 + 2] = z;  // base vertex n + k
+      c.multiplyScalar(0.8); col.set([c.r, c.g, c.b], k * 3); c.multiplyScalar(0.6); col.set([c.r, c.g, c.b], (n + k) * 3);
+    }
+    const idx = [];
+    const quad = (a, b, d, e) => idx.push(a, d, b, b, d, e);
+    for (let r = 0; r < ny - 1; r++) for (let q = 0; q < nx - 1; q++) {
+      const a = r * nx + q, b = a + 1, d = a + nx, e = d + 1;
+      if (ok[a] && ok[b] && ok[d] && ok[e]) { quad(a, b, d, e); quad(n + d, n + e, n + a, n + b); }
+      // skirts: where a valid cell edge borders an invalid cell (or the grid edge), drop a wall from top to base
+      if (ok[a] && ok[b] && !(ok[d] && ok[e])) quad(a, b, n + a, n + b);
+      if (ok[d] && ok[e] && !(ok[a] && ok[b])) quad(n + d, n + e, d, e);
+      if (ok[a] && ok[d] && !(ok[b] && ok[e])) quad(n + a, n + d, a, d);
+      if (ok[b] && ok[e] && !(ok[a] && ok[d])) quad(b, e, n + b, n + e);
+    }
+    for (let q = 0; q < nx - 1; q++) { const a = q, b = a + 1; if (ok[a] && ok[b]) quad(n + a, n + b, a, b); const d = (ny - 1) * nx + q, e = d + 1; if (ok[d] && ok[e]) quad(d, e, n + d, n + e); }
+    for (let r = 0; r < ny - 1; r++) { const a = r * nx, d = a + nx; if (ok[a] && ok[d]) quad(a, d, n + a, n + d); const b = r * nx + nx - 1, e = b + nx; if (ok[b] && ok[e]) quad(n + b, n + e, b, e); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    g.setIndex(idx); g.computeVertexNormals();
+    const mesh = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }));
+    mesh.renderOrder = 1; mesh.visible = false; mesh.userData = { lo, hi, label };
+    group.add(mesh); volumes[name] = mesh;
+  }
+  function volLegend() {
+    const on = Object.values(volumes).filter((m) => m.visible), L = $('volLegend');
+    L.hidden = !on.length; if (!on.length) return;
+    L.innerHTML = '';
+    for (const m of on) {
+      const cv = document.createElement('canvas'); cv.width = 240; cv.height = 12;
+      const g = cv.getContext('2d'), c = new THREE.Color();
+      for (let x = 0; x < 240; x++) { valColor({ ramp: VOL_RAMP, lo: 0, hi: 1 }, x / 239, c); g.fillStyle = '#' + c.getHexString(); g.fillRect(x, 0, 1, 12); }
+      const t = document.createElement('div'); t.className = 'ticks';
+      const { lo, hi } = m.userData; t.innerHTML = [lo, lo + (hi - lo) / 3, lo + 2 * (hi - lo) / 3, hi].map((v, i) => `<span>${fmt.format(v)}${i === 3 ? ' ft' : ''}</span>`).join('');
+      const n = document.createElement('div'); n.className = 'note'; n.textContent = m.userData.label;
+      L.appendChild(n); L.appendChild(cv); L.appendChild(t);
+    }
+  }
+
+  // Casing shoes: one point per string with a shoe depth, coloured by string type (filled = reported, pale = estimated)
+  const SHOE_COLORS = ['#c4c4c4', '#ffd166', '#ff7a3d', '#5fd3d3'].map((c) => new THREE.Color(c));
+  let shoePts = null;
+  function buildShoes() {
+    if (!W.shoes || !W.shoes.some((s) => s && s.length)) { $('sShoes').disabled = true; return; }
+    const pos = [], col = [], c = new THREE.Color();
+    const vis = visibleW();
+    for (let w = 0; w < nW; w++) {
+      if (!vis[w] || !W.shoes[w]) continue;
+      for (const [t, md, od, rep, x, y, z] of W.shoes[w]) {
+        pos.push(x * K, z * K, -y * K);
+        c.copy(SHOE_COLORS[t]); if (!rep) c.multiplyScalar(0.55);
+        col.push(c.r, c.g, c.b);
+      }
+    }
+    if (shoePts) { group.remove(shoePts); shoePts.geometry.dispose(); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    shoePts = new THREE.Points(g, new THREE.PointsMaterial({ size: 7, sizeAttenuation: false, vertexColors: true, depthTest: false }));
+    shoePts.renderOrder = 2; shoePts.visible = $('sShoes').checked; group.add(shoePts);
+  }
+
+  // Projected laterals: two points each; the scenario select shows tiers up to the chosen one (they nest)
+  function buildFuture() {
+    const f = meta.future; if (!f || !FU) { $('sFuture').disabled = true; $('futureTier').disabled = true; $('futureColor').disabled = true; return; }
+    if (!f.breakeven) for (const o of $('futureColor').options) if (o.value === 'be') o.disabled = true;
+    const pos = new Float32Array(f.n * 6), col = new Float32Array(f.n * 6);
+    for (let i = 0; i < f.n; i++) {
+      for (let k = 0; k < 2; k++) {
+        const b = (i * 2 + k) * 3;
+        pos[b] = FU[b] * K; pos[b + 1] = FU[b + 2] * K; pos[b + 2] = -FU[b + 1] * K;
+        const c = TIER_COLORS[f.tier[i]]; col[b] = c.r; col[b + 1] = c.g; col[b + 2] = c.b;
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    futureLines = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ vertexColors: true }));
+    futureLines.renderOrder = 2; futureLines.visible = false; group.add(futureLines);
+    filterFuture();
+  }
+  function filterFuture() {
+    const f = meta.future; if (!futureLines) return;
+    const t = +$('futureTier').value, idx = [], byBE = $('futureColor').value === 'be' && f.breakeven;
+    const col = futureLines.geometry.attributes.color.array;
+    let n = 0; const nb = [0, 0, 0, 0, 0];
+    for (let i = 0; i < f.n; i++) {
+      const c = byBE ? (beClass(f.breakeven[i]) < 0 ? NOLOG : BE_COLORS[beClass(f.breakeven[i])]) : TIER_COLORS[f.tier[i]];
+      for (let k = 0; k < 2; k++) { const b = (i * 2 + k) * 3; col[b] = c.r; col[b + 1] = c.g; col[b + 2] = c.b; }
+      if (tierShown(f.tier[i], t)) { idx.push(i * 2, i * 2 + 1); n++; if (byBE) nb[beClass(f.breakeven[i]) < 0 ? 4 : beClass(f.breakeven[i])]++; }
+    }
+    futureLines.geometry.attributes.color.needsUpdate = true;
+    futureLines.geometry.setIndex(idx);
+    const names = TIER_NAMES, shownTiers = names.map((_, i) => i).filter((i) => tierShown(i, t));
+    if (byBE) {
+      const lab = ['works at $55', 'needs $65', 'needs $75', 'above $75'];
+      $('futureLegend').innerHTML = '<div class="cats">' + lab.map((l, i) => `<span><i class="sw" style="background:#${BE_COLORS[i].getHexString()}"></i>${l} · ${fmt.format(nb[i])}</span>`).join('') +
+        `<span>${fmt.format(n)} projected laterals shown${t >= 3 ? ' (upside laterals have no economics yet)' : ''} · breakeven = WTI at which NPV10 is zero on the local analog type curve, $8.5 M well, $5 differential, 80% NRI, 10% tax, LOE $7.5k/mo + $3/bbl oil + $1/bbl water</span></div>`;
+    } else {
+      $('futureLegend').innerHTML = '<div class="cats">' + shownTiers.map((i) =>
+        `<span><i class="sw" style="background:#${TIER_COLORS[i].getHexString()}"></i>${names[i]} · ${fmt.format(f.counts[f.tiers[i]] || 0)}</span>`).join('') +
+        `<span>${fmt.format(n)} projected laterals shown</span></div>`;
+    }
+  }
+
+  function colorSurfaces() {
+    const mode = $('surfColor').value, vm = VAL_MODES[mode];
+    for (const m of Object.values(surfaces)) {
+      const arr = (vm && m.userData.draped[mode]) || m.userData.depth;
+      m.geometry.attributes.color.array.set(arr);
+      m.geometry.attributes.color.needsUpdate = true;
+    }
+    const L = $('surfLegend');
+    if (!vm) { L.innerHTML = '<div class="note">Shaded by depth: lighter is shallower.</div>'; return; }
+    const cv = document.createElement('canvas'); cv.width = 240; cv.height = 12;
+    const g = cv.getContext('2d'), c = new THREE.Color();
+    for (let x = 0; x < 240; x++) { valColor(vm, vm.lo + (vm.hi - vm.lo) * x / 239, c); g.fillStyle = '#' + c.getHexString(); g.fillRect(x, 0, 1, 12); }
+    L.innerHTML = '';
+    L.appendChild(cv);
+    const t = document.createElement('div'); t.className = 'ticks';
+    t.innerHTML = vm.ticks.map((x) => `<span>${x}</span>`).join('');
+    L.appendChild(t);
+    const n = document.createElement('div'); n.className = 'note'; n.style.marginTop = '4px';
+    n.textContent = vm.note;
+    L.appendChild(n);
+  }
+
+  function applyColors() {
+    const mode = $('colorBy').value, m = MODES[mode];
+    const col = lineGeo.attributes.color.array, c = new THREE.Color();
+    for (let w = 0; w < nW; w++) {
+      let wc = null;
+      if (m.cat) wc = ZONE_COLORS[W.zone[w]];
+      else if (m.catWell) { const v = W[m.catWell] ? W[m.catWell][w] : null, pal = m.palette ? PALETTES[mode] : WB_COLORS; wc = v === null || v === undefined ? NOLOG : pal[v % pal.length]; }
+      else if (m.year !== undefined) { const v = YS ? YS[(w * meta.years.length + yearIdx()) * 2 + m.year] : NaN; wc = !Number.isFinite(v) ? NOLOG : m.ramp ? valColor({ ramp: m.ramp, lo: 0, hi: 1 }, norm(m, v), new THREE.Color()) : rampColor(norm(m, v), new THREE.Color()); }
+      else if (m.well) { const v = W[m.well][w]; wc = v === null ? NOLOG : m.ramp ? valColor({ ramp: m.ramp, lo: m.lo, hi: m.hi }, v, new THREE.Color()) : (m.div ? divColor : rampColor)(norm(m, v), new THREE.Color()); }
+      for (let v = offsets[w]; v < offsets[w + 1]; v++) {
+        let cc = wc;
+        if (!cc) {
+          const x = V[v * S + m.col];
+          cc = !Number.isFinite(x) ? NOLOG : m.catPath ? (m.palette ? PALETTES[mode][x] : UNIT_COLORS[x]) : rampColor(norm(m, x), c);
+        }
+        col[v * 3] = cc.r; col[v * 3 + 1] = cc.g; col[v * 3 + 2] = cc.b;
+      }
+    }
+    lineGeo.attributes.color.needsUpdate = true;
+    renderLegend(mode);
+    $('colorNote').textContent = m.note;
+  }
+
+  const visibleW = () => (visibleW.a || (visibleW.a = new Uint8Array(nW)));
+  function applyFilter() {
+    const idx = [], up = $('showUpper').checked ? 0 : (meta.upper_pts || 0), yr = +$('year').value;
+    const thin = +$('thin').value, county = +$('county').value, op = +$('operator').value, radius = +$('radius').value;
+    let cx = 0, cy = 0, useR = false;
+    if (radius > 0 && selected >= 0) { const h = offsets[selected] + (meta.upper_pts || 0) + (meta.build_pts || 0); cx = V[h * S]; cy = V[h * S + 1]; useR = true; }
+    const r2 = (radius * 5280) ** 2, vis = visibleW();
+    let shown = 0;
+    for (let w = 0; w < nW; w++) {
+      vis[w] = 0;
+      if (!zoneOn[W.zone[w]]) continue;
+      if (W.fpy[w] !== null && W.fpy[w] > yr) continue;
+      if (thin > 1 && w % thin !== 0 && w !== selected) continue;
+      if (county >= 0 && W.county && W.county[w] !== county) continue;
+      if (op >= 0 && W.op[w] !== op) continue;
+      if (useR && w !== selected) { const h = offsets[w] + (meta.upper_pts || 0) + (meta.build_pts || 0); if ((V[h * S] - cx) ** 2 + (V[h * S + 1] - cy) ** 2 > r2) continue; }
+      vis[w] = 1;
+      shown++;
+      for (let v = offsets[w] + up; v < offsets[w + 1] - 1; v++) idx.push(v, v + 1);
+    }
+    lineGeo.setIndex(idx);
+    if (W.shoes) buildShoes();
+    $('foot').textContent = `${fmt.format(shown)} of ${fmt.format(nW)} wellbores shown. Paths: NDIC surveys (2026-10-27) with KB from LAS headers and USGS 3DEP ground. Log values: LAS mud logs. Cement: bond logs scored by cement_bond.py (2026-10-31). Production: NDIC monthly to 2026-01. Completions: FracFocus (2026-03). Sections: GRU on the surveys. Casing shoes: LAS headers (reported) and open-hole log starts (estimated). Bakken surfaces: gamma-ray rule picks plus machine picks, gridded at 0.01°. Dakota surfaces: NDIC LogTops picks, gridded at 0.01° (shown at 0.02°). Built ${meta.built}.`;
+  }
+
+  function renderLegend(mode) {
+    const m = MODES[mode], L = $('legend');
+    if (m.catPath) {
+      const names = m.names ? (meta[m.names] || []) : meta.units, pal = m.palette ? PALETTES[mode] : UNIT_COLORS;
+      L.innerHTML = '<div class="cats">' + names.map((u, i) =>
+        `<span><i class="sw" style="background:#${pal[i].getHexString()}"></i>${u}</span>`).join('') +
+        `<span><i class="sw" style="background:#${NOLOG.getHexString()}"></i>${m.names ? 'Not classified' : 'Not classified (build section, no surfaces)'}</span></div>`;
+      return;
+    }
+    if (m.catWell) {
+      const names = (m.names ? meta[m.names] : meta.wb_names) || [], n = names.map(() => 0), pal = m.palette ? PALETTES[mode] : WB_COLORS; let none = 0;
+      (W[m.catWell] || []).forEach((v) => { if (v === null || v === undefined) none++; else n[v]++; });
+      L.innerHTML = '<div class="cats">' + names.map((nm, i) => n[i] ? `<span><i class="sw" style="background:#${pal[i % pal.length].getHexString()}"></i>${esc(nm)} · ${fmt.format(n[i])}</span>` : '').join('') +
+        `<span><i class="sw" style="background:#${NOLOG.getHexString()}"></i>Not classified · ${fmt.format(none)}</span></div>`;
+      return;
+    }
+    if (m.cat) {
+      const n = [0, 0, 0, 0]; W.zone.forEach((z) => n[z]++);
+      L.innerHTML = '<div class="cats">' + meta.zones.map((z, i) =>
+        `<span><i class="sw" style="background:#${ZONE_COLORS[i].getHexString()}"></i>${z || 'Not placed'} · ${fmt.format(n[i])}</span>`).join('') + '</div>';
+      return;
+    }
+    const cv = document.createElement('canvas'); cv.width = 240; cv.height = 12;
+    const g = cv.getContext('2d'), c = new THREE.Color();
+    for (let x = 0; x < 240; x++) { if (m.ramp) valColor({ ramp: m.ramp, lo: 0, hi: 1 }, x / 239, c); else (m.div ? divColor : rampColor)(x / 239, c); g.fillStyle = '#' + c.getHexString(); g.fillRect(x, 0, 1, 12); }
+    const f = (v) => ['oil', 'oil24', 'eur'].includes(mode) ? short(v) : mode === 'year' ? String(v) : mode === 'stiff' ? fmt1.format(v) : mode === 'perf' || mode === 'toe_up' ? (v > 0 ? '+' : '') + v : mode.startsWith('pp_') ? v.toFixed(2) : mode === 'gor_y' ? v + '×' : mode === 'tort' ? String(v) : fmt.format(v);
+    L.innerHTML = ''; L.appendChild(cv);
+    const t = document.createElement('div'); t.className = 'ticks';
+    t.innerHTML = m.ticks.map((v) => `<span>${f(v)}${m.unit && v === m.ticks[m.ticks.length - 1] ? ' ' + m.unit : ''}</span>`).join('');
+    L.appendChild(t);
+    const nl = document.createElement('div'); nl.className = 'cats'; nl.style.marginTop = '6px';
+    nl.innerHTML = `<span><i class="sw" style="background:#${NOLOG.getHexString()}"></i>Not logged / no value</span>`;
+    L.appendChild(nl);
+  }
+
+  function setExag() {
+    const e = +$('exag').value; group.scale.y = e; $('exagOut').textContent = e + '×';
+    if (selLine) selLine.scale.y = 1;
+  }
+
+  // Depletion plane: a flat mesh just below the Bakken, coloured per year from the uint8 withdrawal grid
+  const DEPL_RAMP = TURBO;
+  const DEPL_HI = 20000;  // bbl/acre at the top of the ramp
+  function buildDepletion() {
+    const d = meta.depletion; if (!d || !DQ) return;
+    const n = d.nx * d.ny, pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+    for (let r = 0; r < d.ny; r++) for (let q = 0; q < d.nx; q++) {
+      const k = r * d.nx + q;
+      pos[k * 3] = (d.x0 + q * d.d) * K; pos[k * 3 + 1] = d.z * K; pos[k * 3 + 2] = -(d.y0 + r * d.d) * K;
+    }
+    const idx = [];
+    for (let r = 0; r < d.ny - 1; r++) for (let q = 0; q < d.nx - 1; q++) { const a = r * d.nx + q, b = a + 1, c = a + d.nx, e = c + 1; idx.push(a, c, b, b, c, e); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setIndex(idx);
+    deplMesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.75, side: THREE.DoubleSide, depthWrite: false }));
+    deplMesh.renderOrder = 0; deplMesh.visible = false; group.add(deplMesh);
+    colorDepletion();
+    const L = $('deplLegend'), cv = document.createElement('canvas'); cv.width = 240; cv.height = 12;
+    const ctx = cv.getContext('2d'), c = new THREE.Color();
+    for (let x = 0; x < 240; x++) { valColor({ ramp: DEPL_RAMP, lo: 0, hi: 1 }, x / 239, c); ctx.fillStyle = '#' + c.getHexString(); ctx.fillRect(x, 0, 1, 12); }
+    L.innerHTML = ''; L.appendChild(cv);
+    const t = document.createElement('div'); t.className = 'ticks'; t.innerHTML = '<span>0</span><span>5k</span><span>10k</span><span>20k bbl/acre</span>'; L.appendChild(t);
+  }
+  function colorDepletion() {
+    const d = meta.depletion; if (!deplMesh || !d) return;
+    const n = d.nx * d.ny, off = yearIdx() * n, col = deplMesh.geometry.attributes.color.array, c = new THREE.Color();
+    for (let k = 0; k < n; k++) {
+      const v = DQ[off + k] * d.scale_bbl_acre;
+      if (v <= 0) { col[k * 3] = 0.07; col[k * 3 + 1] = 0.09; col[k * 3 + 2] = 0.11; continue; }
+      valColor({ ramp: DEPL_RAMP, lo: 0, hi: 1 }, Math.sqrt(v / DEPL_HI), c); col[k * 3] = c.r; col[k * 3 + 1] = c.g; col[k * 3 + 2] = c.b;
+    }
+    deplMesh.geometry.attributes.color.needsUpdate = true;
+  }
+  // Injection plane (injection_field.py): Dakota disposal as a flat mesh just below the Inyan Kara top, per year, either
+  // the diffusive pressure rise (uint8 of 2 psi) or the water disposed to date (uint8 of 1,000 bbl/acre); square-root colour
+  const INJ_HI_PSI = 500, INJ_HI_CUM = 100000;
+  function buildInjection() {
+    const d = meta.injection; if (!d || !IQ) return;
+    const n = d.nx * d.ny, pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+    for (let r = 0; r < d.ny; r++) for (let q = 0; q < d.nx; q++) {
+      const k = r * d.nx + q;
+      pos[k * 3] = (d.x0 + q * d.d) * K; pos[k * 3 + 1] = d.z * K; pos[k * 3 + 2] = -(d.y0 + r * d.d) * K;
+    }
+    const idx = [];
+    for (let r = 0; r < d.ny - 1; r++) for (let q = 0; q < d.nx - 1; q++) { const a = r * d.nx + q, b = a + 1, c = a + d.nx, e = c + 1; idx.push(a, c, b, b, c, e); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setIndex(idx);
+    injMesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }));
+    injMesh.renderOrder = 0; injMesh.visible = false; group.add(injMesh);
+    colorInjection();
+  }
+  function colorInjection() {
+    const d = meta.injection; if (!injMesh || !d) return;
+    const mode = $('injMode').value, Q = mode === 'cum' ? PQ : IQ, scale = mode === 'cum' ? d.scale_bbl_acre : d.scale_psi, hi = mode === 'cum' ? INJ_HI_CUM : INJ_HI_PSI;
+    const n = d.nx * d.ny, off = yearIdx() * n, col = injMesh.geometry.attributes.color.array, c = new THREE.Color();
+    for (let k = 0; k < n; k++) {
+      const v = (Q ? Q[off + k] : 0) * scale;
+      if (v <= (mode === 'cum' ? 0 : 2)) { col[k * 3] = 0.07; col[k * 3 + 1] = 0.09; col[k * 3 + 2] = 0.11; continue; }
+      valColor({ ramp: TURBO, lo: 0, hi: 1 }, Math.sqrt(v / hi), c); col[k * 3] = c.r; col[k * 3 + 1] = c.g; col[k * 3 + 2] = c.b;
+    }
+    injMesh.geometry.attributes.color.needsUpdate = true;
+    const L = $('injLegend'), cv = document.createElement('canvas'); cv.width = 240; cv.height = 12;
+    const ctx = cv.getContext('2d');
+    for (let x = 0; x < 240; x++) { valColor({ ramp: TURBO, lo: 0, hi: 1 }, x / 239, c); ctx.fillStyle = '#' + c.getHexString(); ctx.fillRect(x, 0, 1, 12); }
+    L.innerHTML = ''; L.appendChild(cv);
+    const t = document.createElement('div'); t.className = 'ticks';
+    t.innerHTML = mode === 'cum' ? '<span>0</span><span>6k</span><span>25k</span><span>100k bbl/acre</span>' : '<span>0</span><span>30</span><span>125</span><span>500 psi</span>';
+    L.appendChild(t);
+    const p = d.params || {}, n2 = document.createElement('div'); n2.className = 'note'; n2.style.marginTop = '4px';
+    n2.textContent = mode === 'cum'
+      ? 'Water disposed into the Dakota Group to the end of the year, per acre of the 1-mile cell. NDIC UIC monthly reports, every Dakota injector, 1956 on.'
+      : `Regional pressure rise from every Dakota injector: superposed diffusion in an infinite, homogeneous, confined aquifer (k ${p.k_md} mD, ct ${p.ct_per_psi}/psi, mapped Inyan Kara porosity-thickness). A far-field average, not injection pressure: no faults, boundaries or leak-off. Square-root colour scale.`;
+    L.appendChild(n2);
+  }
+  // Disposal wells: a point per Dakota injector at its perforation depth and a ring of the year's volume-equivalent radius
+  const RING_SEG = 36;
+  function buildSwd() {
+    const SW = meta.swd; if (!SW || !SW.length) { $('sSwd').disabled = true; return; }
+    const pos = new Float32Array(SW.length * 3);
+    SW.forEach((s, i) => { pos[i * 3] = s.x * K; pos[i * 3 + 1] = s.z * K; pos[i * 3 + 2] = -s.y * K; });
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(SW.length * 3), 3));
+    swdPts = new THREE.Points(g, new THREE.PointsMaterial({ size: 9, sizeAttenuation: false, vertexColors: true, depthTest: false }));
+    swdPts.renderOrder = 3; swdPts.visible = false; group.add(swdPts);
+    const rg = new THREE.BufferGeometry();
+    rg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(SW.length * RING_SEG * 6), 3));
+    rg.setAttribute('color', new THREE.BufferAttribute(new Float32Array(SW.length * RING_SEG * 6), 3));
+    swdRings = new THREE.LineSegments(rg, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.9 }));
+    swdRings.renderOrder = 3; swdRings.visible = false; group.add(swdRings);
+    updateSwd();
+  }
+  function updateSwd() {
+    const SW = meta.swd; if (!swdPts || !SW) return;
+    const yi = yearIdx(), c = new THREE.Color(), pc = swdPts.geometry.attributes.color.array;
+    const rp = swdRings.geometry.attributes.position.array, rc = swdRings.geometry.attributes.color.array;
+    let shown = 0; const rows = [];
+    const cumColor = (cum, out) => valColor({ ramp: TURBO, lo: 0, hi: 1 }, Math.sqrt(Math.min(cum, 100) / 100), out);
+    SW.forEach((s, i) => {
+      const cum = s.cumc[yi], on = cum !== null && cum > 0, rr = on && s.r[yi] ? s.r[yi] : 0;
+      if (on) { shown++; cumColor(cum, c); rows.push([cum, s]); } else c.setRGB(0.12, 0.14, 0.16);
+      pc[i * 3] = c.r; pc[i * 3 + 1] = c.g; pc[i * 3 + 2] = c.b;
+      for (let k = 0; k < RING_SEG; k++) {
+        const a0 = k / RING_SEG * Math.PI * 2, a1 = (k + 1) / RING_SEG * Math.PI * 2, b = (i * RING_SEG + k) * 6;
+        rp[b] = (s.x + rr * Math.cos(a0)) * K; rp[b + 1] = s.z * K; rp[b + 2] = -(s.y + rr * Math.sin(a0)) * K;
+        rp[b + 3] = (s.x + rr * Math.cos(a1)) * K; rp[b + 4] = s.z * K; rp[b + 5] = -(s.y + rr * Math.sin(a1)) * K;
+        for (let j = 0; j < 6; j += 3) { rc[b + j] = c.r; rc[b + j + 1] = c.g; rc[b + j + 2] = c.b; }
+      }
+    });
+    swdPts.geometry.attributes.color.needsUpdate = true;
+    swdRings.geometry.attributes.position.needsUpdate = true; swdRings.geometry.attributes.color.needsUpdate = true;
+    rows.sort((a, b) => b[0] - a[0]);
+    $('swdLegend').innerHTML = `<div class="note">${shown} Dakota injectors active by ${$('year').value}. Colour and ring: water disposed to date, in five size classes; the ring radius is the Dakota pore space that volume would fill at the mapped porosity-thickness (a volume-equivalent plume, not a pressure front). Largest to date:</div>` +
+      '<div class="cats">' + rows.slice(0, 5).map(([cum, s]) => `<span><i class="sw" style="background:#${(cumColor(cum, c), c.getHexString())}"></i>${esc(s.name || s.w)} · ${esc((meta.swd_classes || [])[s.cls[yi] - 1] || '')} · r ${fmt.format(s.r[yi] || 0)} ft</span>`).join('') + '</div>';
+  }
+  function setYear() {
+    $('yearOut').textContent = $('year').value;
+    applyFilter();
+    if (MODES[$('colorBy').value].year !== undefined) applyColors();
+    colorDepletion();
+    colorInjection();
+    updateSwd();
+    timelineStats();
+    if (selected >= 0 && W.fpy[selected] !== null && W.fpy[selected] > +$('year').value) select(-1);
+  }
+
+  // Ground reference: a grid at ground level (about 2,000 ft above sea level in the basin) and town labels, as on the public site
+  const GROUND_Z = 2.0;  // scene units (thousands of feet) above sea level
+  let grid = null, placeEls = [];
+  function buildGround() {
+    const box = new THREE.Box3().setFromObject(lines), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+    const extent = Math.max(size.x, size.z) * 1.4;
+    grid = new THREE.GridHelper(extent, 20, '#294759', '#172d3d');
+    grid.position.set(c.x, GROUND_Z, c.z); group.add(grid);
+    const host = $('mapLabels');
+    for (const pl of meta.places || []) {
+      const el = document.createElement('div'); el.className = 'place-label'; el.textContent = pl.name; host.appendChild(el);
+      placeEls.push({ el, p: new THREE.Vector3(pl.x * K, GROUND_Z, -pl.y * K) });
+    }
+  }
+  function placeLabels() {
+    if (!placeEls.length) return;
+    const show = $('sTowns').checked, w = innerWidth, h = innerHeight, v = new THREE.Vector3();
+    for (const { el, p } of placeEls) {
+      if (!show) { el.hidden = true; continue; }
+      v.copy(p).applyMatrix4(group.matrixWorld).project(camera);
+      const ok = v.z > -1 && v.z < 1 && v.x > -1 && v.x < 1 && v.y > -1 && v.y < 1;
+      el.hidden = !ok;
+      if (ok) el.style.transform = `translate(${((v.x + 1) / 2 * w + 6).toFixed(0)}px, ${((1 - v.y) / 2 * h - 10).toFixed(0)}px)`;
+    }
+  }
+
+  function fitBasin() {
+    const box = new THREE.Box3().setFromObject(lines);
+    const c = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3());
+    const r = Math.max(size.x, size.z);
+    controls.target.copy(c);
+    // high oblique view from the south, like the public viewer's fit: the basin reads as a map with depth
+    camera.position.set(c.x - r * 0.05, c.y + r * 0.95, c.z + r * 0.6);
+    controls.update();
+  }
+
+  function flyTo(w) {
+    // Lease scale reads better with less stretch: cap the vertical exaggeration at 10x
+    if (+$('exag').value > 10) { $('exag').value = 10; setExag(); group.updateMatrixWorld(); }
+    const mid = Math.floor((offsets[w] + offsets[w + 1]) / 2);
+    const p = new THREE.Vector3(V[mid * S] * K, V[mid * S + 2] * K, -V[mid * S + 1] * K).applyMatrix4(group.matrixWorld);
+    // Oblique view from the south-west, ~5 miles back and ~35 degrees above the horizon
+    const dir = new THREE.Vector3(-0.55, 0.62, 0.56).normalize();
+    controls.target.copy(p);
+    camera.position.copy(p.clone().add(dir.multiplyScalar(26)));
+    controls.update();
+  }
+
+  function select(w) {
+    selected = w; syncChips();
+    if (selLine) { group.remove(selLine); selLine.geometry.dispose(); selLine = null; }
+    if (+$('radius').value > 0) applyFilter();
+    if (w < 0) { $('detail').innerHTML = '<p class="empty">Tap or click a wellbore.</p>'; return; }
+    const pts = [];
+    for (let v = offsets[w]; v < offsets[w + 1]; v++) pts.push(new THREE.Vector3(V[v * S] * K, V[v * S + 2] * K, -V[v * S + 1] * K));
+    selLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xff6b6b, depthTest: false }));
+    selLine.renderOrder = 3; group.add(selLine);
+    const up = meta.upper_pts || 0, skip = up + meta.build_pts;
+    const vals = (col) => { const a = []; for (let v = offsets[w] + skip; v < offsets[w + 1]; v++) { const x = V[v * S + col]; if (Number.isFinite(x)) a.push(x); } a.sort((p, q) => p - q); return a.length ? a[Math.floor(a.length / 2)] : null; };
+    const gr = vals(3), gas = vals(4), wet = vals(5);
+    let peak = null; for (let v = offsets[w] + up; v < offsets[w] + skip; v++) { const x = V[v * S + 3]; if (Number.isFinite(x)) peak = Math.max(peak ?? 0, x); }
+    let ikTop = null; if (up) { const z = V[offsets[w] * S + 2], zb = V[(offsets[w] + up) * S + 2]; if (z > zb + 50) ikTop = -z; }
+    const d = (x, f) => x === null || x === undefined ? '—' : f(x);
+    $('detail').innerHTML = `<div class="card">
+      <div><h2>${esc(W.name[w] || 'Unnamed well')}</h2><div class="meta">NDIC file ${W.w[w]} · ${esc(meta.ops[W.op[w]] || '—')}</div></div>
+      <dl class="kv">
+        <dt>Target zone</dt><dd>${esc(meta.zones[W.zone[w]] || 'Not placed')}</dd>
+        <dt>Dakota pressure gradient (Eaton)</dt><dd>${d(W.pp_ik[w], (x) => x.toFixed(2) + ' psi/ft (' + (x / 0.052).toFixed(1) + ' ppg)')}</dd>
+        <dt>Bakken pressure gradient (Eaton)</dt><dd>${d(W.pp_bakken[w], (x) => x.toFixed(2) + ' psi/ft (' + (x / 0.052).toFixed(1) + ' ppg)')}</dd>
+        <dt>Lateral below Upper Bakken base</dt><dd>${d(W.below_ubs[w], (x) => fmt.format(x) + ' ft')}</dd>
+        <dt>Lateral length</dt><dd>${d(W.lat_len[w], (x) => fmt.format(x) + ' ft')}</dd>
+        <dt>Digital logs on NDIC</dt><dd>${esc((meta.logcov_names || [])[W.logcov ? W.logcov[w] : 4] || '')}</dd>
+        ${W.cem_class ? `<dt>Cement top (bond log)</dt><dd>${esc((meta.cem_names || [])[W.cem_class[w]] || 'No bond log')}${W.cem_top[w] !== null ? ' · ' + fmt.format(W.cem_top[w]) + ' ft MD' : ''}${W.cem_ik[w] !== null ? ' · ' + (W.cem_ik[w] >= 0 ? fmt.format(W.cem_ik[w]) + ' ft above the Inyan Kara' : fmt.format(-W.cem_ik[w]) + ' ft below the Inyan Kara') : ''}</dd>
+        <dt>Dakota bond</dt><dd>${esc((meta.bond_names || [])[W.bond[w]] || 'No bond log')}${W.bond_good[w] !== null ? ' · good over ' + Math.round(W.bond_good[w] * 100) + '%' : ''}</dd>` : ''}
+        ${W.shoes && W.shoes[w] && W.shoes[w].length ? `<dt>Casing strings</dt><dd>${W.shoes[w].map(([t, md, od, rep]) => `${od ? od + '" ' : ''}${meta.casing_types[t]} to ${fmt.format(md)} ft${rep ? '' : ' (est.)'}`).join('<br>')}</dd>` : ''}
+        ${W.wb ? `<dt>Wellbore shape class</dt><dd>${d(W.wb[w], (x) => esc((meta.wb_names || [])[x] || x))}</dd>
+        <dt>Geometry tags</dt><dd>${d(W.tags[w] || null, (x) => esc(x.replace(/_/g, ' ').replace(/,/g, ', ')))}</dd>
+        <dt>Kickoff · build rate</dt><dd>${d(W.kop[w], (x) => fmt.format(x) + ' ft')} · ${d(W.build[w], (x) => fmt1.format(x) + '°/100 ft')}</dd>
+        <dt>Toe up / down</dt><dd>${d(W.toe_up[w], (x) => (x > 0 ? '+' : '') + fmt.format(x) + ' ft')}</dd>
+        <dt>Porpoising · tortuosity</dt><dd>${d(W.porp[w], (x) => fmt1.format(x) + ' ft')} · ${d(W.tort[w], (x) => (x * 100).toFixed(2) + '%')}</dd>
+        <dt>Largest turn in lateral</dt><dd>${d(W.turn[w], (x) => fmt.format(x) + '°')}</dd>` : ''}
+        <dt>Spud year</dt><dd>${d(W.year[w], String)}</dd>
+        <dt>First production</dt><dd>${d(W.fpy[w], String)}</dd>
+        <dt>Oil, first 24 months</dt><dd>${d(W.oil24[w], (x) => fmt.format(x) + ' bbl')}</dd>
+        <dt>Estimated ultimate recovery</dt><dd>${d(W.eur[w], (x) => fmt.format(x) + ' bbl')}</dd>
+        <dt>Cumulative oil</dt><dd>${d(W.oil[w], (x) => fmt.format(x) + ' bbl')}</dd>
+        <dt>Actual vs model, 24-month</dt><dd>${d(W.perf[w], (x) => (x > 0 ? '+' : '') + fmt.format(x) + '%')}</dd>
+        <dt>Frac water</dt><dd>${d(W.water_ft[w], (x) => fmt.format(x) + ' gal/ft')}</dd>
+        <dt>Proppant</dt><dd>${d(W.prop_ft[w], (x) => fmt.format(x) + ' lb/ft')}</dd>
+      </dl></div>`;
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+  function pick(cx, cy) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const v3 = new THREE.Vector3(), mw = group.matrixWorld, best = { d: 12 * 12, w: -1 };
+    const vp = camera.projectionMatrix.clone().multiply(camera.matrixWorldInverse).multiply(mw);
+    const vis = visibleW();
+    for (let w = 0; w < nW; w++) {
+      if (!vis[w]) continue;
+      for (let v = offsets[w]; v < offsets[w + 1]; v++) {
+        v3.set(V[v * S] * K, V[v * S + 2] * K, -V[v * S + 1] * K).applyMatrix4(vp);
+        if (v3.z < -1 || v3.z > 1) continue;
+        const sx = (v3.x + 1) / 2 * rect.width, sy = (1 - v3.y) / 2 * rect.height;
+        const dd = (sx - (cx - rect.left)) ** 2 + (sy - (cy - rect.top)) ** 2;
+        if (dd < best.d) { best.d = dd; best.w = w; }
+      }
+    }
+    return best.w;
+  }
+
+  // ---------- Timeline: play, step, speed, keyboard; per-year stats; chips mirroring the layer switches ----------
+  let playTimer = null;
+  function stepYear(d) {
+    const y = $('year'), v = Math.min(+y.max, Math.max(+y.min, +y.value + d));
+    if (v !== +y.value) { y.value = v; setYear(); }
+    else if (d > 0 && playTimer) stopPlay();
+  }
+  function startPlay() {
+    if (playTimer) return;
+    if (+$('year').value >= +$('year').max) { $('year').value = $('year').min; setYear(); }
+    playTimer = setInterval(() => stepYear(1), 1600 / +$('speed').value);
+    $('play').textContent = '❚❚'; $('play').setAttribute('aria-label', 'Pause'); $('play').title = 'Pause (space)';
+  }
+  function stopPlay() {
+    clearInterval(playTimer); playTimer = null;
+    $('play').textContent = '▶'; $('play').setAttribute('aria-label', 'Play'); $('play').title = 'Play (space)';
+  }
+  function timelineStats() {
+    if (!meta || !W) return;
+    const y = +$('year').value, yi = yearIdx(), parts = [];
+    let active = 0; W.fpy.forEach((f) => { if (f !== null && f <= y) active++; });
+    parts.push(`<span><b>${fmt.format(active)}</b> wells on production</span>`);
+    if (YS && meta.years) {
+      let bopd = 0, n = 0;
+      for (let w = 0; w < nW; w++) { const v = YS[(w * meta.years.length + yi) * 2]; if (Number.isFinite(v) && v > 0) { bopd += v; n++; } }
+      if (n) parts.push(`<span><b>${short(Math.round(bopd))}</b> bopd from these wells</span>`);
+    }
+    if (meta.swd && meta.swd.length) {
+      const sy = meta.swd_year || {}, mm = (sy.mmbbl || [])[yi], n = (sy.wells || [])[yi];  // basin totals, precomputed
+      if (mm !== undefined && mm !== null) parts.push(`<span><b>${mm.toFixed(0)} MMbbl</b> into the Dakota this year, ${n} disposal wells</span>`);
+    }
+    $('tlStats').innerHTML = parts.join('');
+  }
+  function initTimeline() {
+    const y = $('year'), lo = +y.min, hi = +y.max, ticks = [];
+    for (let v = Math.ceil(lo / 5) * 5; v <= hi; v += 5) ticks.push(v);
+    $('yearTicks').innerHTML = ticks.map((v) => `<option value="${v}"></option>`).join('');
+    $('tlTicks').innerHTML = `<span>${lo}</span>` + ticks.filter((v) => v > lo + 1 && v < hi - 1).map((v) => `<span>${v}</span>`).join('') + `<span>${hi}</span>`;
+    timelineStats();
+  }
+  const CHIPS = { chipWells: 'sWells', chipUbs: 'sUbs', chipIk: 'sIkTop', chipDepl: 'sDepl', chipInj: 'sInj', chipSwd: 'sSwd', chipFuture: 'sFuture', chipTowns: 'sTowns' };
+  function syncChips() {
+    for (const [chip, id] of Object.entries(CHIPS)) {
+      const cb = $(id), c = $(chip); if (!cb || !c) continue;
+      c.classList.toggle('on', cb.checked); c.disabled = cb.disabled; c.setAttribute('aria-pressed', String(cb.checked));
+    }
+    const s = $('selHint'); if (s) s.textContent = selected >= 0 ? (W.name[selected] || W.w[selected]) : 'click a wellbore';
+  }
+  function wireTimeline() {
+    $('play').addEventListener('click', () => (playTimer ? stopPlay() : startPlay()));
+    $('stepBack').addEventListener('click', () => { stopPlay(); stepYear(-1); });
+    $('stepFwd').addEventListener('click', () => { stopPlay(); stepYear(1); });
+    $('speed').addEventListener('change', () => { if (playTimer) { stopPlay(); startPlay(); } });
+    $('year').addEventListener('pointerdown', stopPlay);
+    $('sWells').addEventListener('change', (e) => { if (lines) lines.visible = e.target.checked; if (selLine) selLine.visible = e.target.checked; });
+    for (const [chip, id] of Object.entries(CHIPS)) {
+      $(chip).addEventListener('click', () => { const cb = $(id); if (!cb || cb.disabled) return; cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); syncChips(); });
+      const cb = $(id); if (cb) cb.addEventListener('change', syncChips);
+    }
+    document.addEventListener('keydown', (e) => {
+      const t = e.target, typing = t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA');
+      if (typing && t.type !== 'range') return;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); stopPlay(); stepYear(-1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); stopPlay(); stepYear(1); }
+      else if (e.key === ' ') { e.preventDefault(); playTimer ? stopPlay() : startPlay(); }
+    });
+  }
+
+  function wire(Zs) {
+    let down = null;
+    renderer.domElement.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY }; });
+    renderer.domElement.addEventListener('pointerup', (e) => {
+      if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 5) select(pick(e.clientX, e.clientY));
+      down = null;
+    });
+    $('colorBy').addEventListener('change', applyColors);
+    $('exag').addEventListener('input', setExag);
+    $('opacity').addEventListener('input', () => {
+      const o = +$('opacity').value; $('opacityOut').textContent = Math.round(o * 100) + '%';
+      for (const m of Object.values(surfaces)) m.material.opacity = o;
+    });
+    $('sUbs').addEventListener('change', (e) => { if (surfaces.ubs) surfaces.ubs.visible = e.target.checked; });
+    $('sLbs').addEventListener('change', (e) => { if (surfaces.lbs) surfaces.lbs.visible = e.target.checked; });
+    $('sIkTop').addEventListener('change', (e) => { if (surfaces.ik_top) surfaces.ik_top.visible = e.target.checked; });
+    $('sIkBase').addEventListener('change', (e) => { if (surfaces.ik_base) surfaces.ik_base.visible = e.target.checked; });
+    $('sShoes').addEventListener('change', (e) => { if (shoePts) shoePts.visible = e.target.checked; });
+    $('sGrid').addEventListener('change', (e) => { if (grid) grid.visible = e.target.checked; });
+    $('sFuture').addEventListener('change', (e) => { if (futureLines) futureLines.visible = e.target.checked; });
+    $('futureTier').addEventListener('change', filterFuture);
+    $('futureColor').addEventListener('change', filterFuture);
+    $('sTowns').addEventListener('change', placeLabels);
+    $('vBakken').addEventListener('change', (e) => { if (volumes.bakken) { volumes.bakken.visible = e.target.checked; if (e.target.checked) { surfaces.ubs.visible = false; $('sUbs').checked = false; surfaces.lbs.visible = false; $('sLbs').checked = false; } volLegend(); } });
+    $('vDakota').addEventListener('change', (e) => { if (volumes.dakota) { volumes.dakota.visible = e.target.checked; if (e.target.checked) { surfaces.ik_top.visible = false; $('sIkTop').checked = false; if (surfaces.ik_base) { surfaces.ik_base.visible = false; $('sIkBase').checked = false; } } volLegend(); } });
+    $('thin').addEventListener('change', applyFilter);
+    $('county').addEventListener('change', applyFilter);
+    $('operator').addEventListener('change', applyFilter);
+    $('radius').addEventListener('change', applyFilter);
+    $('showUpper').addEventListener('change', applyFilter);
+    $('year').addEventListener('input', setYear);
+    $('sDepl').addEventListener('change', (e) => { if (deplMesh) deplMesh.visible = e.target.checked; });
+    $('sInj').addEventListener('change', (e) => { if (injMesh) injMesh.visible = e.target.checked; });
+    $('injMode').addEventListener('change', colorInjection);
+    $('sSwd').addEventListener('change', (e) => { if (swdPts) swdPts.visible = e.target.checked; if (swdRings) swdRings.visible = e.target.checked; });
+    $('reset').addEventListener('click', fitBasin);
+    $('clear').addEventListener('click', () => select(-1));
+    $('search').addEventListener('change', () => {
+      const q = $('search').value.trim().toUpperCase(); if (!q) return;
+      let w = W.w.indexOf(q.split(' ')[0]);
+      if (w < 0) w = W.name.findIndex((n) => (n || '').toUpperCase().includes(q));
+      if (w >= 0) { select(w); flyTo(w); }
+    });
+    $('toggle').addEventListener('click', () => {
+      const c = $('rail').classList.toggle('collapsed'); $('toggle').textContent = c ? '⟩' : '⟨'; $('toggle').title = c ? 'Expand the panel' : 'Collapse the panel'; $('toggle').setAttribute('aria-expanded', String(!c));
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') select(-1); });
+    wireTimeline();
+  }
+
+  function zoneChecks() {
+    const n = [0, 0, 0, 0]; W.zone.forEach((z) => n[z]++);
+    $('zoneChecks').innerHTML = meta.zones.map((z, i) =>
+      `<label class="check" for="z${i}"><input type="checkbox" id="z${i}" checked><span class="sw" style="background:#${ZONE_COLORS[i].getHexString()}"></span>${z || 'Not placed'}</label>`).join('');
+    meta.zones.forEach((_, i) => $('z' + i).addEventListener('change', (e) => { zoneOn[i] = e.target.checked; applyFilter(); if (selected >= 0 && !zoneOn[W.zone[selected]]) select(-1); }));
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+    placeLabels();
+    const az = Math.round(((Math.atan2(camera.position.x - controls.target.x, camera.position.z - controls.target.z) * 180 / Math.PI) + 360) % 360);
+    $('compass').textContent = `View from ${['S', 'SE', 'E', 'NE', 'N', 'NW', 'W', 'SW'][Math.round(az / 45) % 8]} · ${$('exag').value}× vertical`;
+  }
+
+  load().then((S) => {
+    initScene();
+    buildLines();
+    const layer = {}; for (const l of meta.layers) layer[l.name] = S.subarray(l.offset, l.offset + l.n);
+    const gridOf = (name) => meta.grids[meta.layers.find((l) => l.name === name).grid];
+    buildSurface('ubs', layer.ubs_z, gridOf('ubs_z'), '#7d9bb3', layer);
+    buildSurface('lbs', layer.lbs_z, gridOf('lbs_z'), '#b8926b', layer);
+    if (layer.ik_top_z) buildSurface('ik_top', layer.ik_top_z, gridOf('ik_top_z'), '#c9a96a', layer);
+    if (layer.ik_base_z) buildSurface('ik_base', layer.ik_base_z, gridOf('ik_base_z'), '#8c7a5a', layer);
+    if (layer.tf_z) buildVolume('bakken', layer.ubs_z, layer.tf_z, gridOf('ubs_z'), 20, 140, `Bakken volume: Upper Bakken Shale top to Three Forks top (Lower shale top + ${meta.lbs_thick_ft || 24} ft), coloured by thickness. The isopach as a solid.`);
+    else $('vBakken').disabled = true;
+    if (layer.ik_top_z && layer.ik_base_z) buildVolume('dakota', layer.ik_top_z, layer.ik_base_z, gridOf('ik_top_z'), 200, 550, 'Dakota volume: Inyan Kara top to Swift top, coloured by gross thickness (NDIC picks, ~20,000 wells). The isopach as a solid.');
+    else $('vDakota').disabled = true;
+    for (const o of $('surfColor').options) if (VAL_MODES[o.value]) o.disabled = !Object.values(VAL_MODES[o.value].layers).some((k) => layer[k]);
+    $('surfColor').addEventListener('change', colorSurfaces);
+    colorSurfaces();
+    surfaces.ubs.visible = $('sUbs').checked; surfaces.lbs.visible = false;
+    if (surfaces.ik_top) surfaces.ik_top.visible = $('sIkTop').checked;
+    if (surfaces.ik_base) surfaces.ik_base.visible = false;
+    buildGround();
+    buildFuture();
+    if (!surfaces.ik_top) { $('sIkTop').disabled = true; $('sIkBase').disabled = true; }
+    if (meta.years) { $('year').min = meta.years[0]; $('year').max = meta.years[meta.years.length - 1]; $('year').value = meta.years[meta.years.length - 1]; }
+    $('yearOut').textContent = $('year').value;
+    buildDepletion();
+    if (!deplMesh) $('sDepl').disabled = true;
+    buildInjection();
+    if (!injMesh) { $('sInj').disabled = true; $('injMode').disabled = true; }
+    buildSwd();
+    if (!YS) for (const o of $('colorBy').options) if (MODES[o.value] && MODES[o.value].year !== undefined) o.disabled = true;
+    $('wellList').innerHTML = W.w.map((w, i) => `<option value="${w} ${esc(W.name[i] || '')}"></option>`).join('');
+    if (meta.counties && W.county) { const n = meta.counties.map(() => 0); W.county.forEach((c) => n[c]++); $('county').innerHTML += meta.counties.map((c, i) => c && n[i] ? `<option value="${i}">${esc(c)} (${fmt.format(n[i])})</option>` : '').join(''); } else $('county').disabled = true;
+    { const n = meta.ops.map(() => 0); W.op.forEach((o) => n[o]++); const order = meta.ops.map((_, i) => i).filter((i) => meta.ops[i] && n[i] >= 20).sort((a, b) => n[b] - n[a]); $('operator').innerHTML += order.map((i) => `<option value="${i}">${esc(meta.ops[i])} (${fmt.format(n[i])})</option>`).join(''); }
+    if (!meta.sections || !(meta.stride >= 9)) { for (const o of $('colorBy').options) if (o.value === 'section') o.disabled = true; $('colorBy').value = 'gr'; }
+    else $('colorBy').value = 'section';  // browsers may restore a previous form choice on reload; the site opens on sections
+    if (!W.wb) for (const o of $('colorBy').options) if (MODES[o.value] && (MODES[o.value].catWell || ['toe_up', 'porp', 'tort', 'dls90'].includes(o.value))) o.disabled = true;
+    zoneChecks(); wire(); initTimeline(); syncChips();
+    $('opacityOut').textContent = '45%';
+    setExag(); applyColors(); applyFilter();
+    group.updateMatrixWorld(); fitBasin();
+    $('status').hidden = true;
+    animate();
+  }).catch((err) => { $('status').textContent = 'The 3D data did not load (' + err.message + '). Reload the page to try again.'; });
+})();
+</script>
+</html>

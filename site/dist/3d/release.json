@@ -1,0 +1,84 @@
+{
+  "kind": "bakken-subsurface-3d",
+  "version": 2,
+  "edition": "public-level-1",
+  "built": "2026-10-31",
+  "prepared": "2026-10-31T23:03Z",
+  "wells": 20266,
+  "vertices": 506650,
+  "layers": 19,
+  "years": [
+    2006,
+    2026
+  ],
+  "transport": "one gzip object per data file under data/, inflated in the browser with DecompressionStream",
+  "page": {
+    "bytes": 100839,
+    "sha256": "245ea01b5c06efd95a1348d9da198ad0da31525d72d79873cc4661f0c33c21c3"
+  },
+  "data": {
+    "meta.gz.bin": {
+      "source": "meta.json",
+      "bytes": 5395407,
+      "sha256": "d57921e0d876d0a71538dc594c5b795b2a9e90f01994f37ad456d8c03284ddfb",
+      "storedBytes": 946001,
+      "storedSHA256": "31c4aed9acbe9ed7ca8402b9a72b602e17e81f8bec10c9d08630010998fa643f"
+    },
+    "paths.gz.bin": {
+      "source": "paths.b64.txt",
+      "bytes": 18239400,
+      "sha256": "c8ad2cd455111d6f96112a9d7f58a0b159937cdfaafea19cd329691b6797efa9",
+      "storedBytes": 6734257,
+      "storedSHA256": "5672452bf7e957f0f44af50a5993a25979e08b73b9ac2d0f4f175aa1ec6f16e5"
+    },
+    "surfaces.gz.bin": {
+      "source": "surfaces.b64.txt",
+      "bytes": 5936900,
+      "sha256": "b61a3ef44a7cbc099c4e7434772f2e10a3247a594e15930e813e7d64bf8f8125",
+      "storedBytes": 1732791,
+      "storedSHA256": "9a7e592db99a7c68dbc5787cb4dd2fa6435004b4212a78e92a39ca8a7d421b5c"
+    },
+    "years.gz.bin": {
+      "source": "years.b64.txt",
+      "bytes": 3404688,
+      "sha256": "1882c80d80aad9704b5fc047ac02e72fa82e387045f0816c285a61a7d097e3b5",
+      "storedBytes": 1551530,
+      "storedSHA256": "68cd189e44956871b15aebb556c375973fea4e81b01b3f48a056f518ff68f60c"
+    },
+    "depl.gz.bin": {
+      "source": "depl.b64.txt",
+      "bytes": 391545,
+      "sha256": "e3c963f9020a361c4cd05c5cd3fa33450ddbfb3b0424f825f75531c962566793",
+      "storedBytes": 88902,
+      "storedSHA256": "4f3310f4b29886686f8d1e07be8e4b741ca31fc56dbcf0318234d486172e1e03"
+    },
+    "future.gz.bin": {
+      "source": "future.b64.txt",
+      "bytes": 984048,
+      "sha256": "670537f33fceeddf22855cef335825240d77b9f16253761aa17f2e0b1b0b3223",
+      "storedBytes": 679961,
+      "storedSHA256": "41af3c1fc3913331024741bbaa210d955744d1b96ae9f36267dd55a9750f44d4"
+    },
+    "inj.gz.bin": {
+      "source": "inj.b64.txt",
+      "bytes": 397404,
+      "sha256": "6ba6aa51d3784234172bb1e2d72c2b1c41ab6bf3acffcca3e199da65d28ee03e",
+      "storedBytes": 85801,
+      "storedSHA256": "6d8ee54e4374744f1ec386b1df4bf78877460ce46aa7deae2517736b37cdd5c9"
+    },
+    "plume.gz.bin": {
+      "source": "plume.b64.txt",
+      "bytes": 397404,
+      "sha256": "be25d599221313c28e242b5eacb266ce85a07085b093eee272c69312838b1ae0",
+      "storedBytes": 22292,
+      "storedSHA256": "030ac5b50f17ea454a72f8216fa0399990d873cfdf4da1cec48e56d4e36d1fb5"
+    }
+  },
+  "public_filter": [
+    "disposal wells: per-well volumes, rates and pressures replaced by 5 size classes (under 1 MMbbl, 1 to 5 MMbbl, 5 to 20 MMbbl, 20 to 50 MMbbl, over 50 MMbbl); ring radius scaled to the class value; basin totals per year precomputed",
+    "lateral log values (gamma ray, total gas, gas wetness) stored as 16 colour levels per mode range",
+    "cement study: numeric cement top, offset to the Inyan Kara and good-bond share nulled; classes kept",
+    "card: per-well Inyan Kara top and numeric log lines removed; casing shoe depths rounded to 100 ft",
+    "provenance paragraph in About the data"
+  ]
+}

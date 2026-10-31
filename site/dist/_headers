@@ -10,6 +10,9 @@
 /viewer/data/*
   X-Robots-Tag: noindex
 
+/3d/data/*
+  X-Robots-Tag: noindex
+
 /viewer/data/public-parts/*
   Cache-Control: public, max-age=31536000, immutable
 

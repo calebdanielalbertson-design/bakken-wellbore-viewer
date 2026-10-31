@@ -16,6 +16,16 @@
         "reference/metadata.json"
       ]
     },
+    "site-3d-data": {
+      "path": "site/dist/3d/data",
+      "description": "Bakken Subsurface 3D viewer data as served at /3d/ (one gzip object each for meta, paths, surfaces, years, depletion, future, injection and plume; from the LAS catalog project's map3d/ via scripts/prepare_3d_viewer.py).",
+      "version": "2026-10-31-public",
+      "key": "datasets/site-3d-data/2026-10-31-public/site-3d-data.tar.gz",
+      "sha256": "92458a7846b1b1f12bb0d1afda2d6cd37ebecd1bc015ca08db11db1c1dba99cd",
+      "bytes": 11792536,
+      "files": 8,
+      "contentBytes": 11841535
+    },
     "explorer-full-dataset": {
       "path": "explorer/full-dataset",
       "description": "Full North Dakota survey geometry, metrics, operators, well names and production for the development viewer.",
