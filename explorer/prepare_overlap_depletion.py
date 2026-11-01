@@ -33,7 +33,7 @@ import shapely
 from shapely.geometry import shape
 from shapely.strtree import STRtree
 
-from prepare_dsu_headroom import parse_spud, permit_key, read_well_index, county_lookup
+from prepare_dsu_headroom import parse_spud, permit_key, read_well_index, county_lookup, pool_class
 
 BAKKEN_POOLS = {'BAKKEN', 'SANISH', 'THREE FORKS'}
 MCF_PER_BOE = 6.0
@@ -43,20 +43,44 @@ SINGLE_UNIT = 0.80     # a later well with this share of its lateral in one unde
 MIN_ACRES = 1500
 
 
-def load_production(paths):
-    """permit -> {month: [oil, gas]} for Bakken-pool rows, summed across report lines."""
+def is_bakken_label(label):
+    """A Bakken-family production pool label, commingled ones such as BAKKEN/THREE FORKS included."""
+    label = (label or '').strip().upper()
+    return any(p in label for p in BAKKEN_POOLS)
+
+
+def load_production(paths, other=None):
+    """permit -> {month: [oil, gas]} for Bakken-pool rows, summed across report lines.
+
+    other, a Counter if given, collects each permit's BOE reported under any other pool.
+    """
     out = collections.defaultdict(lambda: collections.defaultdict(lambda: [0.0, 0.0]))
     months = set()
     for path in paths:
         with open(path, newline='', encoding='utf-8', errors='replace') as handle:
             for r in csv.DictReader(handle):
-                if r['Pool Name'].strip().upper() not in BAKKEN_POOLS:
+                if not is_bakken_label(r['Pool Name']):
+                    if other is not None:
+                        other[permit_key(r['File No'])] += boe(float(r['BBLS_OIL_COND'] or 0), float(r['MCF_GAS'] or 0))
                     continue
                 month = r['RPT_DATE'][:7]
                 cell = out[permit_key(r['File No'])][month]
                 cell[0] += float(r['BBLS_OIL_COND'] or 0); cell[1] += float(r['MCF_GAS'] or 0)
                 months.add(month)
     return out, sorted(months)
+
+
+def non_bakken_wells(index_rows, production, other):
+    """Permits that are not Bakken wells, though their laterals lie in Bakken units: the Well Index
+    names only other pools, or most of the well's reported production is from another pool
+    (Madison unit horizontals, Birdbear and Red River re-entries)."""
+    out = set()
+    for r in index_rows:
+        permit = permit_key(r['FileNo'])
+        bakken = sum(boe(o, g) for o, g in production.get(permit, {}).values())
+        if pool_class(r.get('ProducedPools')) == 'other' or other.get(permit, 0) > bakken:
+            out.add(permit)
+    return out
 
 
 def choose_parts(overlap, candidates, area):
@@ -108,7 +132,9 @@ def build(dsu_path, orders_path, membership_path, well_index_path, production_gl
     spud = {permit_key(r['FileNo']): parse_spud(r.get('SpudDate')) for r in index_rows}
     county_of = county_lookup(index_rows)
     paths = sorted(glob.glob(production_glob))
-    production, months = load_production(paths)
+    other = collections.Counter()
+    production, months = load_production(paths, other)
+    skip = non_bakken_wells(index_rows, production, other)
     ids = [f['properties']['id'] for f in features]
     geoms = [shapely.make_valid(shape(f['geometry'])) for f in features]
     acres = {f['properties']['id']: f['properties'].get('acres') or 0 for f in features}
@@ -142,6 +168,9 @@ def build(dsu_path, orders_path, membership_path, well_index_path, production_gl
         line_wells = set()
         nearby = {r['permit'] for u in [unit, *part_ids] for r in membership.get(u, [])}
         for permit in nearby:
+            if permit in skip:
+                counters['non_bakken_well_rows_skipped'] += 1
+                continue
             shares = by_permit[permit]
             inside = {p: shares.get(p, 0.0) for p in part_ids}
             best = max(inside, key=inside.get)
@@ -184,14 +213,15 @@ def build(dsu_path, orders_path, membership_path, well_index_path, production_gl
     for r in rows_out:
         y = by_year[r['year']]
         y['overlaps'] += 1; y['oneSided'] += r['oneSided']; y['priorBoeOneSided'] += r['priorBoe'] if r['oneSided'] else 0
-    summary = {**dict(counters), 'productionMonths': [months[0], months[-1]] if months else None,
+    summary = {**dict(counters), 'nonBakkenWells': len(skip), 'productionMonths': [months[0], months[-1]] if months else None,
                'oneSidedPriorBoe': sum(r['priorBoe'] for r in one_sided), 'oneSidedPriorOil': sum(r['priorOil'] for r in one_sided),
                'oneSidedLineBoe': sum(r['lineBoe'] for r in one_sided), 'oneSidedDryShareOfLineBoe': sum(r['dryShareOfLineBoe'] for r in one_sided),
                'medianImbalanceAll': float(np.median([r['imbalance'] for r in rows_out if r['priorBoe'] > 0])) if rows_out else None}
     result = {'version': 1, 'createdAtUTC': datetime.datetime.now(datetime.timezone.utc).isoformat(),
               'method': {'parts': f'Smaller DSUs at least {INSIDE:.0%} inside the overlap, largest first, none sharing more than {NO_DOUBLE_COVER:.0%} with those chosen.',
                          'date': 'The overlapping unit\'s first dated linked order; if an earlier order is missing, earlier production is overstated.',
-                         'production': f'NDIC monthly reports, pools {sorted(BAKKEN_POOLS)}; BOE = oil + gas/{MCF_PER_BOE:.0f}.',
+                         'production': f'NDIC monthly reports, rows whose pool label names {sorted(BAKKEN_POOLS)} (BAKKEN/THREE FORKS included); BOE = oil + gas/{MCF_PER_BOE:.0f}.',
+                         'wells': 'Wells whose Well Index pools are all non-Bakken, or whose reported production is mostly from another pool (Madison unit horizontals, Birdbear re-entries), are left out of every well count and side.',
                          'sides': 'A well belongs to the underlying unit holding most of its surveyed lateral; earlier production counts wells spudded before the overlap date and months before it.',
                          'lineWells': f'Wells spudded on or after the overlap date with at least half their lateral in the overlap and less than {SINGLE_UNIT:.0%} in any one underlying unit.',
                          'imbalance': 'Half the summed |production share - area share| over underlying units; 0 even, 1 all from one side.',

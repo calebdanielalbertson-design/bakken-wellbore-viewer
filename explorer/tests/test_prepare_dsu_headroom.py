@@ -5,6 +5,7 @@ import importlib.util
 import io
 import json
 import pathlib
+import sys
 import tempfile
 import unittest
 
@@ -14,6 +15,7 @@ except ImportError:
     raise unittest.SkipTest('Headroom tests require optional Shapely.')
 
 ROOT=pathlib.Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT.parent))
 spec=importlib.util.spec_from_file_location('headroom_builder',ROOT.parent/'prepare_dsu_headroom.py')
 builder=importlib.util.module_from_spec(spec); spec.loader.exec_module(builder)
 
@@ -40,7 +42,7 @@ def event(order,date,event='spacing',wells=None,verb='designated'):
 
 
 class HeadroomTests(unittest.TestCase):
-    def run_build(self,dsus,orders,members,index_rows,branches=8,groups=None,applicants=None,membership_ids_hash=None,manifest_branches=None):
+    def run_build(self,dsus,orders,members,index_rows,branches=8,groups=None,applicants=None,membership_ids_hash=None,manifest_branches=None,production=None):
         ids=[d[0] for d in dsus]; ids_hash=hashlib.sha256('\n'.join(sorted(ids)).encode()).hexdigest()
         with tempfile.TemporaryDirectory() as folder:
             f=pathlib.Path(folder); (f/'dataset').mkdir()
@@ -57,7 +59,14 @@ class HeadroomTests(unittest.TestCase):
             for r in index_rows: w.writerow({k:r.get(k,'') for k in FIELDS})
             (f/'WellIndex.csv').write_text(out.getvalue())
             (f/'atlas.json').write_text(json.dumps({'records':[{'order':o,'case':'1','applicant':n} for o,n in (applicants or {}).items()],'cases':[]}))
-            return builder.build(f/'orders.json',f/'membership.json',f/'dsus.geojson',f/'dataset',f/'WellIndex.csv',f/'atlas.json',f/'out.json')
+            glob=None
+            if production is not None:
+                with open(f/'prod.csv','w',newline='') as h:
+                    pw=csv.DictWriter(h,['File No','Pool Name','RPT_DATE','BBLS_OIL_COND','MCF_GAS']); pw.writeheader()
+                    for permit,pool,oil in production:
+                        pw.writerow({'File No':permit,'Pool Name':pool,'RPT_DATE':'2015-01-01','BBLS_OIL_COND':str(oil),'MCF_GAS':'0'})
+                glob=str(f/'prod.csv')
+            return builder.build(f/'orders.json',f/'membership.json',f/'dsus.geojson',f/'dataset',f/'WellIndex.csv',f/'atlas.json',f/'out.json',production_glob=glob)
 
     def test_balance_counts_bakken_wells_over_660_ft(self):
         result=self.run_build([('a',rect(0,0,1,2),1280)],{'a':link(4)},
@@ -67,6 +76,16 @@ class HeadroomTests(unittest.TestCase):
         u=result['units']['a']
         self.assertEqual((u['wellsInside'],u['balance'],u['assignedBalance']),(1,3,3))
         self.assertEqual(u['county'],'McKenzie')
+        self.assertEqual(result['counts']['wellsPool_other'],1)
+
+    def test_well_with_mostly_other_pool_production_is_not_counted(self):
+        # Well 1 lists Bakken among its pools but produced mostly Madison; well 2 is a Bakken well.
+        result=self.run_build([('a',rect(0,0,1,2),1280)],{'a':link(4)},
+            {'a':[member(1,9000,1,[0]),member(2,9000,1,[1])]},
+            [{'FileNo':'1','ProducedPools':'BAKKEN, MADISON'},{'FileNo':'2','ProducedPools':'BAKKEN'}],
+            production=[('1','MADISON',90000),('1','BAKKEN',5000),('2','BAKKEN/THREE FORKS',80000),('2','MADISON',100)])
+        u=result['units']['a']
+        self.assertEqual((u['wellsInside'],u['balance']),(1,3))
         self.assertEqual(result['counts']['wellsPool_other'],1)
 
     def test_shared_well_is_assigned_once_to_smaller_unit_on_tie(self):

@@ -187,7 +187,7 @@ def rollup(rows,key):
     return sorted(({'name':k,**dict(v)} for k,v in groups.items()),key=lambda g:(-g['remaining'],g['name']))
 
 
-def build(orders_path,membership_path,dsu_path,dataset_path,well_index_path,atlas_path,output_path,key_path=None):
+def build(orders_path,membership_path,dsu_path,dataset_path,well_index_path,atlas_path,output_path,key_path=None,production_glob=None):
     started=time.perf_counter()
     answer_key=json.loads(pathlib.Path(key_path).read_text(encoding='utf-8'))['pairs'] if key_path else None
     dataset_path=pathlib.Path(dataset_path)
@@ -217,6 +217,15 @@ def build(orders_path,membership_path,dsu_path,dataset_path,well_index_path,atla
     # Order links built from the land index carry applicants for orders the atlas never mapped.
     for order,name in (orders.get('applicants') or {}).items(): applicant.setdefault(str(order),name)
     counters=collections.Counter()
+    # With monthly production, a well whose production is mostly from another pool (a Madison
+    # horizontal or Birdbear re-entry with a little Bakken) is not a Bakken well either.
+    mostly_other=set()
+    if production_glob:
+        import glob
+        from prepare_overlap_depletion import load_production,non_bakken_wells
+        other=collections.Counter()
+        production,_=load_production(sorted(glob.glob(production_glob)),other)
+        mostly_other=non_bakken_wells(index_rows,production,other)
 
     # Bakken-pool wells per unit (every unit, including overlapping ones).
     eligible_rows=collections.defaultdict(dict); well_pool={}
@@ -224,7 +233,7 @@ def build(orders_path,membership_path,dsu_path,dataset_path,well_index_path,atla
         for row in rows:
             if row['insideFt']<MIN_INSIDE_FT: continue
             if row['key'] not in well_pool:
-                well_pool[row['key']]=pool_class((index_by_permit.get(row['permit']) or {}).get('ProducedPools'))
+                well_pool[row['key']]='other' if row['permit'] in mostly_other else pool_class((index_by_permit.get(row['permit']) or {}).get('ProducedPools'))
                 counters['wellsPool_'+well_pool[row['key']]]+=1
             if well_pool[row['key']]=='other': continue
             eligible_rows[unit_id][row['key']]=row
@@ -254,7 +263,7 @@ def build(orders_path,membership_path,dsu_path,dataset_path,well_index_path,atla
     for r in index_rows:
         if r['WellStatus'] not in PENDING_STATUS or r['Wellbore'] not in ('HORIZONTAL','Confidential'): continue
         if permit_key(r['FileNo']) in surveyed: counters['pendingAlreadySurveyed']+=1; continue
-        if pool_class(r['ProducedPools'])=='other': continue
+        if pool_class(r['ProducedPools'])=='other' or permit_key(r['FileNo']) in mostly_other: continue
         try: point=Point(float(r['Longitude']),float(r['Latitude']))
         except ValueError: counters['pendingWithoutLocation']+=1; continue
         hits=[ids[j] for j in tree.query(point,predicate='within')]
@@ -305,7 +314,7 @@ def build(orders_path,membership_path,dsu_path,dataset_path,well_index_path,atla
             'sourceHashes':{p.name:sha_file(p) for p in paths},
             'method':{'allowance':'Latest linked order allowance from dsu-orders.json; units with no single or mixed allowances are omitted.',
                       'wellsInside':f'Distinct permit + API10 wells with at least {MIN_INSIDE_FT:.0f} ft of classified surveyed lateral inside the unit (dsu-well-membership.json).',
-                      'pool':'Wells whose Well Index ProducedPools names a pool and none of '+', '.join(BAKKEN_POOLS)+' are excluded; blank or confidential pools are kept.',
+                      'pool':'Wells whose Well Index ProducedPools names a pool and none of '+', '.join(BAKKEN_POOLS)+' are excluded; blank or confidential pools are kept.'+(' So are wells whose monthly production is mostly reported to another pool.' if production_glob else ''),
                       'assignedWells':f'Each counted well is assigned to one DSU by geometry alone: the largest share of its lateral; shares within {TIE_FRACTION:.0%} go to the smaller unit. A well in a unit with no stated allowance uses none. Rollups use these so overlapping units do not double count. attributionScore compares this rule with giving units that have an allowance precedence, on wells that orders name with their unit.',
                       'timing':'firstOrderDate (earliest dated linked order on the unit\'s land), wellsBeforeFirstOrder (charged wells spudded before it), wellsAfterLatestOrder (spudded after the allowance order) and drilledBeyondOrderInForce (wells whose spud-order count exceeds the allowance in force that day) compare Well Index spud dates with the unit\'s order dates. They tag why a unit is over its allowance; they do not change attribution.',
                       'conservative':'totals.remainingConservative uses each unit\'s own wellsInside, so shared wells reduce every unit they cross; it is a lower bound.',
@@ -339,4 +348,5 @@ if __name__=='__main__':
     parser.add_argument('atlas',help='local order queue unit_atlas/data.json (order applicants)')
     parser.add_argument('output',help='viewer/data/dsu/dsu-headroom.json')
     parser.add_argument('--answer-key',help='land_index/data/well_unit_key.json: wells named with their unit in orders, to score attribution')
-    args=parser.parse_args(); build(args.orders,args.membership,args.dsus,args.dataset,args.well_index,args.atlas,args.output,args.answer_key)
+    parser.add_argument('--production',help='quoted glob of NDIC monthly production CSVs: also leave out wells whose production is mostly from another pool')
+    args=parser.parse_args(); build(args.orders,args.membership,args.dsus,args.dataset,args.well_index,args.atlas,args.output,args.answer_key,args.production)
